@@ -4,7 +4,7 @@ build:
 # Build the HUGO page in public folder
     - arjen/hugo-build@1.14.1:
         version: "0.18.1"
-        theme: mainroad
+        theme: aerial
         flags: --buildDrafts=false
 
 deploy:
