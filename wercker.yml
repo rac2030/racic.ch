@@ -1,0 +1,18 @@
+box: debian
+build:
+  steps:
+# Build the HUGO page in public folder
+    - arjen/hugo-build@1.14.1:
+        version: "0.18.1"
+        theme: mainroad
+        flags: --buildDrafts=false
+
+deploy:
+  steps:
+    - install-packages:
+        packages: git ssh-client
+# Deploy the public folder to gh_pages branch
+    - lukevivier/gh-pages@0.2.1:
+        token: $GIT_TOKEN
+        domain: racic.ch
+        basedir: public

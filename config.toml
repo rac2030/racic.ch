@@ -1,0 +1,32 @@
+languageCode = "en-us"
+title = "Michel Racic"
+baseurl = "http://racic.ch/"
+theme = "aerial"
+favicon = "favicon.ico"
+
+[params]
+  name = "Michel Racic"
+  about = "Software Engineer &nbsp;&bull;&nbsp; Automation Specialist &nbsp;&bull;&nbsp; Always up to hack for fun"
+  copyright = "rac.su"
+  #Disable the scrolling background by entering any string for bg_scroll. Enable by leaving bg_scroll empty.
+  bg_scroll = ""
+
+[[params.social]]
+  medium = "G+"
+  icon = "google-plus"
+  link = "https://google.com/+michelracic"
+
+[[params.social]]
+  medium = "Twitter"
+  icon = "twitter"
+  link = "https://twitter.com/rac2030"
+
+[[params.social]]
+  medium = "Github"
+  icon = "github"
+  link = "https://github.com/rac2030"
+
+[[params.social]]
+  medium = "Web notepad"
+  icon = "rss"
+  link = "http://rac.su"
