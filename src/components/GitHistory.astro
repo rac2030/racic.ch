@@ -1,5 +1,10 @@
 ---
-import type { GitCommit } from '../utils/gitLog';
+interface GitCommit {
+  hash: string;
+  date: string;
+  message: string;
+  url: string;
+}
 
 interface Props {
   commits: GitCommit[];
@@ -18,12 +23,12 @@ const formatTime = (d: string) => {
 };
 ---
 
-<div class="git-history-modal" id="git-history-modal" style="display:none;">
-  <div class="git-history-backdrop" id="git-history-backdrop"></div>
+<div class="git-history-modal" id="gh-modal" style="display:none;">
+  <div class="git-history-backdrop" id="gh-modal-backdrop"></div>
   <div class="git-history-dialog">
     <div class="git-history-header">
       <h3>Change History</h3>
-      <button class="git-history-close" id="git-history-close">&times;</button>
+      <button class="git-history-close" id="gh-modal-close">&times;</button>
     </div>
     <div class="git-history-body">
       <table class="git-history-table">
@@ -57,9 +62,9 @@ const formatTime = (d: string) => {
 
 <script is:inline>
   (function() {
-    var modal = document.getElementById('git-history-modal');
-    var backdrop = document.getElementById('git-history-backdrop');
-    var closeBtn = document.getElementById('git-history-close');
+    var modal = document.getElementById('gh-modal');
+    var backdrop = document.getElementById('gh-modal-backdrop');
+    var closeBtn = document.getElementById('gh-modal-close');
     var trigger = document.getElementById('git-history-trigger');
 
     if (!modal || !trigger) return;

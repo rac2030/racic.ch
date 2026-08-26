@@ -5,7 +5,7 @@ description: "An AI-generated blog post documenting how this very page was built
 category: "generated"
 tags: ["ai", "astro", "opencode"]
 heroImage: /images/projects/opencode-ai-hero.svg
-draft: true
+draft: false
 aliases:
   - "how-i-was-built"
 ---
@@ -523,6 +523,12 @@ A build-time git log integration was added to show the full change history of ea
 3. **Updated date fallback** — If a content file has no `updatedDate` in frontmatter, the last git commit date is used instead. This means every article with git history automatically shows when it was last modified, even without manual frontmatter updates.
 
 The key implementation challenge was Vite's JSON import handling during Astro's prerender phase. Direct `import` of JSON files and `readFileSync` with `process.cwd()` both failed because the prerendering step changes the working directory. The solution was to import the JSON file as a Vite static import (`import gitLogJson from '../../data/git-log.json'`), which Vite bundles correctly at build time.
+
+#### The ID Collision Bug
+
+The modal worked on every page except this very blog post. The trigger text "(updated DATE)" appeared, but clicking it did nothing. The root cause was an HTML `id` collision: the blog post content contains a `## Git History Modal` heading, which Astro renders as `<h3 id="git-history-modal">Git History Modal</h3>`. The modal component also used `id="git-history-modal"` on its `<div>`. Since `document.getElementById()` returns the first matching element in DOM order, the script grabbed the heading instead of the modal div — so the click handler was attached to the wrong element, and `modal.style.display = 'flex'` set display on a heading that was already visible.
+
+The fix was to prefix the component IDs (`gh-modal`, `gh-modal-close`, `gh-modal-backdrop`) to avoid collisions with any content-generated IDs. This is a general risk when components use `id` attributes that could match headings or anchors in user-authored content — scoped CSS classes or `data-*` selectors are safer for interactive components.
 
 ## Manual Changes Required
 
