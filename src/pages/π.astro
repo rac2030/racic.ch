@@ -1,0 +1,102 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="π">
+  <section class="section">
+    <div class="container" style="max-width: 800px;">
+      <h1 style="text-align: center;">π</h1>
+      <div style="position: relative; width: 100%; padding-bottom: 56.25%; margin: 2rem 0;">
+        <iframe
+          src="https://www.youtube.com/embed/pXPXMxsXT28?autoplay=1&mute=1"
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: var(--radius-lg);"
+          allow="autoplay; encrypted-media"
+          allowfullscreen
+        ></iframe>
+      </div>
+      <div class="pi-calc" style="margin-top: 2rem;">
+        <pre id="pi-output" style="text-align: left; white-space: pre-wrap; word-break: break-all; min-height: 3rem;"></pre>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script is:inline>
+function Decimal(digits) {
+  this.d = new Array(); this.m = digits;
+  for (var n = digits; n >= 0; n--) this.d[n] = 0;
+}
+Decimal.prototype.copy = function() {
+  var ret = new Decimal(this.m);
+  for (var n = this.m; n >= 0; n--) ret.d[n] = this.d[n];
+  return ret;
+};
+Decimal.prototype.toString = function(safety) {
+  if (this.d[0] < 0) { var x = this.copy(); x.invertSign(); return '-' + x.toString(); }
+  var ret = this.d[0] + '.';
+  for (var n = 1; n <= this.m - safety; n++) {
+    ret += this.d[n];
+    if (n % 10 == 0) { if (n % 50 == 0) ret += '\n  '; else ret += ' '; }
+  }
+  return ret;
+};
+function convergedDecimals(a, b, safety) {
+  if (a.d[0] < 0) { var na = a.copy(); na.invertSign(); var nb = b.copy(); nb.invertSign(); return '-' + convergedDecimals(na, nb); }
+  var ret = a.d[0] + '.';
+  for (var n = 1; n <= a.m - safety && a.d[n] == b.d[n]; n++) {
+    ret += a.d[n];
+    if (n % 10 == 0) { if (n % 50 == 0) ret += '\n  '; else ret += ' '; }
+  }
+  return ret;
+}
+function equalDecimals(a, b) {
+  if (a.m != b.m) return 0;
+  for (var n = a.m; n >= 0; n--) if (a.d[n] != b.d[n]) return 0;
+  return 1;
+}
+Decimal.prototype.setValue = function(x) {
+  for (var n = 0; n <= this.m; n++) { x -= (this.d[n] = Math.floor(x)); x *= 10; }
+};
+Decimal.prototype.invertSign = function() {
+  for (var n = 0; n <= this.m; n++) {
+    this.d[n] *= -1;
+    for (var i = n; this.d[i] < 0 && i > 0; i--) { this.d[i] += 10; this.d[i - 1]--; }
+  }
+};
+Decimal.prototype.addDecimal = function(x) {
+  for (var n = this.m; n >= 0; n--) {
+    this.d[n] += x.d[n];
+    if (this.d[n] >= 10 && n > 0) { this.d[n] -= 10; this.d[n - 1]++; }
+  }
+};
+Decimal.prototype.divideInt = function(x) {
+  var r = 0;
+  for (var n = 0; n <= this.m; n++) {
+    r += this.d[n];
+    this.d[n] = q = Math.floor(r / x);
+    r = (r - q * x) * 10;
+  }
+};
+var piSum, piTa, piTb, piK;
+function piestart(digits) {
+  piSum = new Decimal(digits + 10); piK = 0;
+  piTa = new Decimal(digits + 10); piTa.setValue(16); piTa.divideInt(5);
+  piTb = new Decimal(digits + 10); piTb.setValue(-4); piTb.divideInt(239);
+  pieiter();
+}
+function pieiter() {
+  var a = piTa.copy(); a.divideInt(2 * piK + 1);
+  var b = piTb.copy(); b.divideInt(2 * piK + 1);
+  var old = piSum.copy();
+  piSum.addDecimal(a); piSum.addDecimal(b);
+  piTa.invertSign(); piTa.divideInt(25);
+  piTb.invertSign(); piTb.divideInt(239 * 239);
+  piK++;
+  var el = document.getElementById('pi-output');
+  if (el) el.textContent = piSum.toString(10);
+  if (!equalDecimals(piSum, old)) setTimeout(pieiter, 0);
+}
+document.addEventListener('DOMContentLoaded', function() {
+  piestart(1000);
+});
+</script>

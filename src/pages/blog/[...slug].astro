@@ -1,0 +1,67 @@
+---
+import { getCollection, render } from 'astro:content';
+import Post from '../../layouts/Post.astro';
+import Comments from '../../components/Comments.astro';
+import ContentResizer from '../../components/ContentResizer.astro';
+
+const EDIT_BASE = 'https://github.com/rac2030/racic.ch/edit/main/src/content/blog';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const entries = posts
+    .filter((post) => import.meta.env.MODE === 'production' ? !post.data.draft : true)
+    .flatMap((post) => {
+      const slug = post.id.replace(/\.md$/, '');
+      const aliases = (post.data.aliases || [])
+        .filter((alias) => !alias.startsWith('/'))
+        .map((alias) => ({
+          params: { slug: alias },
+          props: { post },
+        }));
+      return [{ params: { slug }, props: { post } }, ...aliases];
+    });
+  return entries;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const tagLinks = post.data.tags.map((t) => `<a href="/tags/${t}" class="tag">${t}</a>`).join(' ');
+const editUrl = `${EDIT_BASE}/${post.id}`;
+---
+
+<Post
+  title={post.data.title}
+  description={post.data.description}
+  image={post.data.heroImage}
+>
+  <article>
+    {post.data.draft && <div class="draft-watermark">DRAFT — not published in production</div>}
+    <div class="article-header">
+      <a href={editUrl} class="article-edit" target="_blank" rel="noopener noreferrer" title="Edit on GitHub"><i class="fa-solid fa-pen"></i></a>
+      <div class="container content-width">
+        {post.data.heroImage && <img src={post.data.heroImage} alt={post.data.title} style="margin-bottom: 1.5rem;" />}
+        <h1>{post.data.title}{post.data.draft && <span class="draft-badge">Draft</span>}</h1>
+        <div class="article-meta">
+          {post.data.category && (
+            <a href={`/blog?category=${post.data.category}`} class="article-category">{post.data.category}</a>
+          )}
+          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          {post.data.updatedDate && post.data.updatedDate.getTime() !== post.data.pubDate.getTime() && (
+            <span class="article-updated">(updated <time datetime={post.data.updatedDate.toISOString()}>{formatDate(post.data.updatedDate)}</time>)</span>
+          )}
+          <div set:html={tagLinks} />
+        </div>
+      </div>
+    </div>
+    <ContentResizer>
+      <div class="container article-content">
+        <Content />
+        <Comments />
+      </div>
+    </ContentResizer>
+  </article>
+</Post>

@@ -1,0 +1,43 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  date: Date;
+  tags?: string[];
+  category?: string;
+  updatedDate?: Date;
+  heroImage?: string;
+  draft?: boolean;
+}
+
+const { title, description, href, date, tags = [], category, updatedDate, heroImage, draft } = Astro.props;
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+---
+
+<a href={href} class="card" data-tags={JSON.stringify(tags)} data-category={category || ''}>
+  {heroImage && (
+    <div class="card-hero">
+      <img src={heroImage} alt="" loading="lazy" />
+    </div>
+  )}
+  <div class="card-body">
+    <div class="card-meta">
+      <time datetime={date.toISOString()}>{formatDate(date)}</time>
+      {updatedDate && (
+        <span>(updated {formatDate(updatedDate)})</span>
+      )}
+    </div>
+    <h3>{title}{draft && <span class="draft-badge">Draft</span>}</h3>
+    <p>{description}</p>
+    {tags.length > 0 && (
+      <div class="card-tags">
+        {tags.map((tag) => (
+          <span class="tag">{tag}</span>
+        ))}
+      </div>
+    )}
+  </div>
+</a>

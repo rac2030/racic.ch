@@ -1,0 +1,457 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="404 — Page Not Found">
+  <div class="page-404">
+    <h1>404</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 1rem;">The page you're looking for doesn't exist.</p>
+
+    <div id="poop-container" style="position: fixed; inset: 0; pointer-events: none; z-index: 100;"></div>
+
+    <div id="search-404" style="display: none; margin: 2rem auto; max-width: 600px; text-align: left;">
+      <h2 style="font-size: 1rem; color: var(--text-muted); margin-bottom: 1rem;">Search results for "<span id="search-term"></span>":</h2>
+      <div id="search-results"></div>
+    </div>
+
+    <a href="/" class="btn btn-primary">Back to Home</a>
+
+    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 2rem;"><kbd style="padding: 0.15em 0.5em; border: 1px solid var(--border); border-radius: 3px; font-size: 0.8em;">Space</kbd> or click to jump (double jump!) &middot; <kbd style="padding: 0.15em 0.5em; border: 1px solid var(--border); border-radius: 3px; font-size: 0.8em;">&larr;</kbd> <kbd style="padding: 0.15em 0.5em; border: 1px solid var(--border); border-radius: 3px; font-size: 0.8em;">&rarr;</kbd> to move</p>
+  </div>
+
+  <canvas id="duck-game" style="position: fixed; bottom: 0; left: 0; width: 100%; height: 200px; z-index: 50; pointer-events: auto; cursor: pointer;"></canvas>
+</Base>
+
+<script is:inline>
+(function() {
+  var container = document.getElementById('poop-container');
+  var poopEmoji = '\uD83D\uDCA9';
+  var emojis = [];
+  var PW = window.innerWidth;
+  var PH = window.innerHeight;
+
+  for (var i = 0; i < 8; i++) {
+    var el = document.createElement('div');
+    el.textContent = poopEmoji;
+    el.style.cssText = 'position:absolute;font-size:' + (20 + Math.random() * 24) + 'px;pointer-events:auto;cursor:pointer;opacity:0.7;transition:transform 0.2s;z-index:101;';
+    container.appendChild(el);
+    emojis.push({
+      el: el,
+      x: Math.random() * (PW - 40),
+      y: Math.random() * (PH - 40),
+      vx: (Math.random() - 0.5) * 4,
+      vy: (Math.random() - 0.5) * 4,
+    });
+    el.addEventListener('click', function() { window.location.href = '/\uD83D\uDCA9/'; });
+    el.addEventListener('mouseenter', function() { this.style.transform = 'scale(1.5)'; });
+    el.addEventListener('mouseleave', function() { this.style.transform = 'scale(1)'; });
+  }
+
+  function animate() {
+    PW = window.innerWidth;
+    PH = window.innerHeight;
+    for (var i = 0; i < emojis.length; i++) {
+      var e = emojis[i];
+      e.x += e.vx;
+      e.y += e.vy;
+      if (e.x <= 0 || e.x >= PW - 40) e.vx *= -1;
+      if (e.y <= 0 || e.y >= PH - 40) e.vy *= -1;
+      e.x = Math.max(0, Math.min(PW - 40, e.x));
+      e.y = Math.max(0, Math.min(PH - 40, e.y));
+
+      // bounce off mountains
+      var peSize = parseInt(e.el.style.fontSize, 10) || 24;
+      var peCx = e.x + peSize / 2;
+      var peCy = e.y + peSize / 2;
+      if (typeof obstacles !== 'undefined' && typeof GROUND !== 'undefined') {
+        var groundY = PH - 200 + GROUND;
+        for (var m = 0; m < obstacles.length; m++) {
+          var o = obstacles[m];
+          var mLeft = o.x - o.w / 2;
+          var mRight = o.x + o.w / 2;
+          var mTop = groundY - o.h;
+          var mBottom = groundY;
+          if (peCx > mLeft && peCx < mRight && peCy > mTop && peCy < mBottom) {
+            var dx = peCx - o.x;
+            var dy = peCy - (mTop + o.h / 2);
+            if (Math.abs(dx / o.w) > Math.abs(dy / o.h)) {
+              e.vx = dx > 0 ? Math.abs(e.vx) : -Math.abs(e.vx);
+            } else {
+              e.vy = dy > 0 ? Math.abs(e.vy) : -Math.abs(e.vy);
+            }
+            e.x += e.vx * 2;
+            e.y += e.vy * 2;
+            break;
+          }
+        }
+      }
+
+      e.el.style.left = e.x + 'px';
+      e.el.style.top = e.y + 'px';
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  var path = decodeURIComponent(window.location.pathname).replace(/^\/|\/$/g, '').replace(/^(blog|projects|wiki|bookmarks)\//i, '').replace(/[-_]/g, ' ').toLowerCase();
+  if (!path) return;
+
+  document.getElementById('search-term').textContent = path;
+
+  fetch('/search-index.json').then(function(r) { return r.json(); }).then(function(data) {
+    var terms = path.split(/\s+/).filter(Boolean);
+    var results = data.filter(function(item) {
+      var haystack = (item.title + ' ' + item.description + ' ' + item.tags.join(' ')).toLowerCase();
+      return terms.every(function(t) { return haystack.indexOf(t) !== -1; });
+    });
+    if (results.length === 0) {
+      document.getElementById('search-404').style.display = 'block';
+      document.getElementById('search-results').innerHTML = '<p style="color: var(--text-muted);">No matching pages found.</p>';
+      return;
+    }
+    document.getElementById('search-404').style.display = 'block';
+    var html = '<div class="card-grid" style="grid-template-columns: 1fr;">';
+    results.forEach(function(r) {
+      html += '<a href="' + r.url + '" class="card" style="padding: 1rem;">' +
+        '<h3 style="margin: 0 0 0.25rem;">' + r.title + '</h3>' +
+        '<p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">' + r.description + '</p>' +
+        '<span style="font-size: 0.75rem; color: var(--accent);">' + r.section + '</span>' +
+        '</a>';
+    });
+    html += '</div>';
+    document.getElementById('search-results').innerHTML = html;
+  }).catch(function() {});
+
+  // Duck game — fixed at bottom of page
+  var canvas = document.getElementById('duck-game');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var GW, GH, GROUND;
+  var GRAVITY = 0.55;
+  var JUMP = -10;
+  var SPEED = 3.5;
+  var MIN_GAP = 120;
+  var MAX_GAP = 220;
+  var MAX_JUMPS = 2;
+  var DUCK_H = 26;
+  var MOVE_SPEED = 3;
+  var keys = {};
+
+  function resize() {
+    GW = window.innerWidth;
+    GH = 200;
+    canvas.width = GW;
+    canvas.height = GH;
+    GROUND = GH - 12;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  var duck = { x: 60, y: GROUND - DUCK_H, vy: 0, w: 28, h: DUCK_H, grounded: true, frame: 0, jumpsLeft: MAX_JUMPS, brownUntil: 0 };
+  var obstacles = [];
+  var score = 0;
+  var alive = true;
+  var frameCount = 0;
+  var nextSpawn = 80;
+
+  function jump() {
+    if (!alive) {
+      duck.y = GROUND - DUCK_H;
+      duck.vy = 0;
+      duck.jumpsLeft = MAX_JUMPS;
+      obstacles = [];
+      score = 0;
+      alive = true;
+      frameCount = 0;
+      nextSpawn = 80;
+      return;
+    }
+    if (duck.jumpsLeft > 0) {
+      duck.vy = JUMP;
+      duck.grounded = false;
+      duck.jumpsLeft--;
+    }
+  }
+
+  document.addEventListener('keydown', function(e) {
+    keys[e.code] = true;
+    if (e.code === 'Space' || e.key === ' ') {
+      e.preventDefault();
+      jump();
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    keys[e.code] = false;
+  });
+  canvas.addEventListener('click', jump);
+  canvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    jump();
+  });
+
+  function lerpColor(c1, c2, t) {
+    var r1 = parseInt(c1.slice(1, 3), 16), g1 = parseInt(c1.slice(3, 5), 16), b1 = parseInt(c1.slice(5, 7), 16);
+    var r2 = parseInt(c2.slice(1, 3), 16), g2 = parseInt(c2.slice(3, 5), 16), b2 = parseInt(c2.slice(5, 7), 16);
+    var r = Math.round(r1 + (r2 - r1) * t);
+    var g = Math.round(g1 + (g2 - g1) * t);
+    var b = Math.round(b1 + (b2 - b1) * t);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+
+  function getDuckColors() {
+    var now = Date.now();
+    if (now < duck.brownUntil) {
+      var elapsed = now - (duck.brownUntil - 2000);
+      var t = Math.min(elapsed / 300, 1);
+      return {
+        body: lerpColor('#f5c542', '#8B5A2B', t),
+        dark: lerpColor('#d4a030', '#6B3A1B', t),
+        eye: '#fff',
+      };
+    } else if (now < duck.brownUntil + 500) {
+      var t2 = Math.min((now - duck.brownUntil) / 500, 1);
+      return {
+        body: lerpColor('#8B5A2B', '#f5c542', t2),
+        dark: lerpColor('#6B3A1B', '#d4a030', t2),
+        eye: '#fff',
+      };
+    }
+    return { body: '#f5c542', dark: '#d4a030', eye: '#fff' };
+  }
+
+  function drawDuck() {
+    var dx = duck.x;
+    var dy = duck.y;
+    var bounce = duck.grounded ? Math.sin(duck.frame * 0.3) * 1.5 : 0;
+    var legOff = duck.grounded ? Math.sin(duck.frame * 0.5) * 3 : -4;
+    var c = getDuckColors();
+
+    ctx.save();
+    ctx.translate(dx, dy + bounce);
+
+    // shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.beginPath();
+    ctx.ellipse(14, DUCK_H + 2, 12, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // body
+    ctx.fillStyle = c.body;
+    ctx.beginPath();
+    ctx.ellipse(14, 8, 12, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // head
+    ctx.fillStyle = c.body;
+    ctx.beginPath();
+    ctx.arc(24, -1, 7, 0, Math.PI * 2);
+    ctx.fill();
+
+    // eye
+    ctx.fillStyle = c.eye;
+    ctx.beginPath();
+    ctx.arc(26, -3, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#222';
+    ctx.beginPath();
+    ctx.arc(27, -3, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // beak
+    ctx.fillStyle = '#e67e22';
+    ctx.beginPath();
+    ctx.moveTo(30, 0);
+    ctx.lineTo(37, 1);
+    ctx.lineTo(30, 3);
+    ctx.closePath();
+    ctx.fill();
+
+    // wing
+    ctx.fillStyle = c.dark;
+    ctx.beginPath();
+    ctx.ellipse(10, 5, 8, 5, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // tail
+    ctx.fillStyle = c.dark;
+    ctx.beginPath();
+    ctx.moveTo(-1, 3);
+    ctx.lineTo(-7, -1);
+    ctx.lineTo(-5, 7);
+    ctx.closePath();
+    ctx.fill();
+
+    // legs
+    ctx.strokeStyle = '#e67e22';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(8, 16);
+    ctx.lineTo(8 + legOff, 26);
+    ctx.moveTo(16, 16);
+    ctx.lineTo(16 - legOff, 26);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function drawMountain(obs) {
+    ctx.save();
+    ctx.translate(obs.x, GROUND);
+
+    // mountain silhouette — multiple peaks like the Aerial background
+    var w = obs.w;
+    var h = obs.h;
+
+    // main peak
+    ctx.fillStyle = 'rgba(60,90,60,0.6)';
+    ctx.beginPath();
+    ctx.moveTo(-w / 2, 0);
+    ctx.lineTo(-w / 6, -h);
+    ctx.lineTo(w / 4, -h * 0.6);
+    ctx.lineTo(w / 2, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    // snow cap
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.beginPath();
+    ctx.moveTo(-w / 6, -h);
+    ctx.lineTo(-w / 6 + 5, -h + 8);
+    ctx.lineTo(-w / 6 - 4, -h + 6);
+    ctx.closePath();
+    ctx.fill();
+
+    // smaller peak behind
+    ctx.fillStyle = 'rgba(50,80,50,0.4)';
+    ctx.beginPath();
+    ctx.moveTo(-w / 3, 0);
+    ctx.lineTo(0, -h * 0.7);
+    ctx.lineTo(w / 3, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  function drawGround() {
+    // ground line
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, GROUND);
+    ctx.lineTo(GW, GROUND);
+    ctx.stroke();
+
+    // small ground details
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    for (var i = 0; i < GW; i += 30) {
+      ctx.fillRect(i, GROUND + 1, 12, 1);
+    }
+  }
+
+  function gameLoop() {
+    ctx.clearRect(0, 0, GW, GH);
+    frameCount++;
+
+    // update duck
+    duck.vy += GRAVITY;
+    duck.y += duck.vy;
+    duck.frame++;
+    if (duck.y >= GROUND - DUCK_H) {
+      duck.y = GROUND - DUCK_H;
+      duck.vy = 0;
+      duck.grounded = true;
+      duck.jumpsLeft = MAX_JUMPS;
+    }
+
+    // left/right movement
+    if (keys['ArrowLeft'] || keys['KeyA']) {
+      duck.x = Math.max(0, duck.x - MOVE_SPEED);
+    }
+    if (keys['ArrowRight'] || keys['KeyD']) {
+      duck.x = Math.min(GW - duck.w, duck.x + MOVE_SPEED);
+    }
+
+    // collision with flying poop emojis
+    var now = Date.now();
+    if (now >= duck.brownUntil) {
+      var duckVpLeft = duck.x;
+      var duckVpRight = duck.x + duck.w;
+      var duckVpTop = window.innerHeight - GH + duck.y;
+      var duckVpBottom = duckVpTop + duck.h;
+      for (var p = 0; p < emojis.length; p++) {
+        var pe = emojis[p];
+        var peSize = parseInt(pe.el.style.fontSize, 10) || 24;
+        if (duckVpRight > pe.x && duckVpLeft < pe.x + peSize && duckVpBottom > pe.y && duckVpTop < pe.y + peSize) {
+          duck.brownUntil = now + 2000;
+          break;
+        }
+      }
+    }
+
+    // spawn mountains
+    if (frameCount >= nextSpawn) {
+      var w = 40 + Math.random() * 30;
+      var h = 30 + Math.random() * 35;
+      obstacles.push({ x: GW + 20, w: w, h: h });
+      nextSpawn = frameCount + Math.floor(MIN_GAP + Math.random() * (MAX_GAP - MIN_GAP));
+    }
+
+    // update obstacles
+    for (var i = obstacles.length - 1; i >= 0; i--) {
+      obstacles[i].x -= SPEED;
+      if (obstacles[i].x < -60) {
+        obstacles.splice(i, 1);
+        score++;
+        continue;
+      }
+
+      // collision — duck box vs mountain triangle
+      var o = obstacles[i];
+      var duckLeft = duck.x + 6;
+      var duckRight = duck.x + duck.w - 4;
+      var duckBottom = duck.y + duck.h;
+      var mLeft = o.x - o.w / 2;
+      var mRight = o.x + o.w / 2;
+      if (duckRight > mLeft && duckLeft < mRight) {
+        // approximate mountain height at duck position
+        var relX = (duck.x + duck.w / 2 - o.x) / (o.w / 2);
+        var mHeight = o.h * (1 - Math.abs(relX));
+        if (duckBottom > GROUND - mHeight + 5) {
+          alive = false;
+        }
+      }
+    }
+
+    drawGround();
+
+    for (var j = 0; j < obstacles.length; j++) {
+      drawMountain(obstacles[j]);
+    }
+
+    drawDuck();
+
+    // score — always on top
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = 'bold 14px monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText('Score: ' + score, GW - 12, 20);
+
+    if (!alive) {
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.fillRect(0, 0, GW, GH);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 18px "Source Sans Pro", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('GAME OVER', GW / 2, GH / 2 - 4);
+      ctx.font = '12px "Source Sans Pro", sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillText('Press Space or Click to Retry', GW / 2, GH / 2 + 14);
+    }
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  gameLoop();
+})();
+</script>

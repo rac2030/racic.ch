@@ -1,0 +1,431 @@
+---
+import Base from '../../layouts/Base.astro';
+import TagFilter from '../../components/TagFilter.astro';
+import { getCollection } from 'astro:content';
+
+const isProd = import.meta.env.MODE === 'production';
+const entries = (await getCollection('wiki'))
+  .filter((e) => isProd ? !e.data.draft : true)
+  .sort((a, b) => (a.data.title).localeCompare(b.data.title));
+
+const allTags = [...new Set(entries.flatMap((e) => e.data.tags))].sort();
+const allCategories = [...new Set(entries.map((e) => e.data.category).filter(Boolean))].sort();
+
+const graphNodes = entries.map((e, i) => ({
+  id: i,
+  title: e.data.title,
+  slug: e.id.replace(/\.md$/, ''),
+  tags: e.data.tags,
+  category: e.data.category || 'uncategorized',
+}));
+
+const graphEdges: { source: number; target: number; type: string }[] = [];
+for (let i = 0; i < graphNodes.length; i++) {
+  for (let j = i + 1; j < graphNodes.length; j++) {
+    const a = graphNodes[i], b = graphNodes[j];
+    const sharedTags = a.tags.filter((t) => b.tags.includes(t));
+    if (sharedTags.length > 0) {
+      graphEdges.push({ source: i, target: j, type: 'tag' });
+    } else if (a.category === b.category && a.category !== 'uncategorized') {
+      graphEdges.push({ source: i, target: j, type: 'category' });
+    }
+  }
+}
+---
+
+<Base title="Wiki | Michel Racic" description="Technical wiki — quick references, how-tos, and useful notes.">
+  <section class="section">
+    <div class="container">
+      <h1 style="text-align: center;"><i class="fa-solid fa-book"></i> Wiki</h1>
+      <p style="text-align: center; margin-bottom: 1.5rem; color: var(--text-muted);">Quick references, how-tos, and useful technical notes.</p>
+
+      <div class="wiki-graph-wrap">
+        <canvas id="wiki-graph" width="1100" height="500"></canvas>
+        <div class="wiki-graph-controls">
+          <button id="wg-zoom-in" title="Zoom in">+</button>
+          <button id="wg-zoom-out" title="Zoom out">-</button>
+          <button id="wg-reset" title="Reset view">Reset</button>
+        </div>
+        <div class="wiki-graph-tooltip" id="wg-tooltip"></div>
+      </div>
+
+      <div class="wiki-filter-row">
+        <TagFilter tags={allTags} label="Filter wiki by tag..." />
+        <div class="category-filter" id="wiki-category-filter">
+          <span class="category-filter-label">Category:</span>
+          <div class="category-filter-btns">
+            <button class="category-btn active" data-category="all">All</button>
+            {allCategories.map((cat) => (
+              <button class="category-btn" data-category={cat}>{cat}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div class="wiki-grid">
+        {entries.map((entry) => (
+          <a href={`/wiki/${entry.id.replace(/\.md$/, '')}`} class="wiki-card" data-tags={JSON.stringify(entry.data.tags)} data-category={entry.data.category || 'uncategorized'}>
+            {entry.data.heroImage && (
+              <div class="wiki-card-hero">
+                <img src={entry.data.heroImage} alt="" loading="lazy" />
+              </div>
+            )}
+            <h3>{entry.data.title}</h3>
+            {entry.data.description && <p>{entry.data.description}</p>}
+            <div class="card-tags" style="margin-top: 0.5rem;">
+              {entry.data.tags.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script is:inline define:vars={{ graphNodes, graphEdges }}>
+(function() {
+  var canvas = document.getElementById('wiki-graph');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var tooltip = document.getElementById('wg-tooltip');
+  var nodes = graphNodes;
+  var edges = graphEdges;
+
+  var dpr = window.devicePixelRatio || 1;
+  var W, H;
+  function resize() {
+    var rect = canvas.parentElement.getBoundingClientRect();
+    W = rect.width;
+    H = 500;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Color palette for categories
+  var catColors = {
+    bookmarks: '#348cb2',
+    development: '#7dd3fc',
+    library: '#a78bfa',
+    security: '#f97316',
+    uncategorized: '#6b7280'
+  };
+
+  // Group nodes by category and compute cluster centers
+  var categories = {};
+  nodes.forEach(function(n) {
+    if (!categories[n.category]) categories[n.category] = [];
+    categories[n.category].push(n);
+  });
+  var catKeys = Object.keys(categories);
+  var cx = W / 2, cy = H / 2;
+  var clusterRadius = Math.min(W, H) * 0.3;
+  var clusterCenters = {};
+  catKeys.forEach(function(cat, i) {
+    var angle = (2 * Math.PI * i) / catKeys.length - Math.PI / 2;
+    clusterCenters[cat] = {
+      x: cx + clusterRadius * Math.cos(angle),
+      y: cy + clusterRadius * Math.sin(angle)
+    };
+  });
+
+  // Init positions within cluster
+  nodes.forEach(function(n) {
+    var cc = clusterCenters[n.category];
+    var catNodes = categories[n.category];
+    var idx = catNodes.indexOf(n);
+    var localAngle = (2 * Math.PI * idx) / catNodes.length;
+    var localR = 40 + catNodes.length * 5;
+    n.x = cc.x + localR * Math.cos(localAngle);
+    n.y = cc.y + localR * Math.sin(localAngle);
+    n.vx = 0;
+    n.vy = 0;
+    n.radius = 8 + Math.min(n.tags.length * 2, 12);
+  });
+
+  // Force simulation
+  var running = true;
+  function simulate() {
+    if (!running) return;
+    // Repulsion
+    for (var i = 0; i < nodes.length; i++) {
+      for (var j = i + 1; j < nodes.length; j++) {
+        var dx = nodes[j].x - nodes[i].x;
+        var dy = nodes[j].y - nodes[i].y;
+        var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        var force = 1500 / (dist * dist);
+        var fx = (dx / dist) * force;
+        var fy = (dy / dist) * force;
+        nodes[i].vx -= fx;
+        nodes[i].vy -= fy;
+        nodes[j].vx += fx;
+        nodes[j].vy += fy;
+      }
+    }
+    // Attraction along edges
+    edges.forEach(function(e) {
+      var a = nodes[e.source], b = nodes[e.target];
+      var dx = b.x - a.x;
+      var dy = b.y - a.y;
+      var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      var force = (dist - 80) * 0.015;
+      var fx = (dx / dist) * force;
+      var fy = (dy / dist) * force;
+      a.vx += fx;
+      a.vy += fy;
+      b.vx -= fx;
+      b.vy -= fy;
+    });
+    // Cluster gravity - pull nodes toward their category center
+    nodes.forEach(function(n) {
+      var cc = clusterCenters[n.category];
+      n.vx += (cc.x - n.x) * 0.008;
+      n.vy += (cc.y - n.y) * 0.008;
+      n.vx *= 0.82;
+      n.vy *= 0.82;
+      n.x += n.vx;
+      n.y += n.vy;
+    });
+  }
+
+  // View transform
+  var viewX = 0, viewY = 0, viewScale = 1;
+  var dragging = false, dragNode = null, panStartX, panStartY, panViewX, panViewY;
+
+  function screenToWorld(sx, sy) {
+    return { x: (sx - viewX) / viewScale, y: (sy - viewY) / viewScale };
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.save();
+    ctx.translate(viewX, viewY);
+    ctx.scale(viewScale, viewScale);
+
+    // Draw cluster backgrounds
+    catKeys.forEach(function(cat) {
+      var catNodes = categories[cat];
+      if (catNodes.length < 1) return;
+      // Find bounding box
+      var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      catNodes.forEach(function(n) {
+        minX = Math.min(minX, n.x - n.radius - 20);
+        maxX = Math.max(maxX, n.x + n.radius + 20);
+        minY = Math.min(minY, n.y - n.radius - 20);
+        maxY = Math.max(maxY, n.y + n.radius + 20);
+      });
+      var color = catColors[cat] || catColors['uncategorized'];
+      ctx.beginPath();
+      ctx.roundRect(minX, minY, maxX - minX, maxY - minY, 12);
+      ctx.fillStyle = color.slice(0, 7) + '10';
+      ctx.fill();
+      ctx.strokeStyle = color.slice(0, 7) + '30';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // Category label
+      ctx.fillStyle = color;
+      ctx.font = 'bold 11px Source Sans Pro, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(cat, minX + 8, minY + 6);
+    });
+
+    // Draw edges
+    edges.forEach(function(e) {
+      var a = nodes[e.source], b = nodes[e.target];
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = e.type === 'tag' ? 'rgba(125,211,252,0.25)' : 'rgba(167,139,250,0.15)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    // Draw nodes
+    nodes.forEach(function(n) {
+      var color = catColors[n.category] || catColors['uncategorized'];
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.85;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Label
+      if (viewScale > 0.5) {
+        ctx.fillStyle = '#f0f4f8';
+        ctx.font = (viewScale > 0.8 ? '12' : '10') + 'px Source Sans Pro, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(n.title, n.x, n.y + n.radius + 4);
+      }
+    });
+
+    ctx.restore();
+    requestAnimationFrame(function() { simulate(); draw(); });
+  }
+
+  draw();
+
+  // Stop simulation after it settles
+  setTimeout(function() { running = false; }, 5000);
+
+  // Mouse interactions
+  canvas.addEventListener('mousedown', function(e) {
+    var rect = canvas.getBoundingClientRect();
+    var sx = e.clientX - rect.left, sy = e.clientY - rect.top;
+    var w = screenToWorld(sx, sy);
+    // Check if clicking a node
+    for (var i = nodes.length - 1; i >= 0; i--) {
+      var dx = w.x - nodes[i].x, dy = w.y - nodes[i].y;
+      if (dx * dx + dy * dy < nodes[i].radius * nodes[i].radius) {
+        dragNode = nodes[i];
+        return;
+      }
+    }
+    dragging = true;
+    panStartX = sx;
+    panStartY = sy;
+    panViewX = viewX;
+    panViewY = viewY;
+    canvas.style.cursor = 'grabbing';
+  });
+
+  canvas.addEventListener('mousemove', function(e) {
+    var rect = canvas.getBoundingClientRect();
+    var sx = e.clientX - rect.left, sy = e.clientY - rect.top;
+
+    if (dragNode) {
+      var w = screenToWorld(sx, sy);
+      dragNode.x = w.x;
+      dragNode.y = w.y;
+      dragNode.vx = 0;
+      dragNode.vy = 0;
+      running = false;
+      return;
+    }
+
+    if (dragging) {
+      viewX = panViewX + (sx - panStartX);
+      viewY = panViewY + (sy - panStartY);
+      return;
+    }
+
+    // Tooltip
+    var w = screenToWorld(sx, sy);
+    var hovered = null;
+    for (var i = nodes.length - 1; i >= 0; i--) {
+      var dx = w.x - nodes[i].x, dy = w.y - nodes[i].y;
+      if (dx * dx + dy * dy < nodes[i].radius * nodes[i].radius) {
+        hovered = nodes[i];
+        break;
+      }
+    }
+    if (hovered) {
+      canvas.style.cursor = 'pointer';
+      tooltip.style.display = 'block';
+      tooltip.style.left = (sx + 12) + 'px';
+      tooltip.style.top = (sy - 10) + 'px';
+      tooltip.innerHTML = '<strong>' + hovered.title + '</strong><br>' +
+        (hovered.category ? '<span style="color:var(--accent)">' + hovered.category + '</span>' : '') +
+        (hovered.tags.length ? '<br>' + hovered.tags.join(', ') : '');
+    } else {
+      canvas.style.cursor = dragging ? 'grabbing' : 'grab';
+      tooltip.style.display = 'none';
+    }
+  });
+
+  canvas.addEventListener('mouseup', function() {
+    if (dragNode) {
+      dragNode = null;
+      return;
+    }
+    dragging = false;
+    canvas.style.cursor = 'grab';
+  });
+
+  canvas.addEventListener('mouseleave', function() {
+    dragging = false;
+    dragNode = null;
+    canvas.style.cursor = 'grab';
+    tooltip.style.display = 'none';
+  });
+
+  canvas.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    var rect = canvas.getBoundingClientRect();
+    var sx = e.clientX - rect.left, sy = e.clientY - rect.top;
+    var delta = e.deltaY < 0 ? 1.15 : 0.87;
+    var newScale = Math.max(0.2, Math.min(5, viewScale * delta));
+    var ratio = newScale / viewScale;
+    viewX = sx - (sx - viewX) * ratio;
+    viewY = sy - (sy - viewY) * ratio;
+    viewScale = newScale;
+  }, { passive: false });
+
+  canvas.addEventListener('dblclick', function(e) {
+    var rect = canvas.getBoundingClientRect();
+    var sx = e.clientX - rect.left, sy = e.clientY - rect.top;
+    var w = screenToWorld(sx, sy);
+    for (var i = nodes.length - 1; i >= 0; i--) {
+      var dx = w.x - nodes[i].x, dy = w.y - nodes[i].y;
+      if (dx * dx + dy * dy < nodes[i].radius * nodes[i].radius) {
+        window.location.href = '/wiki/' + nodes[i].slug + '/';
+        return;
+      }
+    }
+  });
+
+  // Controls
+  document.getElementById('wg-zoom-in').addEventListener('click', function() {
+    viewScale = Math.min(5, viewScale * 1.3);
+  });
+  document.getElementById('wg-zoom-out').addEventListener('click', function() {
+    viewScale = Math.max(0.2, viewScale * 0.7);
+  });
+  document.getElementById('wg-reset').addEventListener('click', function() {
+    viewScale = 1;
+    viewX = 0;
+    viewY = 0;
+  });
+
+  // Category filter for wiki cards
+  var catBtns = document.querySelectorAll('.category-btn');
+  var params = new URLSearchParams(window.location.search);
+  var initialCat = params.get('category');
+
+  function filterWikiCards(cat) {
+    document.querySelectorAll('.wiki-card').forEach(function(card) {
+      if (cat === 'all') { card.style.display = ''; return; }
+      var cardCat = card.getAttribute('data-category') || '';
+      card.style.display = cardCat === cat ? '' : 'none';
+    });
+  }
+
+  catBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      catBtns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      filterWikiCards(btn.getAttribute('data-category'));
+    });
+  });
+
+  if (initialCat) {
+    catBtns.forEach(function(b) { b.classList.remove('active'); });
+    var match = document.querySelector('.category-btn[data-category="' + initialCat + '"]');
+    if (match) match.classList.add('active');
+    filterWikiCards(initialCat);
+  }
+})();
+</script>

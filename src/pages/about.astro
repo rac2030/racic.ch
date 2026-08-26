@@ -1,0 +1,162 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../consts';
+---
+
+<Base title="About | Michel Racic" description="About Michel Racic — Software Engineer, Automation Specialist.">
+  <section class="section">
+    <div class="container content-width">
+      <h1>About</h1>
+      <div class="about-content" style="margin-top: 1.5rem;">
+        <p>
+          Lead Software Engineer working on an internal developer platform
+          based on Backstage.
+        </p>
+
+        <div style="margin: 1.5rem 0; text-align: center;">
+          <svg viewBox="0 0 600 300" width="100%" style="max-width: 600px; opacity: 0.6;" xmlns="http://www.w3.org/2000/svg">
+            <!-- North America outline -->
+            <path d="M55,50 L75,42 L95,38 L115,40 L130,44 L145,40 L158,48 L162,58 L155,68 L162,80 L158,92 L148,105 L138,115 L128,122 L118,118 L108,128 L98,124 L88,132 L78,128 L68,118 L58,105 L52,88 L50,72 Z" fill="none" stroke="currentColor" stroke-width="0.6"/>
+            <!-- Canada/USA border -->
+            <path d="M62,62 L82,56 L105,54 L128,58 L142,56 L155,62" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- USA internal -->
+            <path d="M78,78 L98,75 L118,78 L138,82 L148,88 L152,98 L145,108 L132,115 L118,118" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Mexico -->
+            <path d="M88,132 L95,140 L92,148 L86,152 L82,148 L84,138" fill="none" stroke="currentColor" stroke-width="0.6"/>
+            <!-- Central America -->
+            <path d="M86,152 L90,158 L86,165 L82,168 L78,164 L80,156" fill="none" stroke="currentColor" stroke-width="0.6"/>
+            <!-- Caribbean - Cuba -->
+            <path d="M108,138 L118,135 L125,138 L120,142 L112,142 Z" fill="none" stroke="currentColor" stroke-width="0.4"/>
+
+            <!-- South America outline -->
+            <path d="M112,168 L122,162 L132,165 L138,172 L142,185 L140,200 L136,218 L128,235 L120,248 L112,252 L106,242 L102,225 L98,208 L100,192 L104,178 Z" fill="none" stroke="currentColor" stroke-width="0.6"/>
+            <!-- Brazil outline -->
+            <path d="M128,188 L138,182 L142,190 L140,205 L136,218 L128,228 L120,235 L115,228 L118,215 L122,200 L125,192" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Argentina/Chile -->
+            <path d="M118,235 L122,242 L120,252 L115,258 L110,255 L108,245 L112,235" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Colombia/Venezuela -->
+            <path d="M108,168 L115,165 L125,168 L130,175 L128,185 L122,190 L115,188 L110,180" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+
+            <!-- Europe outline -->
+            <path d="M272,48 L282,42 L295,44 L308,48 L318,55 L322,65 L318,75 L308,82 L298,80 L288,84 L278,78 L272,68 L270,58 Z" fill="none" stroke="currentColor" stroke-width="0.6"/>
+            <!-- Scandinavia -->
+            <path d="M295,28 L300,22 L308,20 L312,25 L310,35 L305,42 L298,44 L292,38 Z" fill="none" stroke="currentColor" stroke-width="0.4"/>
+            <!-- UK/Ireland -->
+            <path d="M270,42 L274,38 L278,40 L276,46 L272,48 L268,46 Z" fill="none" stroke="currentColor" stroke-width="0.4"/>
+            <path d="M265,44 L268,42 L270,45 L267,47 Z" fill="none" stroke="currentColor" stroke-width="0.3"/>
+            <!-- France -->
+            <path d="M282,58 L290,55 L296,58 L295,65 L290,68 L284,66 L280,62 Z" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Spain/Portugal -->
+            <path d="M272,68 L280,66 L286,68 L285,75 L278,78 L272,76 L270,72 Z" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Germany -->
+            <path d="M296,50 L304,48 L310,52 L308,58 L302,60 L296,58 L294,54 Z" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Italy -->
+            <path d="M298,65 L302,62 L306,65 L304,72 L300,78 L296,75 L295,70 Z" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Poland -->
+            <path d="M308,48 L316,46 L322,50 L320,56 L314,58 L308,55 Z" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Balkans -->
+            <path d="M310,62 L316,58 L320,62 L318,70 L314,75 L308,72 L306,66 Z" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+
+            <!-- Switzerland - HIGHLIGHTED -->
+            <path d="M293,60 L297,58 L301,60 L300,64 L296,66 L292,64 Z" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="1.2"/>
+
+            <!-- Africa outline -->
+            <path d="M280,92 L295,88 L310,92 L322,100 L328,115 L332,135 L330,158 L325,178 L318,192 L308,198 L298,195 L288,185 L282,168 L278,148 L276,128 L278,108 Z" fill="none" stroke="currentColor" stroke-width="0.6"/>
+            <!-- North Africa -->
+            <path d="M278,100 L288,95 L302,98 L312,102 L318,108 L315,115 L308,118 L298,115 L288,112 L280,108" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- West Africa -->
+            <path d="M272,125 L282,120 L292,122 L298,128 L295,138 L288,145 L280,148 L274,142 L270,135" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- East Africa -->
+            <path d="M318,120 L325,115 L330,122 L328,135 L325,148 L320,158 L315,162 L312,155 L315,142 L318,130" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Central Africa -->
+            <path d="M295,140 L305,135 L315,138 L318,148 L315,160 L308,168 L298,172 L290,168 L288,158 L290,148" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Southern Africa -->
+            <path d="M298,175 L308,170 L318,172 L322,180 L320,190 L315,198 L308,202 L300,200 L295,192 L296,182" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Madagascar -->
+            <path d="M332,175 L335,170 L338,175 L336,185 L332,188 L330,182 Z" fill="none" stroke="currentColor" stroke-width="0.4"/>
+
+            <!-- Asia outline -->
+            <path d="M322,42 L345,36 L375,34 L405,38 L435,44 L455,52 L465,62 L460,75 L448,85 L432,92 L415,95 L398,92 L380,96 L362,94 L345,88 L330,80 L322,68 Z" fill="none" stroke="currentColor" stroke-width="0.6"/>
+            <!-- Russia -->
+            <path d="M322,32 L345,26 L375,22 L410,24 L445,28 L470,35 L465,45 L455,52 L435,44 L405,38 L375,34 L345,36 L322,42" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- China -->
+            <path d="M398,55 L415,50 L432,52 L442,58 L445,68 L440,78 L430,85 L418,88 L405,85 L395,80 L392,70 L395,62" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Mongolia -->
+            <path d="M415,42 L430,38 L445,42 L448,50 L442,55 L430,52 L418,50 L414,46" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Kazakhstan -->
+            <path d="M370,50 L385,46 L400,48 L408,55 L402,60 L390,62 L378,58 L372,54" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+
+            <!-- Middle East -->
+            <path d="M345,88 L358,92 L365,100 L358,110 L348,112 L340,108 L338,98 Z" fill="none" stroke="currentColor" stroke-width="0.6"/>
+            <!-- Saudi Arabia -->
+            <path d="M348,100 L358,96 L365,102 L362,112 L355,118 L348,115 L345,108" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Iran -->
+            <path d="M365,88 L378,85 L388,90 L390,100 L385,108 L375,112 L368,108 L362,100 L364,92" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+
+            <!-- India -->
+            <path d="M378,96 L392,98 L402,108 L400,125 L395,138 L388,142 L380,135 L375,120 L374,108 Z" fill="none" stroke="currentColor" stroke-width="0.6"/>
+            <!-- Sri Lanka -->
+            <path d="M390,145 L393,142 L396,145 L394,150 L390,150 Z" fill="none" stroke="currentColor" stroke-width="0.3"/>
+
+            <!-- Southeast Asia -->
+            <path d="M420,92 L438,96 L448,105 L445,118 L438,128 L428,125 L422,115 L418,105 Z" fill="none" stroke="currentColor" stroke-width="0.6"/>
+            <!-- Myanmar/Thailand -->
+            <path d="M425,100 L432,98 L438,102 L436,112 L432,120 L428,118 L425,110" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Vietnam -->
+            <path d="M438,100 L442,98 L445,105 L442,115 L438,122 L435,118 L436,108" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Indonesia -->
+            <path d="M440,135 L455,132 L468,135 L475,140 L470,148 L458,150 L445,148 L438,142" fill="none" stroke="currentColor" stroke-width="0.4"/>
+            <!-- Philippines -->
+            <path d="M455,108 L460,105 L464,110 L462,118 L458,122 L454,118 L453,112" fill="none" stroke="currentColor" stroke-width="0.4"/>
+
+            <!-- Japan -->
+            <path d="M462,52 L466,48 L470,52 L468,60 L464,68 L460,64 L458,58 Z" fill="none" stroke="currentColor" stroke-width="0.4"/>
+            <!-- Korea -->
+            <path d="M450,58 L454,55 L457,60 L455,68 L452,72 L448,68 L448,62" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+
+            <!-- Greenland -->
+            <path d="M175,22 L195,16 L212,20 L215,32 L210,42 L200,48 L188,45 L180,38 L178,30 Z" fill="none" stroke="currentColor" stroke-width="0.4"/>
+
+            <!-- Australia outline -->
+            <path d="M438,172 L462,166 L482,170 L492,178 L495,192 L490,205 L478,212 L462,210 L448,202 L440,192 L436,182 Z" fill="none" stroke="currentColor" stroke-width="0.6"/>
+            <!-- Australia states -->
+            <path d="M462,166 L468,175 L462,185 L452,188 L445,182 L448,172" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <path d="M468,175 L482,170 L488,178 L482,190 L468,185 L462,185" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <path d="M462,185 L468,185 L482,190 L490,205 L478,212 L462,210 L452,202 L448,192 L452,188" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="2,2"/>
+            <!-- Tasmania -->
+            <path d="M480,215 L485,212 L488,216 L485,222 L480,220 Z" fill="none" stroke="currentColor" stroke-width="0.3"/>
+
+            <!-- New Zealand -->
+            <path d="M502,205 L506,200 L510,205 L508,215 L504,220 L500,215 Z" fill="none" stroke="currentColor" stroke-width="0.4"/>
+            <path d="M498,222 L502,218 L506,222 L504,230 L500,232 L496,228 Z" fill="none" stroke="currentColor" stroke-width="0.3"/>
+
+            <!-- Zurich dot and label -->
+            <circle cx="296" cy="62" r="4" fill="#ef4444"/>
+            <text x="296" y="55" text-anchor="middle" fill="#ef4444" font-size="10" font-family="Source Sans Pro, sans-serif" font-weight="600">Zürich</text>
+          </svg>
+        </div>
+        
+        <ul class="social-links">
+          <li>
+            <a href={SITE.social.github}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              GitHub
+            </a>
+          </li>
+          <li>
+            <a href={SITE.social.twitter}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Twitter
+            </a>
+          </li>
+          <li>
+            <a href={SITE.social.linkedin}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              LinkedIn
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>

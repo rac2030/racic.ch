@@ -1,0 +1,245 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../consts';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const { title = SITE.title, description = SITE.description, image } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, SITE.url);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    {image && <meta property="og:image" content={new URL(image, SITE.url)} />}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/css/glightbox.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/js/glightbox.min.js" defer></script>
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof GLightbox !== 'undefined') {
+          GLightbox({ selector: '.article-content img', type: 'image', loop: true });
+        }
+
+        document.querySelectorAll('pre').forEach(function(pre) {
+          if (pre.querySelector('.copy-btn')) return;
+          var lang = pre.getAttribute('data-language');
+          if (lang) {
+            var badge = document.createElement('span');
+            badge.className = 'lang-badge';
+            badge.textContent = lang;
+            pre.appendChild(badge);
+          }
+          var btn = document.createElement('button');
+          btn.className = 'copy-btn';
+          btn.textContent = 'Copy';
+          btn.addEventListener('click', function() {
+            var code = pre.querySelector('code');
+            var text = (code || pre).textContent;
+            navigator.clipboard.writeText(text).then(function() {
+              btn.textContent = 'Copied!';
+              btn.classList.add('copied');
+              setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+            });
+          });
+          pre.appendChild(btn);
+        });
+
+        var modal = document.getElementById('mermaid-modal');
+        var modalContent = document.getElementById('mermaid-modal-content');
+        var modalClose = document.getElementById('mermaid-modal-close');
+        var zoomIn = document.getElementById('mermaid-zoom-in');
+        var zoomOut = document.getElementById('mermaid-zoom-out');
+        var zoomReset = document.getElementById('mermaid-zoom-reset');
+        var fsBtn = document.getElementById('mermaid-zoom-fs');
+        var currentScale = 1;
+        var panX = 0;
+        var panY = 0;
+        var dragging = false;
+        var dragStartX = 0;
+        var dragStartY = 0;
+        var panStartX = 0;
+        var panStartY = 0;
+
+        function applyTransform() {
+          var svg = modalContent.querySelector('svg');
+          if (svg) svg.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + currentScale + ')';
+        }
+
+        function setZoom(scale) {
+          currentScale = Math.max(0.25, Math.min(6, scale));
+          applyTransform();
+        }
+
+        function resetPan() {
+          panX = 0;
+          panY = 0;
+        }
+
+        function toggleFullscreen() {
+          if (document.fullscreenElement) {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+          } else {
+            if (modal.requestFullscreen) modal.requestFullscreen();
+            else if (modal.webkitRequestFullscreen) modal.webkitRequestFullscreen();
+          }
+        }
+
+        function openMermaidModal(el) {
+          var svg = el.querySelector('svg');
+          if (!svg) return;
+          var clone = svg.cloneNode(true);
+          clone.style.width = '100vw';
+          clone.style.height = '100vh';
+          clone.style.objectFit = 'contain';
+          clone.style.transformOrigin = 'center center';
+          modalContent.innerHTML = '';
+          modalContent.appendChild(clone);
+          currentScale = 1;
+          resetPan();
+          modal.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeMermaidModal() {
+          modal.style.display = 'none';
+          modalContent.innerHTML = '';
+          document.body.style.overflow = '';
+          resetPan();
+          if (document.fullscreenElement) {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+          }
+        }
+
+        modalClose.addEventListener('click', closeMermaidModal);
+        modal.addEventListener('click', function(e) { if (e.target === modal) closeMermaidModal(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && modal.style.display === 'flex') closeMermaidModal(); });
+        zoomIn.addEventListener('click', function(e) { e.stopPropagation(); setZoom(currentScale + 0.25); });
+        zoomOut.addEventListener('click', function(e) { e.stopPropagation(); setZoom(currentScale - 0.25); });
+        zoomReset.addEventListener('click', function(e) { e.stopPropagation(); currentScale = 1; resetPan(); applyTransform(); });
+        fsBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleFullscreen(); });
+
+        modal.addEventListener('wheel', function(e) {
+          if (e.target === modal || modalContent.contains(e.target)) {
+            e.preventDefault();
+            setZoom(currentScale + (e.deltaY < 0 ? 0.15 : -0.15));
+          }
+        }, { passive: false });
+
+        modal.addEventListener('mousedown', function(e) {
+          if (e.button !== 0) return;
+          if (e.target.closest('#mermaid-zoom-out, #mermaid-zoom-reset, #mermaid-zoom-in, #mermaid-zoom-fs, #mermaid-modal-close')) return;
+          dragging = true;
+          dragStartX = e.clientX;
+          dragStartY = e.clientY;
+          panStartX = panX;
+          panStartY = panY;
+          modal.style.cursor = 'grabbing';
+          e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+          if (!dragging) return;
+          panX = panStartX + (e.clientX - dragStartX);
+          panY = panStartY + (e.clientY - dragStartY);
+          applyTransform();
+        });
+
+        document.addEventListener('mouseup', function() {
+          if (!dragging) return;
+          dragging = false;
+          modal.style.cursor = '';
+        });
+
+        function setupMermaidZoom() {
+          document.querySelectorAll('.mermaid').forEach(function(container) {
+            if (container.dataset.zoomSetup) return;
+            container.dataset.zoomSetup = 'true';
+            var svg = container.querySelector('svg');
+            if (!svg) return;
+            container.style.cursor = 'zoom-in';
+            container.style.transition = 'transform 0.2s, box-shadow 0.2s';
+            container.addEventListener('mouseenter', function() { container.style.transform = 'scale(1.02)'; container.style.boxShadow = '0 0 20px rgba(52,140,178,0.3)'; });
+            container.addEventListener('mouseleave', function() { container.style.transform = 'scale(1)'; container.style.boxShadow = 'none'; });
+            container.addEventListener('click', function(e) { e.preventDefault(); openMermaidModal(container); });
+          });
+        }
+
+        // Load mermaid dynamically
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
+        script.onload = function() {
+          mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            themeVariables: {
+              primaryColor: '#348cb2',
+              primaryTextColor: '#f0f4f8',
+              primaryBorderColor: 'rgba(120,180,220,0.5)',
+              lineColor: '#7dd3fc',
+              secondaryColor: 'rgba(10,18,30,0.8)',
+              tertiaryColor: 'rgba(10,18,30,0.6)',
+              fontFamily: 'Source Sans Pro, sans-serif',
+              background: 'rgba(10,18,30,0.9)',
+              mainBkg: 'rgba(10,18,30,0.8)',
+              nodeBorder: '#7dd3fc',
+              clusterBkg: 'rgba(52,140,178,0.15)',
+              clusterBorder: 'rgba(120,180,220,0.3)',
+              titleColor: '#f0f4f8',
+              edgeLabelBackground: 'rgba(10,18,30,0.8)'
+            }
+          });
+          mermaid.run({ querySelector: '.mermaid' }).catch(function(err) {
+            console.error('Mermaid render error:', err);
+          }).finally(function() {
+            setupMermaidZoom();
+          });
+        };
+        document.head.appendChild(script);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="bg"></div>
+    <div id="overlay"></div>
+    <div id="wrapper">
+      <Header />
+      <main id="main">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+    <div id="mermaid-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.95);align-items:center;justify-content:center;">
+      <div style="position:absolute;top:1rem;right:1rem;display:flex;gap:0.5rem;align-items:center;z-index:10000;">
+        <button id="mermaid-zoom-out" style="background:rgba(10,18,30,0.8);color:#f0f4f8;border:1px solid rgba(120,180,220,0.3);border-radius:4px;padding:0.3rem 0.6rem;cursor:pointer;font-size:1rem;">-</button>
+        <button id="mermaid-zoom-reset" style="background:rgba(10,18,30,0.8);color:#f0f4f8;border:1px solid rgba(120,180,220,0.3);border-radius:4px;padding:0.3rem 0.6rem;cursor:pointer;font-size:0.8rem;">Reset</button>
+        <button id="mermaid-zoom-in" style="background:rgba(10,18,30,0.8);color:#f0f4f8;border:1px solid rgba(120,180,220,0.3);border-radius:4px;padding:0.3rem 0.6rem;cursor:pointer;font-size:1rem;">+</button>
+        <button id="mermaid-zoom-fs" style="background:rgba(10,18,30,0.8);color:#f0f4f8;border:1px solid rgba(120,180,220,0.3);border-radius:4px;padding:0.3rem 0.6rem;cursor:pointer;font-size:0.85rem;">&#x26F6;</button>
+        <div id="mermaid-modal-close" style="color:#f0f4f8;font-size:1.5rem;cursor:pointer;line-height:1;margin-left:0.5rem;">&times;</div>
+      </div>
+      <div id="mermaid-modal-content" style="width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:grab;"></div>
+    </div>
+  </body>
+</html>

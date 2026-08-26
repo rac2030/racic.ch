@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../consts';
+import { getCollection } from 'astro:content';
+
+const isProd = import.meta.env.MODE === 'production';
+
+const blog = (await getCollection('blog')).filter((p) => isProd ? !p.data.draft : true);
+const projects = (await getCollection('projects')).filter((p) => isProd ? !p.data.draft : true);
+const wiki = (await getCollection('wiki')).filter((e) => isProd ? !e.data.draft : true);
+
+interface RecentItem {
+  title: string;
+  description: string;
+  url: string;
+  section: string;
+  date: Date;
+}
+
+const items: RecentItem[] = [
+  ...blog.map((p) => ({
+    title: p.data.title,
+    description: p.data.description,
+    url: `/blog/${p.id.replace(/\.md$/, '')}`,
+    section: 'Blog',
+    date: p.data.updatedDate || p.data.pubDate,
+  })),
+  ...projects.map((p) => ({
+    title: p.data.title,
+    description: p.data.description,
+    url: `/projects/${p.id.replace(/\.md$/, '')}`,
+    section: 'Projects',
+    date: p.data.updatedDate || p.data.pubDate,
+  })),
+  ...wiki.filter((e) => e.data.pubDate).map((e) => ({
+    title: e.data.title,
+    description: e.data.description,
+    url: `/wiki/${e.id.replace(/\.md$/, '')}`,
+    section: 'Wiki',
+    date: e.data.updatedDate || e.data.pubDate!,
+  })),
+];
+
+items.sort((a, b) => b.date.valueOf() - a.date.valueOf());
+const recent = items.slice(0, 10);
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+---
+
+<Base>
+  <section class="hero">
+    <div class="hero-content">
+      <h1>{SITE.title}</h1>
+      <p class="subtitle">{SITE.description}</p>
+      <div class="hero-links">
+        <a href="/projects" class="btn btn-primary"><i class="fa-solid fa-microchip"></i> Projects</a>
+        <a href="/blog" class="btn"><i class="fa-solid fa-pen-nib"></i> Blog</a>
+        <a href="/wiki" class="btn"><i class="fa-solid fa-book"></i> Wiki</a>
+        <a href="/about" class="btn"><i class="fa-solid fa-user"></i> About</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="max-width: 800px;">
+      <h2 style="text-align: center; margin-bottom: 1.5rem;">Recently Updated</h2>
+      <div class="recent-list">
+        {recent.map((item) => (
+          <a href={item.url} class="recent-item">
+            <span class="recent-item-section">{item.section}</span>
+            <span class="recent-item-text">
+              <span class="recent-item-title">{item.title}</span>
+              {item.description && <span class="recent-item-desc">{item.description}</span>}
+            </span>
+            <time class="recent-item-date" datetime={item.date.toISOString()}>{formatDate(item.date)}</time>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,29 @@
+{
+  "name": "racic.ch",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "npx jest --config jest.config.cjs",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.2.4"
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.4.1",
+    "@playwright/test": "^1.62.1",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.4.2",
+    "sharp": "^0.33.5",
+    "ts-jest": "^29.4.12",
+    "ts-node": "^10.9.2"
+  }
+}

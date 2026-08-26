@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const isProd = import.meta.env.MODE === 'production';
+const bookmarks = (await getCollection('bookmarks'))
+  .filter((e) => isProd ? !e.data.draft : true)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const grouped: Record<string, typeof bookmarks> = {};
+bookmarks.forEach((b) => {
+  const firstLetter = b.data.title[0].toUpperCase();
+  if (!grouped[firstLetter]) grouped[firstLetter] = [];
+  grouped[firstLetter].push(b);
+});
+
+const letters = Object.keys(grouped).sort();
+---
+
+<Base title="Bookmarks | Michel Racic" description="Curated link collections — tools, resources, and interesting finds.">
+  <section class="section">
+    <div class="container">
+      <h1 style="text-align: center;"><i class="fa-solid fa-bookmark"></i> Bookmarks</h1>
+      <p style="text-align: center; margin-bottom: 2rem; color: var(--text-muted);">Curated link collections and resources.</p>
+
+      <div class="bookmarks-tree">
+        {letters.map((letter) => (
+          <div class="bookmarks-letter">
+            <div class="bookmarks-letter-label">{letter}</div>
+            <div class="bookmarks-letter-items">
+              {grouped[letter].map((entry) => (
+                <a href={`/bookmarks/${entry.id.replace(/\.md$/, '')}`} class="bookmark-item">
+                  <span class="bookmark-item-icon"><i class="fa-solid fa-link"></i></span>
+                  <span class="bookmark-item-text">
+                    <span class="bookmark-item-title">{entry.data.title}</span>
+                    {entry.data.description && <span class="bookmark-item-desc">{entry.data.description}</span>}
+                  </span>
+                  {entry.data.tags.length > 0 && (
+                    <span class="bookmark-item-tags">
+                      {entry.data.tags.slice(0, 3).map((tag) => (
+                        <span class="tag" style="font-size: 0.7rem;">{tag}</span>
+                      ))}
+                    </span>
+                  )}
+                  {entry.data.heroImage && (
+                    <span class="bookmark-item-hero">
+                      <img src={entry.data.heroImage} alt="" loading="lazy" />
+                    </span>
+                  )}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
