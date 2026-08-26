@@ -1,0 +1,193 @@
+---
+import type { GitCommit } from '../utils/gitLog';
+
+interface Props {
+  commits: GitCommit[];
+}
+
+const { commits } = Astro.props;
+
+const formatDate = (d: string) => {
+  const date = new Date(d);
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+};
+
+const formatTime = (d: string) => {
+  const date = new Date(d);
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+};
+---
+
+<div class="git-history-modal" id="git-history-modal" style="display:none;">
+  <div class="git-history-backdrop" id="git-history-backdrop"></div>
+  <div class="git-history-dialog">
+    <div class="git-history-header">
+      <h3>Change History</h3>
+      <button class="git-history-close" id="git-history-close">&times;</button>
+    </div>
+    <div class="git-history-body">
+      <table class="git-history-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Message</th>
+            <th>Commit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {commits.map((commit) => (
+            <tr>
+              <td class="git-history-date">
+                <span>{formatDate(commit.date)}</span>
+                <span class="git-history-time">{formatTime(commit.date)}</span>
+              </td>
+              <td class="git-history-message">{commit.message}</td>
+              <td class="git-history-hash">
+                <a href={commit.url} target="_blank" rel="noopener noreferrer" title={commit.hash}>
+                  {commit.hash.substring(0, 7)}
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    var modal = document.getElementById('git-history-modal');
+    var backdrop = document.getElementById('git-history-backdrop');
+    var closeBtn = document.getElementById('git-history-close');
+    var trigger = document.getElementById('git-history-trigger');
+
+    if (!modal || !trigger) return;
+
+    function openModal() {
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    trigger.addEventListener('click', openModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (backdrop) backdrop.addEventListener('click', closeModal);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+    });
+  })();
+</script>
+
+<style>
+  .git-history-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    align-items: center;
+    justify-content: center;
+  }
+  .git-history-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+  }
+  .git-history-dialog {
+    position: relative;
+    background: rgba(10, 18, 30, 0.95);
+    border: 1px solid rgba(120, 180, 220, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(52, 140, 178, 0.2);
+    max-width: 700px;
+    width: 90%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(12px);
+  }
+  .git-history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(120, 180, 220, 0.15);
+  }
+  .git-history-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #f0f4f8;
+    font-weight: 600;
+  }
+  .git-history-close {
+    background: none;
+    border: none;
+    color: #f0f4f8;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .git-history-close:hover {
+    opacity: 1;
+  }
+  .git-history-body {
+    overflow-y: auto;
+    padding: 0;
+  }
+  .git-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .git-history-table th {
+    text-align: left;
+    padding: 0.75rem 1.5rem;
+    color: #7dd3fc;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(120, 180, 220, 0.15);
+    position: sticky;
+    top: 0;
+    background: rgba(10, 18, 30, 0.98);
+  }
+  .git-history-table td {
+    padding: 0.6rem 1.5rem;
+    border-bottom: 1px solid rgba(120, 180, 220, 0.08);
+    color: #f0f4f8;
+  }
+  .git-history-table tr:hover td {
+    background: rgba(52, 140, 178, 0.08);
+  }
+  .git-history-date {
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .git-history-time {
+    font-size: 0.75rem;
+    opacity: 0.5;
+  }
+  .git-history-message {
+    word-break: break-word;
+  }
+  .git-history-hash a {
+    color: #7dd3fc;
+    text-decoration: none;
+    font-family: monospace;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .git-history-hash a:hover {
+    color: #3b82f6;
+    text-decoration: underline;
+  }
+</style>

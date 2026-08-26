@@ -3,6 +3,8 @@ import { getCollection, render } from 'astro:content';
 import Post from '../../layouts/Post.astro';
 import Comments from '../../components/Comments.astro';
 import ContentResizer from '../../components/ContentResizer.astro';
+import GitHistory from '../../components/GitHistory.astro';
+import gitLogJson from '../../data/git-log.json';
 
 const EDIT_BASE = 'https://github.com/rac2030/racic.ch/edit/main/src/content/blog';
 
@@ -31,6 +33,11 @@ const formatDate = (d: Date) =>
 
 const tagLinks = post.data.tags.map((t) => `<a href="/tags/${t}" class="tag">${t}</a>`).join(' ');
 const editUrl = `${EDIT_BASE}/${post.id}`;
+
+const slug = post.id.replace(/\.md$/, '');
+const gitLog = gitLogJson[`blog/${slug}`] || null;
+const lastCommit = gitLog?.lastCommitDate ? new Date(gitLog.lastCommitDate) : null;
+const effectiveUpdatedDate = post.data.updatedDate || (lastCommit && lastCommit.getTime() !== post.data.pubDate.getTime() ? lastCommit : null);
 ---
 
 <Post
@@ -50,8 +57,8 @@ const editUrl = `${EDIT_BASE}/${post.id}`;
             <a href={`/blog?category=${post.data.category}`} class="article-category">{post.data.category}</a>
           )}
           <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
-          {post.data.updatedDate && post.data.updatedDate.getTime() !== post.data.pubDate.getTime() && (
-            <span class="article-updated">(updated <time datetime={post.data.updatedDate.toISOString()}>{formatDate(post.data.updatedDate)}</time>)</span>
+          {effectiveUpdatedDate && (
+            <span class="article-updated" id="git-history-trigger" style="cursor:pointer;" title="View change history">(updated <time datetime={effectiveUpdatedDate.toISOString()}>{formatDate(effectiveUpdatedDate)}</time>)</span>
           )}
           <div set:html={tagLinks} />
         </div>
@@ -63,5 +70,6 @@ const editUrl = `${EDIT_BASE}/${post.id}`;
         <Comments />
       </div>
     </ContentResizer>
+    {gitLog && <GitHistory commits={gitLog.commits} />}
   </article>
 </Post>

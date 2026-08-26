@@ -175,3 +175,95 @@ test.describe('Alias routing', () => {
     expect(aliasTitle).toBe(originalTitle);
   });
 });
+
+test.describe('Git history modal', () => {
+  test('blog article shows updated date from git', async ({ page }) => {
+    await page.goto('/blog/hosting-hugo-site-firebase/');
+    const updated = page.locator('#git-history-trigger');
+    await expect(updated).toBeVisible();
+    await expect(updated).toContainText('updated');
+  });
+
+  test('clicking updated date opens git history modal', async ({ page }) => {
+    await page.goto('/blog/hosting-hugo-site-firebase/');
+    const trigger = page.locator('#git-history-trigger');
+    await trigger.click();
+    const modal = page.locator('#git-history-modal');
+    await expect(modal).toBeVisible();
+  });
+
+  test('modal shows Change History heading', async ({ page }) => {
+    await page.goto('/blog/hosting-hugo-site-firebase/');
+    await page.locator('#git-history-trigger').click();
+    const heading = page.locator('#git-history-modal h3');
+    await expect(heading).toContainText('Change History');
+  });
+
+  test('modal shows commit table with date, message, and hash', async ({ page }) => {
+    await page.goto('/blog/hosting-hugo-site-firebase/');
+    await page.locator('#git-history-trigger').click();
+    const table = page.locator('#git-history-modal table');
+    await expect(table).toBeVisible();
+    const headers = table.locator('th');
+    await expect(headers.nth(0)).toContainText('Date');
+    await expect(headers.nth(1)).toContainText('Message');
+    await expect(headers.nth(2)).toContainText('Commit');
+  });
+
+  test('modal shows at least one commit row', async ({ page }) => {
+    await page.goto('/blog/hosting-hugo-site-firebase/');
+    await page.locator('#git-history-trigger').click();
+    const rows = page.locator('#git-history-modal tbody tr');
+    expect(await rows.count()).toBeGreaterThanOrEqual(1);
+  });
+
+  test('commit hash links to GitHub', async ({ page }) => {
+    await page.goto('/blog/hosting-hugo-site-firebase/');
+    await page.locator('#git-history-trigger').click();
+    const hashLink = page.locator('#git-history-modal tbody tr td a').first();
+    await expect(hashLink).toBeVisible();
+    const href = await hashLink.getAttribute('href');
+    expect(href).toContain('github.com/rac2030/racic.ch/commit/');
+  });
+
+  test('modal closes on close button click', async ({ page }) => {
+    await page.goto('/blog/hosting-hugo-site-firebase/');
+    await page.locator('#git-history-trigger').click();
+    await expect(page.locator('#git-history-modal')).toBeVisible();
+    await page.locator('#git-history-close').click();
+    await expect(page.locator('#git-history-modal')).not.toBeVisible();
+  });
+
+  test('modal closes on backdrop click', async ({ page }) => {
+    await page.goto('/blog/hosting-hugo-site-firebase/');
+    await page.locator('#git-history-trigger').click();
+    await expect(page.locator('#git-history-modal')).toBeVisible();
+    await page.locator('#git-history-backdrop').click({ position: { x: 10, y: 10 } });
+    await expect(page.locator('#git-history-modal')).not.toBeVisible();
+  });
+
+  test('modal closes on Escape key', async ({ page }) => {
+    await page.goto('/blog/hosting-hugo-site-firebase/');
+    await page.locator('#git-history-trigger').click();
+    await expect(page.locator('#git-history-modal')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#git-history-modal')).not.toBeVisible();
+  });
+
+  test('wiki article shows git history modal', async ({ page }) => {
+    await page.goto('/wiki/git/');
+    const trigger = page.locator('#git-history-trigger');
+    await expect(trigger).toBeVisible();
+    await trigger.click();
+    await expect(page.locator('#git-history-modal')).toBeVisible();
+    await expect(page.locator('#git-history-modal h3')).toContainText('Change History');
+  });
+
+  test('project article shows git history modal', async ({ page }) => {
+    await page.goto('/projects/spikey/');
+    const trigger = page.locator('#git-history-trigger');
+    await expect(trigger).toBeVisible();
+    await trigger.click();
+    await expect(page.locator('#git-history-modal')).toBeVisible();
+  });
+});

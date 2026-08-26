@@ -26,7 +26,7 @@ test.describe('Blog post pages', () => {
 
   test('post has date, tags, and hero image', async ({ page }) => {
     await page.goto('/blog/hosting-hugo-site-firebase/');
-    await expect(page.locator('article time')).toBeVisible();
+    await expect(page.locator('article time').first()).toBeVisible();
     const tags = page.locator('article .tag');
     await expect(tags.first()).toBeVisible();
     await expect(page.locator('article img')).toBeVisible();

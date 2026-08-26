@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# generated data
+src/data/
+
 # astro generated
 .astro/
 

@@ -3,6 +3,8 @@ import { getCollection, render } from 'astro:content';
 import Post from '../../layouts/Post.astro';
 import Comments from '../../components/Comments.astro';
 import ContentResizer from '../../components/ContentResizer.astro';
+import GitHistory from '../../components/GitHistory.astro';
+import gitLogJson from '../../data/git-log.json';
 
 const EDIT_BASE = 'https://github.com/rac2030/racic.ch/edit/main/src/content/projects';
 
@@ -30,6 +32,11 @@ const formatDate = (d: Date) =>
 
 const tagLinks = project.data.tags.map((t) => `<a href="/tags/${t}" class="tag">${t}</a>`).join(' ');
 const editUrl = `${EDIT_BASE}/${project.id}`;
+
+const slug = project.id.replace(/\.md$/, '');
+const gitLog = gitLogJson[`projects/${slug}`] || null;
+const lastCommit = gitLog?.lastCommitDate ? new Date(gitLog.lastCommitDate) : null;
+const effectiveUpdatedDate = project.data.updatedDate || (lastCommit && lastCommit.getTime() !== project.data.pubDate.getTime() ? lastCommit : null);
 ---
 
 <Post
@@ -49,8 +56,8 @@ const editUrl = `${EDIT_BASE}/${project.id}`;
             <a href={`/projects?category=${project.data.category}`} class="article-category">{project.data.category}</a>
           )}
           <time datetime={project.data.pubDate.toISOString()}>{formatDate(project.data.pubDate)}</time>
-          {project.data.updatedDate && project.data.updatedDate.getTime() !== project.data.pubDate.getTime() && (
-            <span class="article-updated">(updated <time datetime={project.data.updatedDate.toISOString()}>{formatDate(project.data.updatedDate)}</time>)</span>
+          {effectiveUpdatedDate && (
+            <span class="article-updated" id="git-history-trigger" style="cursor:pointer;" title="View change history">(updated <time datetime={effectiveUpdatedDate.toISOString()}>{formatDate(effectiveUpdatedDate)}</time>)</span>
           )}
           <div set:html={tagLinks} />
         </div>
@@ -65,5 +72,6 @@ const editUrl = `${EDIT_BASE}/${project.id}`;
         <Comments />
       </div>
     </ContentResizer>
+    {gitLog && <GitHistory commits={gitLog.commits} />}
   </article>
 </Post>

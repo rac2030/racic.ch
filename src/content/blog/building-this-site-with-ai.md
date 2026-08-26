@@ -386,8 +386,8 @@ The site uses **GitHub Actions** for continuous integration and deployment. The 
 flowchart TD
 P["Push to branch or open PR"] --> T1["Unit Tests"]
 P --> T2["E2E Tests"]
-T1 -->|"All 42 pass"| B{"Is push to main?"}
-T2 -->|"All 68 pass"| B
+T1 -->|"All 74 pass"| B{"Is push to main?"}
+T2 -->|"All 81 pass"| B
 B -->|"Yes"| Build["Astro Build"]
 B -->|"No (PR only)"| Stop["Tests pass, no deploy"]
 Build --> Upload["Upload dist/ artifact"]
@@ -395,9 +395,9 @@ Upload --> Deploy["Deploy to GitHub Pages"]
 Deploy --> Live["Site live at racic.ch"]
 </div>
 
-**Unit tests** (Jest) validate utility functions, content schemas, and site constants — 53 tests that run in under a second.
+**Unit tests** (Jest) validate utility functions, content schemas, site constants, and git log data — 74 tests that run in under a second.
 
-**E2E tests** (Playwright) spin up the built site and verify every page renders correctly, navigation works, all links resolve, and the sitemap/RSS feeds are valid — 69 tests across 7 spec files.
+**E2E tests** (Playwright) spin up the built site and verify every page renders correctly, navigation works, all links resolve, the sitemap/RSS feeds are valid, and the git history modal works — 81 tests across 7 spec files.
 
 The build only runs on pushes to `main`. Pull requests run the test suite but do not deploy. This prevents broken content from reaching production.
 
@@ -447,7 +447,8 @@ Here is every feature implemented in this site:
 | Mermaid diagrams | Dynamic loading, custom lightbox with zoom/pan/fullscreen, hover effects |
 | giscus comments | GitHub Discussions integration on all article pages |
 | Edit link | Pen icon (top-right) linking to GitHub edit URL |
-| Last updated date | Shows "(updated DATE)" when `updatedDate` differs from `pubDate` |
+| Last updated date | Shows "(updated DATE)" when `updatedDate` differs from `pubDate`, or falls back to last git commit date |
+| Git history modal | Click "updated" text to open a modal with full commit history table (date, message, hash linked to GitHub) |
 | URL aliases | `aliases` array in frontmatter generates additional routes via `flatMap` in `getStaticPaths` |
 | Recently Updated | Homepage section with 10 most recent articles across all sections |
 | Bookmarks | Separate collection with hero images, alphabetical tree layout |
@@ -510,6 +511,18 @@ All NPM dependencies were verified against latest stable versions. Only `astro` 
 ### Security Review
 
 A full audit of uncommitted changes was performed before the first commit. No secrets, API keys, passwords, or credentials were found. The giscus `repo-id` and `category-id` are public identifiers, not secrets. The opencode session file (`markdown-portfolio-wiki-and-blog-site.json`) was added to `.gitignore` as it contains internal tooling metadata.
+
+### Git History Modal
+
+A build-time git log integration was added to show the full change history of each content file. The implementation has three parts:
+
+1. **Build script** (`scripts/generate-git-log.mjs`) — Runs before `astro build`. Scans all `.md` files in `src/content/`, executes `git log --format="%H|%aI|%s" --follow` for each, and outputs `src/data/git-log.json` keyed by collection/slug (e.g., `blog/hosting-hugo-site-firebase`).
+
+2. **GitHistory component** (`src/components/GitHistory.astro`) — A modal dialog triggered by clicking the "(updated DATE)" text on any article. Displays a table with date, commit message, and short hash linked to the GitHub commit URL. Uses the same hologram panel styling as other UI elements.
+
+3. **Updated date fallback** — If a content file has no `updatedDate` in frontmatter, the last git commit date is used instead. This means every article with git history automatically shows when it was last modified, even without manual frontmatter updates.
+
+The key implementation challenge was Vite's JSON import handling during Astro's prerender phase. Direct `import` of JSON files and `readFileSync` with `process.cwd()` both failed because the prerendering step changes the working directory. The solution was to import the JSON file as a Vite static import (`import gitLogJson from '../../data/git-log.json'`), which Vite bundles correctly at build time.
 
 ## Manual Changes Required
 
