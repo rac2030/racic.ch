@@ -1,6 +1,7 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 const config = {
   testEnvironment: 'node',
+  globalSetup: '<rootDir>/jest.globalSetup.cjs',
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
