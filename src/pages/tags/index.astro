@@ -1,0 +1,47 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const isProd = import.meta.env.MODE === 'production';
+const allPosts = (await getCollection('blog')).filter((p) => isProd ? !p.data.draft : true);
+const allProjects = (await getCollection('projects')).filter((p) => isProd ? !p.data.draft : true);
+const allWiki = (await getCollection('wiki')).filter((e) => isProd ? !e.data.draft : true);
+
+const tagMap = new Map<string, number>();
+
+for (const post of allPosts) {
+  for (const tag of post.data.tags) {
+    tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
+  }
+}
+for (const project of allProjects) {
+  for (const tag of project.data.tags) {
+    tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
+  }
+}
+for (const entry of allWiki) {
+  for (const tag of entry.data.tags) {
+    tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
+  }
+}
+
+const tags = [...tagMap.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .map(([tag, count]) => ({ tag, count }));
+---
+
+<Base title="Tags | Michel Racic" description="Browse all tags.">
+  <section class="section">
+    <div class="container">
+      <h1>Tags</h1>
+      <p style="margin-bottom: 2rem; color: var(--text-muted);">Browse content by topic.</p>
+      <div class="tags-page">
+        {tags.map(({ tag, count }) => (
+          <a href={`/tags/${tag}`} class="tag">
+            {tag} <span class="tag-count">({count})</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>

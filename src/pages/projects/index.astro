@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import TagFilter from '../../components/TagFilter.astro';
+import { getCollection } from 'astro:content';
+
+const isProd = import.meta.env.MODE === 'production';
+const projects = (await getCollection('projects'))
+  .filter((p) => isProd ? !p.data.draft : true)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const allTags = [...new Set(projects.flatMap((p) => p.data.tags))].sort();
+const allCategories = [...new Set(projects.map((p) => p.data.category).filter(Boolean))].sort();
+---
+
+<Base title="Projects | Michel Racic" description="Hardware and software projects — IoT, LoRaWAN, electronics, and more.">
+  <section class="section">
+    <div class="container">
+      <h1>Projects</h1>
+      <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Hardware and software projects — IoT, LoRaWAN, electronics, and more.</p>
+      <div class="wiki-filter-row">
+        <TagFilter tags={allTags} label="Filter projects by tag..." />
+        {allCategories.length > 0 && (
+          <div class="category-filter">
+            <span class="category-filter-label">Category:</span>
+            <div class="category-filter-btns">
+              <button class="category-btn active" data-category="all">All</button>
+              {allCategories.map((cat) => (
+                <button class="category-btn" data-category={cat}>{cat}</button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+      <div class="card-grid">
+        {projects.map((project) => (
+          <PostCard
+            title={project.data.title}
+            description={project.data.description}
+            href={`/projects/${project.id.replace(/\.md$/, '')}`}
+            date={project.data.pubDate}
+            tags={project.data.tags}
+            category={project.data.category}
+            draft={project.data.draft}
+            updatedDate={project.data.updatedDate}
+            heroImage={project.data.heroImage}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script is:inline>
+(function() {
+  var btns = document.querySelectorAll('.category-btn');
+  var params = new URLSearchParams(window.location.search);
+  var initialCat = params.get('category');
+
+  function filterByCategory(cat) {
+    document.querySelectorAll('.card[data-category]').forEach(function(card) {
+      if (cat === 'all') { card.style.display = ''; return; }
+      card.style.display = card.getAttribute('data-category') === cat ? '' : 'none';
+    });
+  }
+
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      btns.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      filterByCategory(btn.getAttribute('data-category'));
+    });
+  });
+
+  if (initialCat) {
+    btns.forEach(function(b) { b.classList.remove('active'); });
+    var match = document.querySelector('.category-btn[data-category="' + initialCat + '"]');
+    if (match) match.classList.add('active');
+    filterByCategory(initialCat);
+  }
+})();
+</script>

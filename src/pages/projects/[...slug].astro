@@ -1,0 +1,69 @@
+---
+import { getCollection, render } from 'astro:content';
+import Post from '../../layouts/Post.astro';
+import Comments from '../../components/Comments.astro';
+import ContentResizer from '../../components/ContentResizer.astro';
+
+const EDIT_BASE = 'https://github.com/rac2030/racic.ch/edit/main/src/content/projects';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects
+    .filter((project) => import.meta.env.MODE === 'production' ? !project.data.draft : true)
+    .flatMap((project) => {
+      const slug = project.id.replace(/\.md$/, '');
+      const aliases = (project.data.aliases || [])
+        .filter((alias) => !alias.startsWith('/'))
+        .map((alias) => ({
+          params: { slug: alias },
+          props: { project },
+        }));
+      return [{ params: { slug }, props: { project } }, ...aliases];
+    });
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const tagLinks = project.data.tags.map((t) => `<a href="/tags/${t}" class="tag">${t}</a>`).join(' ');
+const editUrl = `${EDIT_BASE}/${project.id}`;
+---
+
+<Post
+  title={project.data.title}
+  description={project.data.description}
+  image={project.data.heroImage}
+>
+  <article>
+    {project.data.draft && <div class="draft-watermark">DRAFT — not published in production</div>}
+    <div class="article-header">
+      <a href={editUrl} class="article-edit" target="_blank" rel="noopener noreferrer" title="Edit on GitHub"><i class="fa-solid fa-pen"></i></a>
+      <div class="container content-width">
+        {project.data.heroImage && <img src={project.data.heroImage} alt={project.data.title} style="margin-bottom: 1.5rem;" />}
+        <h1>{project.data.title}{project.data.draft && <span class="draft-badge">Draft</span>}</h1>
+        <div class="article-meta">
+          {project.data.category && (
+            <a href={`/projects?category=${project.data.category}`} class="article-category">{project.data.category}</a>
+          )}
+          <time datetime={project.data.pubDate.toISOString()}>{formatDate(project.data.pubDate)}</time>
+          {project.data.updatedDate && project.data.updatedDate.getTime() !== project.data.pubDate.getTime() && (
+            <span class="article-updated">(updated <time datetime={project.data.updatedDate.toISOString()}>{formatDate(project.data.updatedDate)}</time>)</span>
+          )}
+          <div set:html={tagLinks} />
+        </div>
+      </div>
+    </div>
+    <ContentResizer>
+      <div class="container article-content">
+        {project.data.repo && (
+          <p><a href={project.data.repo} class="btn" style="margin-bottom: 1.5rem;"><i class="fa-brands fa-github"></i> View Source on GitHub</a></p>
+        )}
+        <Content />
+        <Comments />
+      </div>
+    </ContentResizer>
+  </article>
+</Post>

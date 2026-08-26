@@ -1,0 +1,163 @@
+---
+interface Props {
+  tags: string[];
+  label?: string;
+}
+
+const { tags, label = 'Filter by tag' } = Astro.props;
+const sortedTags = [...new Set(tags)].sort();
+---
+
+<div class="tag-filter" id="tag-filter" data-tags={JSON.stringify(sortedTags)}>
+  <div class="tag-filter-bar">
+    <div class="tag-filter-input-wrap">
+      <svg class="tag-filter-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      <input type="text" class="tag-filter-input" id="tag-filter-input" placeholder={label} autocomplete="off" />
+      <div class="tag-filter-autocomplete" id="tag-filter-autocomplete"></div>
+    </div>
+    <button class="tag-filter-cloud-btn" id="tag-filter-cloud-btn" title="Show tag cloud">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4.5 11h-1a.5.5 0 010-1h1a.5.5 0 010 1zm5 0a.5.5 0 010-1h3a.5.5 0 010 1h-3zm6.5 0a.5.5 0 010-1h1a.5.5 0 010 1h-1zM4.5 14.5h-1a.5.5 0 010-1h1a.5.5 0 010 1zm5 0a.5.5 0 010-1h7a.5.5 0 010 1h-7zm9 0a.5.5 0 010-1h1a.5.5 0 010 1h-1zM4.5 18h-1a.5.5 0 010-1h1a.5.5 0 010 1zm5 0a.5.5 0 010-1h5a.5.5 0 010 1h-5zm7 0a.5.5 0 010-1h3a.5.5 0 010 1h-3zM3 7.5h18a.5.5 0 010 1H3a.5.5 0 010-1z"/></svg>
+    </button>
+  </div>
+  <div class="tag-filter-active" id="tag-filter-active"></div>
+  <div class="tag-filter-cloud" id="tag-filter-cloud">
+    <div class="tag-filter-cloud-inner">
+      {sortedTags.map((tag) => (
+        <button class="tag-cloud-tag" data-tag={tag}>{tag}</button>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+(function() {
+  var filterEl = document.getElementById('tag-filter');
+  var allTags = JSON.parse(filterEl.getAttribute('data-tags') || '[]');
+  var selectedTags = [];
+  var cloudOpen = false;
+
+  var input = document.getElementById('tag-filter-input');
+  var ac = document.getElementById('tag-filter-autocomplete');
+  var activeEl = document.getElementById('tag-filter-active');
+  var cloudBtn = document.getElementById('tag-filter-cloud-btn');
+  var cloud = document.getElementById('tag-filter-cloud');
+
+  function getCards() {
+    return document.querySelectorAll('.card[data-tags], .wiki-card[data-tags]');
+  }
+
+  function matchesAll(card) {
+    if (selectedTags.length === 0) return true;
+    var cardTags = JSON.parse(card.getAttribute('data-tags') || '[]');
+    return selectedTags.every(function(t) { return cardTags.indexOf(t) !== -1; });
+  }
+
+  function applyFilter() {
+    getCards().forEach(function(card) {
+      card.style.display = matchesAll(card) ? '' : 'none';
+    });
+    renderActive();
+    updateURL();
+  }
+
+  function renderActive() {
+    activeEl.innerHTML = '';
+    selectedTags.forEach(function(tag) {
+      var el = document.createElement('span');
+      el.className = 'tag-filter-active-tag';
+      el.innerHTML = tag + ' <span class="tag-filter-active-x">&times;</span>';
+      el.querySelector('.tag-filter-active-x').addEventListener('click', function() {
+        removeTag(tag);
+      });
+      activeEl.appendChild(el);
+    });
+  }
+
+  function addTag(tag) {
+    if (selectedTags.indexOf(tag) === -1) {
+      selectedTags.push(tag);
+      applyFilter();
+    }
+    input.value = '';
+    ac.style.display = 'none';
+  }
+
+  function removeTag(tag) {
+    selectedTags = selectedTags.filter(function(t) { return t !== tag; });
+    applyFilter();
+  }
+
+  function updateURL() {
+    var url = new URL(window.location);
+    if (selectedTags.length > 0) {
+      url.searchParams.set('tags', selectedTags.join(','));
+    } else {
+      url.searchParams.delete('tags');
+    }
+    history.replaceState(null, '', url);
+  }
+
+  function loadFromURL() {
+    var url = new URL(window.location);
+    var param = url.searchParams.get('tags');
+    if (param) {
+      selectedTags = param.split(',').filter(function(t) { return allTags.indexOf(t) !== -1; });
+      applyFilter();
+    }
+  }
+
+  input.addEventListener('input', function() {
+    var val = input.value.toLowerCase().trim();
+    if (!val) { ac.style.display = 'none'; return; }
+    var matches = allTags.filter(function(t) {
+      return t.toLowerCase().indexOf(val) !== -1 && selectedTags.indexOf(t) === -1;
+    });
+    if (matches.length === 0) { ac.style.display = 'none'; return; }
+    ac.innerHTML = '';
+    matches.forEach(function(tag) {
+      var item = document.createElement('div');
+      item.className = 'tag-filter-ac-item';
+      item.textContent = tag;
+      item.addEventListener('click', function() { addTag(tag); });
+      ac.appendChild(item);
+    });
+    ac.style.display = 'block';
+  });
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      var val = input.value.toLowerCase().trim();
+      var match = allTags.find(function(t) { return t.toLowerCase() === val; });
+      if (match) addTag(match);
+    }
+    if (e.key === 'Escape') { ac.style.display = 'none'; }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.tag-filter-input-wrap')) ac.style.display = 'none';
+  });
+
+  cloudBtn.addEventListener('click', function() {
+    cloudOpen = !cloudOpen;
+    cloud.style.display = cloudOpen ? 'block' : 'none';
+    cloudBtn.classList.toggle('active', cloudOpen);
+  });
+
+  cloud.querySelectorAll('.tag-cloud-tag').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      addTag(btn.getAttribute('data-tag'));
+    });
+  });
+
+  document.addEventListener('click', function(e) {
+    var tagEl = e.target.closest('.card-tags .tag, .wiki-card .card-tags .tag');
+    if (tagEl) {
+      e.preventDefault();
+      e.stopPropagation();
+      addTag(tagEl.textContent.trim());
+    }
+  });
+
+  loadFromURL();
+})();
+</script>

@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const isProd = import.meta.env.MODE === 'production';
+  const allPosts = (await getCollection('blog')).filter((p) => isProd ? !p.data.draft : true);
+  const allProjects = (await getCollection('projects')).filter((p) => isProd ? !p.data.draft : true);
+  const allWiki = (await getCollection('wiki')).filter((e) => isProd ? !e.data.draft : true);
+
+  const allTags = new Set<string>();
+  for (const post of allPosts) for (const t of post.data.tags) allTags.add(t);
+  for (const project of allProjects) for (const t of project.data.tags) allTags.add(t);
+  for (const entry of allWiki) for (const t of entry.data.tags) allTags.add(t);
+
+  return [...allTags].map((tag) => {
+    const blogPosts = allPosts.filter((p) => p.data.tags.includes(tag));
+    const projects = allProjects.filter((p) => p.data.tags.includes(tag));
+    const wikiEntries = allWiki.filter((p) => p.data.tags.includes(tag));
+    return { params: { tag }, props: { tag, blogPosts, projects, wikiEntries } };
+  });
+}
+
+const { tag, blogPosts, projects, wikiEntries } = Astro.props;
+---
+
+<Base title={`#${tag} | Michel Racic`} description={`Content tagged with ${tag}.`}>
+  <section class="section">
+    <div class="container">
+      <h1>Tag: <span class="tag">{tag}</span></h1>
+
+      {blogPosts.length > 0 && (
+        <div style="margin-top: 2rem;">
+          <h2>Blog Posts</h2>
+          <div class="card-grid" style="margin-top: 1rem;">
+            {blogPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).map((post) => (
+              <PostCard
+                title={post.data.title}
+                description={post.data.description}
+                href={`/blog/${post.id.replace(/\.md$/, '')}`}
+                date={post.data.pubDate}
+                tags={post.data.tags}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {projects.length > 0 && (
+        <div style="margin-top: 2rem;">
+          <h2>Projects</h2>
+          <div class="card-grid" style="margin-top: 1rem;">
+            {projects.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).map((project) => (
+              <PostCard
+                title={project.data.title}
+                description={project.data.description}
+                href={`/projects/${project.id.replace(/\.md$/, '')}`}
+                date={project.data.pubDate}
+                tags={project.data.tags}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {wikiEntries.length > 0 && (
+        <div style="margin-top: 2rem;">
+          <h2>Wiki</h2>
+          <div class="wiki-grid" style="margin-top: 1rem;">
+            {wikiEntries.map((entry) => (
+              <a href={`/wiki/${entry.id.replace(/\.md$/, '')}`} class="wiki-card">
+                <h3>{entry.data.title}</h3>
+                {entry.data.description && <p>{entry.data.description}</p>}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+</Base>

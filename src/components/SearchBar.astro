@@ -1,0 +1,190 @@
+---
+---
+
+<div class="search-bar" id="search-bar">
+  <svg class="search-bar-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  <input type="text" class="search-bar-input" id="search-bar-input" placeholder="Search..." autocomplete="off" />
+  <div class="search-bar-dropdown" id="search-bar-dropdown"></div>
+</div>
+
+<script is:inline>
+(function() {
+  var input = document.getElementById('search-bar-input');
+  var dropdown = document.getElementById('search-bar-dropdown');
+  var index = null;
+  var loading = false;
+
+  function loadIndex() {
+    if (index || loading) return;
+    loading = true;
+    fetch('/search-index.json').then(function(r) { return r.json(); }).then(function(data) {
+      index = data;
+      loading = false;
+    }).catch(function() {
+      loading = false;
+    });
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function highlight(text, words) {
+    var result = escapeHtml(text);
+    words.forEach(function(w) {
+      var re = new RegExp('(' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+      result = result.replace(re, '<mark>$1</mark>');
+    });
+    return result;
+  }
+
+  function getExcerpt(body, words) {
+    if (!body) return '';
+    var lower = body.toLowerCase();
+    var bestIdx = -1;
+    for (var w = 0; w < words.length; w++) {
+      var idx = lower.indexOf(words[w]);
+      if (idx !== -1) { bestIdx = idx; break; }
+    }
+    if (bestIdx === -1) return '';
+    var start = Math.max(0, bestIdx - 60);
+    var end = Math.min(body.length, bestIdx + 120);
+    var excerpt = (start > 0 ? '...' : '') + body.slice(start, end) + (end < body.length ? '...' : '');
+    return highlight(excerpt, words);
+  }
+
+  function search(query) {
+    if (!index || !query) return [];
+    var words = query.toLowerCase().split(/\s+/).filter(Boolean);
+    var results = [];
+    for (var i = 0; i < index.length; i++) {
+      var item = index[i];
+      var titleLower = item.title.toLowerCase();
+      var descLower = item.description.toLowerCase();
+      var tagsLower = item.tags.join(' ').toLowerCase();
+      var metaHaystack = titleLower + ' ' + descLower + ' ' + tagsLower;
+      var score = 0;
+      var allMatch = true;
+      var bodyMatch = false;
+
+      for (var w = 0; w < words.length; w++) {
+        var word = words[w];
+        // Title match (highest)
+        if (titleLower.indexOf(word) !== -1) {
+          score += 10;
+          if (titleLower.startsWith(word)) score += 5;
+        }
+        // Tag match
+        if (item.tags.some(function(t) { return t.toLowerCase().indexOf(word) !== -1; })) {
+          score += 3;
+        }
+        // Description match
+        if (descLower.indexOf(word) !== -1) {
+          score += 1;
+        }
+        // Body match (lowest priority)
+        if (item.body && item.body.toLowerCase().indexOf(word) !== -1) {
+          bodyMatch = true;
+          score += 0.1;
+        }
+        // Check if at least one field matches this word
+        if (metaHaystack.indexOf(word) === -1 && (!item.body || item.body.toLowerCase().indexOf(word) === -1)) {
+          allMatch = false;
+          break;
+        }
+      }
+
+      if (allMatch) {
+        // Separate metadata matches from body-only matches
+        var isMetaMatch = score >= 1;
+        results.push({ item: item, score: score, bodyMatch: bodyMatch && !isMetaMatch });
+      }
+    }
+
+    // Sort: metadata matches first, then by score
+    results.sort(function(a, b) {
+      if (a.bodyMatch !== b.bodyMatch) return a.bodyMatch ? 1 : -1;
+      return b.score - a.score;
+    });
+
+    return results.slice(0, 10).map(function(r) {
+      var excerpt = '';
+      if (r.bodyMatch || r.score < 1) {
+        excerpt = getExcerpt(r.item.body, words);
+      }
+      return { item: r.item, excerpt: excerpt };
+    });
+  }
+
+  function render(results) {
+    if (results.length === 0) {
+      dropdown.innerHTML = '<div class="search-bar-empty">No results found</div>';
+      dropdown.style.display = 'block';
+      return;
+    }
+    dropdown.innerHTML = '';
+    var sectionIcons = { Blog: 'fa-solid fa-pen-nib', Projects: 'fa-solid fa-microchip', Wiki: 'fa-solid fa-book', Page: 'fa-solid fa-file' };
+    results.forEach(function(r) {
+      var item = r.item;
+      var el = document.createElement('a');
+      el.href = item.url;
+      el.className = 'search-bar-result';
+      var icon = sectionIcons[item.section] || 'fa-solid fa-file';
+      var excerptHtml = r.excerpt ? '<span class="search-bar-result-excerpt">' + r.excerpt + '</span>' : '';
+      el.innerHTML = '<span class="search-bar-result-icon"><i class="' + icon + '"></i></span>' +
+        '<span class="search-bar-result-text"><span class="search-bar-result-title">' + escapeHtml(item.title) + '</span>' +
+        '<span class="search-bar-result-desc">' + escapeHtml(item.description) + '</span>' +
+        excerptHtml + '</span>' +
+        '<span class="search-bar-result-section">' + item.section + '</span>';
+      dropdown.appendChild(el);
+    });
+    dropdown.style.display = 'block';
+  }
+
+  input.addEventListener('focus', function() {
+    loadIndex();
+    if (input.value.trim()) {
+      var results = search(input.value.trim());
+      render(results);
+    }
+  });
+
+  input.addEventListener('input', function() {
+    var q = input.value.trim();
+    if (!q) { dropdown.style.display = 'none'; return; }
+    loadIndex();
+    var results = search(q);
+    render(results);
+  });
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      dropdown.style.display = 'none';
+      input.blur();
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      var first = dropdown.querySelector('.search-bar-result');
+      if (first) first.focus();
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.search-bar')) dropdown.style.display = 'none';
+  });
+
+  dropdown.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      var next = document.activeElement && document.activeElement.nextElementSibling;
+      if (next && next.classList.contains('search-bar-result')) next.focus();
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      var prev = document.activeElement && document.activeElement.previousElementSibling;
+      if (prev && prev.classList.contains('search-bar-result')) prev.focus();
+      else input.focus();
+    }
+  });
+})();
+</script>

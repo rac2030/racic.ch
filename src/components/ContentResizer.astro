@@ -1,0 +1,65 @@
+---
+---
+
+<div class="content-resizer" id="content-resizer">
+  <div class="resizer-handle resizer-left" id="resizer-left"></div>
+  <div class="resizer-body">
+    <slot />
+  </div>
+  <div class="resizer-handle resizer-right" id="resizer-right"></div>
+</div>
+
+<script is:inline>
+(function() {
+  var KEY = 'content-width';
+  var MIN = 480;
+  var DEFAULT = 1000;
+
+  var resizer = document.getElementById('content-resizer');
+  if (!resizer) return;
+
+  var body = resizer.querySelector('.resizer-body');
+  var leftHandle = document.getElementById('resizer-left');
+  var rightHandle = document.getElementById('resizer-right');
+
+  function getMax() {
+    return window.innerWidth - 80;
+  }
+
+  var saved = parseInt(localStorage.getItem(KEY), 10);
+  var max = getMax();
+  var width = (saved && saved >= MIN) ? Math.min(saved, max) : Math.min(DEFAULT, max);
+  body.style.width = width + 'px';
+
+  function onDrag(handle, startX, startWidth) {
+    var isLeft = handle === 'left';
+    function onMove(e) {
+      var dx = e.clientX - startX;
+      var newWidth = isLeft ? startWidth - dx : startWidth + dx;
+      newWidth = Math.max(MIN, Math.min(getMax(), newWidth));
+      body.style.width = newWidth + 'px';
+    }
+    function onUp() {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      localStorage.setItem(KEY, body.style.width.replace('px', ''));
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }
+
+  leftHandle.addEventListener('mousedown', function(e) {
+    e.preventDefault();
+    onDrag('left', e.clientX, parseInt(body.style.width, 10));
+  });
+
+  rightHandle.addEventListener('mousedown', function(e) {
+    e.preventDefault();
+    onDrag('right', e.clientX, parseInt(body.style.width, 10));
+  });
+})();
+</script>
