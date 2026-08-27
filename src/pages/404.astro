@@ -22,6 +22,7 @@ import Base from '../layouts/Base.astro';
   <canvas id="duck-game" style="position: fixed; bottom: 0; left: 0; width: 100%; height: 200px; z-index: 50; pointer-events: auto; cursor: pointer;"></canvas>
 </Base>
 
+<script is:inline src="/search.js"></script>
 <script is:inline>
 (function() {
   var container = document.getElementById('poop-container');
@@ -98,26 +99,33 @@ import Base from '../layouts/Base.astro';
 
   document.getElementById('search-term').textContent = path;
 
+  function renderCard(r) {
+    var sectionIcons = { Blog: 'fa-solid fa-pen-nib', Projects: 'fa-solid fa-microchip', Wiki: 'fa-solid fa-book', Page: 'fa-solid fa-file' };
+    var icon = sectionIcons[r.section] || 'fa-solid fa-file';
+    return '<a href="' + r.url + '" class="card" style="padding: 1rem;">' +
+      '<h3 style="margin: 0 0 0.25rem;">' + r.title + '</h3>' +
+      '<p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">' + r.description + '</p>' +
+      '<span style="font-size: 0.75rem; color: var(--accent);"><i class="' + icon + '"></i> ' + r.section + '</span>' +
+      '</a>';
+  }
+
   fetch('/search-index.json').then(function(r) { return r.json(); }).then(function(data) {
-    var terms = path.split(/\s+/).filter(Boolean);
-    var results = data.filter(function(item) {
-      var haystack = (item.title + ' ' + item.description + ' ' + item.tags.join(' ')).toLowerCase();
-      return terms.every(function(t) { return haystack.indexOf(t) !== -1; });
-    });
-    if (results.length === 0) {
+    var results = SearchLib.search(data, path);
+
+    if (results.exact.length === 0 && results.fuzzy.length === 0) {
       document.getElementById('search-404').style.display = 'block';
       document.getElementById('search-results').innerHTML = '<p style="color: var(--text-muted);">No matching pages found.</p>';
       return;
     }
+
     document.getElementById('search-404').style.display = 'block';
     var html = '<div class="card-grid" style="grid-template-columns: 1fr;">';
-    results.forEach(function(r) {
-      html += '<a href="' + r.url + '" class="card" style="padding: 1rem;">' +
-        '<h3 style="margin: 0 0 0.25rem;">' + r.title + '</h3>' +
-        '<p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">' + r.description + '</p>' +
-        '<span style="font-size: 0.75rem; color: var(--accent);">' + r.section + '</span>' +
-        '</a>';
-    });
+    results.exact.forEach(function(r) { html += renderCard(r.item); });
+    if (results.fuzzy.length > 0) {
+      var header = results.exact.length > 0 ? 'Similar results' : 'Did you mean?';
+      html += '</div><h3 style="font-size: 0.85rem; color: var(--accent); margin: 1.5rem 0 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">' + header + '</h3><div class="card-grid" style="grid-template-columns: 1fr;">';
+      results.fuzzy.forEach(function(r) { html += renderCard(r.item); });
+    }
     html += '</div>';
     document.getElementById('search-results').innerHTML = html;
   }).catch(function() {});

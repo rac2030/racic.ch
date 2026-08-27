@@ -12,6 +12,7 @@ interface SearchEntry {
   section: string;
   date: string;
   body: string;
+  heroImage?: string;
 }
 
 export const GET: APIRoute = async () => {
@@ -28,6 +29,7 @@ export const GET: APIRoute = async () => {
       section: 'Blog',
       date: post.data.pubDate.toISOString(),
       body: stripHtml(post.body ?? ''),
+      heroImage: post.data.heroImage,
     });
   }
 
@@ -41,6 +43,7 @@ export const GET: APIRoute = async () => {
       section: 'Projects',
       date: project.data.pubDate.toISOString(),
       body: stripHtml(project.body ?? ''),
+      heroImage: project.data.heroImage,
     });
   }
 
@@ -54,6 +57,7 @@ export const GET: APIRoute = async () => {
       section: 'Wiki',
       date: entry.data.pubDate?.toISOString() ?? '',
       body: stripHtml(entry.body ?? ''),
+      heroImage: entry.data.heroImage,
     });
   }
 
@@ -67,6 +71,7 @@ export const GET: APIRoute = async () => {
       section: 'Bookmarks',
       date: entry.data.pubDate?.toISOString() ?? '',
       body: stripHtml(entry.body ?? ''),
+      heroImage: entry.data.heroImage,
     });
   }
 

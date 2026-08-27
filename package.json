@@ -4,8 +4,9 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/generate-git-log.mjs && node scripts/stamp-sw.js && astro build",
+    "build": "node scripts/generate-git-log.mjs && node scripts/stamp-sw.js && node scripts/build-search.js && astro build",
     "build:git": "node scripts/generate-git-log.mjs",
+    "build:search": "node scripts/build-search.js",
     "preview": "astro preview",
     "astro": "astro",
     "test": "npm run test:unit && npm run test:e2e",
@@ -23,6 +24,7 @@
     "@jest/globals": "^30.4.1",
     "@playwright/test": "^1.62.1",
     "@types/jest": "^30.0.0",
+    "esbuild": "^0.28.2",
     "jest": "^30.4.2",
     "sharp": "^0.33.5",
     "ts-jest": "^29.4.12",

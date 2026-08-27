@@ -187,9 +187,31 @@ Bookmark entries (10 curated link collections originally in the wiki's `links/` 
 
 Article pages (blog, projects, wiki, bookmarks) have a **draggable content width resizer**. Two thin handles on the left and right borders of the article content area let the user drag to resize. The width is persisted in `localStorage` and restored on page load. Default width is 1000px, minimum 480px, maximum is the browser window width minus 80px.
 
-### Full-Text Search
+### Full-Text Search with Fuzzy Matching
 
-A build-time search index (`/search-index.json`) generates JSON with the full text body content of every article. The search bar in the header supports multi-word AND matching with scoring, highlighted excerpts using `<mark>` tags, and results sorted by metadata matches before body matches. The index is lazy-loaded on first search.
+A build-time search index (`/search-index.json`) generates JSON with the full text body content of every article. The search system is implemented as a shared `SearchLib` module (`public/search.js`) used by both the search bar and the 404 page.
+
+**Exact search** — Multi-word AND matching with scoring: title matches (10pts + 5pt prefix bonus), tag matches (3pts), description matches (1pt), body matches (0.1pt). Results sorted by metadata matches before body matches.
+
+**Fuzzy search** — Character sequence matching with scoring: consecutive char bonus (5x per streak), word boundary bonus (3pts), title weighted 3x, tags 2x, description 1x. Fuzzy results appear below exact results under a "Similar results" header, or as "Did you mean?" when no exact matches exist. Minimum score threshold of 3 prevents noise.
+
+**Highlighting** — Matching terms wrapped in `<mark>` tags in title, description, and excerpt. Excerpts show 60 chars before and 120 chars after the first match.
+
+Both the search bar and 404 page URL-based search use the same `SearchLib.search()` function, ensuring consistent results across the site.
+
+### Dedicated Search Page (`/search`)
+
+A full-page search experience at `/search` with a Google-like interface:
+- Centered search input with real-time results as you type (150ms debounce)
+- Accepts `?q=` query parameter for deep linking and SearchBar navigation
+- URL syncs via `history.replaceState` so the back button works
+- Results displayed in a floating holocard panel with hero images
+- Hero images use the same mask/fade technique as bookmark entries (right-aligned, 50% width, gradient mask)
+- Pressing Enter in the header SearchBar navigates to `/search?q=...`
+
+### TypeScript Search Module
+
+The search logic was extracted from inline JavaScript into a TypeScript module (`src/lib/search.ts`) with full type annotations for `SearchItem`, `FuzzyMatchResult`, `ExactResult`, `FuzzyResult`, and `SearchResult`. esbuild compiles it to `public/search.js` as an IIFE with a `SearchLib` global. The build step runs via `scripts/build-search.js` before `astro build`.
 
 ### Tag Filtering
 
@@ -451,7 +473,9 @@ Here is every feature implemented in this site:
 | Category system | Optional `category` field, filter buttons on listings, clickable badges on articles |
 | Draft mode | `draft: true` hides from production; visible in dev with yellow watermark |
 | Tag filtering | Autocomplete input, tag cloud, active pills, URL persistence, AND multi-select |
-| Full-text search | Build-time JSON index, multi-word AND matching, highlighted excerpts |
+| Full-text search | Shared `SearchLib` module, exact + fuzzy matching, highlighted excerpts, used by search bar and 404 page |
+| Dedicated search page | Google-like `/search` page with real-time results, hero images, `?q=` param, holocard results panel |
+| SearchBar → search page | Enter key navigates to `/search?q=...` for full-page results |
 | Content resizer | Drag handles on article pages, localStorage persistence, full window width |
 | Copy button | One-click code block copying with "Copied!" feedback |
 | Language badge | Shows Shiki language on code blocks (top-left corner) |
@@ -463,7 +487,7 @@ Here is every feature implemented in this site:
 | URL aliases | `aliases` array in frontmatter generates additional routes via `flatMap` in `getStaticPaths` |
 | Recently Updated | Homepage section with 10 most recent articles across all sections |
 | Bookmarks | Separate collection with hero images, alphabetical tree layout |
-| 404 page | Flying 💩 emojis, URL-based search, duck jump game with double jump and arrow key movement |
+| 404 page | Flying 💩 emojis, URL-based search using SearchLib (exact + fuzzy), duck jump game with double jump and arrow key movement |
 | π easter egg | Nearly invisible symbol (bottom-right), hidden page with pi calculator |
 | 💩 easter egg | Flying poop on 404 navigates to rickroll page |
 | Responsive design | Mobile menu, responsive breakpoints, background scaling |

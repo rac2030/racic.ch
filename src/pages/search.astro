@@ -1,0 +1,131 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Search — Michel Racic">
+  <div class="search-page">
+    <div class="search-page-hero">
+      <div class="search-page-box">
+        <svg class="search-page-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-page-input" id="search-input" placeholder="Search racic.ch..." autocomplete="off" autofocus />
+        <button class="search-page-clear" id="search-clear" title="Clear">&times;</button>
+      </div>
+    </div>
+
+    <div class="search-page-results" id="search-results"></div>
+  </div>
+</Base>
+
+<script is:inline src="/search.js"></script>
+<script is:inline>
+(function() {
+  var input = document.getElementById('search-input');
+  var resultsEl = document.getElementById('search-results');
+  var clearBtn = document.getElementById('search-clear');
+  var index = null;
+  var debounceTimer = null;
+
+  function loadIndex(callback) {
+    if (index) { if (callback) callback(); return; }
+    fetch('/search-index.json').then(function(r) { return r.json(); }).then(function(data) {
+      index = data;
+      if (callback) callback();
+    }).catch(function() {});
+  }
+
+  function renderCard(r, words) {
+    var sectionIcons = { Blog: 'fa-solid fa-pen-nib', Projects: 'fa-solid fa-microchip', Wiki: 'fa-solid fa-book', Bookmarks: 'fa-solid fa-bookmark', Page: 'fa-solid fa-file' };
+    var icon = sectionIcons[r.section] || 'fa-solid fa-file';
+    var excerpt = '';
+    if (r.body) {
+      excerpt = SearchLib.getExcerpt(r.body, words);
+    }
+    var excerptHtml = excerpt ? '<p class="search-page-result-excerpt">' + excerpt + '</p>' : '';
+    var heroHtml = r.heroImage ? '<div class="search-page-result-hero"><img src="' + r.heroImage + '" alt="" loading="lazy" /></div>' : '';
+    return '<a href="' + r.url + '" class="search-page-result">' +
+      heroHtml +
+      '<div class="search-page-result-icon"><i class="' + icon + '"></i></div>' +
+      '<div class="search-page-result-body">' +
+        '<div class="search-page-result-url">' + r.url + '</div>' +
+        '<h3 class="search-page-result-title">' + SearchLib.highlight(r.title, words) + '</h3>' +
+        '<p class="search-page-result-desc">' + SearchLib.highlight(r.description, words) + '</p>' +
+        excerptHtml +
+      '</div>' +
+      '</a>';
+  }
+
+  function render(results, words) {
+    if (results.exact.length === 0 && results.fuzzy.length === 0) {
+      resultsEl.innerHTML = '<div class="search-page-no-results">No results found for your query.</div>';
+      resultsEl.style.display = 'block';
+      return;
+    }
+
+    var total = results.exact.length + results.fuzzy.length;
+    var html = '<div class="search-page-stats">About ' + total + ' result' + (total !== 1 ? 's' : '') + '</div>';
+
+    results.exact.forEach(function(r) {
+      var excerptWords = (r.bodyMatch || r.score < 1) ? words : [];
+      html += renderCard(r.item, excerptWords);
+    });
+
+    if (results.fuzzy.length > 0) {
+      html += '<div class="search-page-section-header">Related results</div>';
+      results.fuzzy.forEach(function(r) {
+        html += renderCard(r.item, []);
+      });
+    }
+
+    resultsEl.innerHTML = html;
+    resultsEl.style.display = 'block';
+  }
+
+  function doSearch(q) {
+    if (!q || !index) { resultsEl.innerHTML = ''; resultsEl.style.display = 'none'; return; }
+    var words = q.toLowerCase().split(/\s+/).filter(Boolean);
+    var results = SearchLib.search(index, q);
+    render(results, words);
+  }
+
+  function syncFromInput() {
+    var q = input.value.trim();
+    if (q) {
+      var params = new URLSearchParams(window.location.search);
+      params.set('q', q);
+      var newUrl = window.location.pathname + '?' + params.toString();
+      history.replaceState(null, '', newUrl);
+    } else {
+      history.replaceState(null, '', window.location.pathname);
+    }
+    doSearch(q);
+  }
+
+  loadIndex();
+
+  var params = new URLSearchParams(window.location.search);
+  var initialQuery = params.get('q') || '';
+  if (initialQuery) {
+    input.value = initialQuery;
+    loadIndex(function() { doSearch(initialQuery); });
+  }
+
+  input.addEventListener('input', function() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(syncFromInput, 150);
+  });
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      input.value = '';
+      syncFromInput();
+      input.blur();
+    }
+  });
+
+  clearBtn.addEventListener('click', function() {
+    input.value = '';
+    syncFromInput();
+    input.focus();
+  });
+})();
+</script>
