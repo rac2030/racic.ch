@@ -12,6 +12,7 @@
   var input = document.getElementById('search-bar-input');
   var dropdown = document.getElementById('search-bar-dropdown');
   var index = null;
+  var lastWords = [];
   var loading = false;
 
   function loadIndex() {
@@ -55,7 +56,7 @@
 
   function search(query) {
     if (!index || !query) return [];
-    var words = query.toLowerCase().split(/\s+/).filter(Boolean);
+    lastWords = query.toLowerCase().split(/\s+/).filter(Boolean);
     var results = [];
     for (var i = 0; i < index.length; i++) {
       var item = index[i];
@@ -67,8 +68,8 @@
       var allMatch = true;
       var bodyMatch = false;
 
-      for (var w = 0; w < words.length; w++) {
-        var word = words[w];
+      for (var w = 0; w < lastWords.length; w++) {
+        var word = lastWords[w];
         // Title match (highest)
         if (titleLower.indexOf(word) !== -1) {
           score += 10;
@@ -110,13 +111,21 @@
     return results.slice(0, 10).map(function(r) {
       var excerpt = '';
       if (r.bodyMatch || r.score < 1) {
-        excerpt = getExcerpt(r.item.body, words);
+        excerpt = getExcerpt(r.item.body, lastWords);
       }
       return { item: r.item, excerpt: excerpt };
     });
   }
 
+  function positionDropdown() {
+    var rect = input.getBoundingClientRect();
+    dropdown.style.top = (rect.bottom + 6) + 'px';
+    dropdown.style.left = '50%';
+    dropdown.style.transform = 'translateX(-50%)';
+  }
+
   function render(results) {
+    positionDropdown();
     if (results.length === 0) {
       dropdown.innerHTML = '<div class="search-bar-empty">No results found</div>';
       dropdown.style.display = 'block';
@@ -132,8 +141,8 @@
       var icon = sectionIcons[item.section] || 'fa-solid fa-file';
       var excerptHtml = r.excerpt ? '<span class="search-bar-result-excerpt">' + r.excerpt + '</span>' : '';
       el.innerHTML = '<span class="search-bar-result-icon"><i class="' + icon + '"></i></span>' +
-        '<span class="search-bar-result-text"><span class="search-bar-result-title">' + escapeHtml(item.title) + '</span>' +
-        '<span class="search-bar-result-desc">' + escapeHtml(item.description) + '</span>' +
+        '<span class="search-bar-result-text"><span class="search-bar-result-title">' + highlight(item.title, lastWords) + '</span>' +
+        '<span class="search-bar-result-desc">' + highlight(item.description, lastWords) + '</span>' +
         excerptHtml + '</span>' +
         '<span class="search-bar-result-section">' + item.section + '</span>';
       dropdown.appendChild(el);
@@ -144,6 +153,7 @@
   loadIndex();
 
   input.addEventListener('focus', function() {
+    positionDropdown();
     if (input.value.trim()) {
       var results = search(input.value.trim());
       render(results);
@@ -154,6 +164,19 @@
     var q = input.value.trim();
     if (!q) { dropdown.style.display = 'none'; return; }
     loadIndex();
+    if (!index) {
+      // Wait for index to load
+      var checkIndex = setInterval(function() {
+        if (index) {
+          clearInterval(checkIndex);
+          var results = search(q);
+          render(results);
+        }
+      }, 50);
+      // Stop checking after 2 seconds
+      setTimeout(function() { clearInterval(checkIndex); }, 2000);
+      return;
+    }
     var results = search(q);
     render(results);
   });
