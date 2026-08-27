@@ -252,6 +252,15 @@ A hidden page accessible only via the nearly invisible `π` symbol in the bottom
 
 A hidden rickroll page with an autoplaying YouTube embed. Only accessible via the flying poop on the 404 page or direct URL.
 
+### Backstage.io Bouncing Icon
+
+On the About page, the official [Backstage.io logo](https://backstage.io/img/logo.svg) bounces around the screen like a DVD screensaver. The icon uses `requestAnimationFrame` for smooth 60fps animation, bouncing off all four browser borders. When clicked:
+1. The icon stops bouncing and expands to 3x size
+2. After 500ms, it opens [backstage.io](https://backstage.io) in a new tab
+3. The icon resumes bouncing
+
+This is a nod to the internal developer platform built on Backstage mentioned in the About page content.
+
 ## Development Workflow
 
 ### Project Structure
@@ -397,7 +406,7 @@ Deploy --> Live["Site live at racic.ch"]
 
 **Unit tests** (Jest) validate utility functions, content schemas, site constants, and git log data — 97 tests that run in under a second.
 
-**E2E tests** (Playwright) spin up the built site and verify every page renders correctly, navigation works, all links resolve, the sitemap/RSS feeds are valid, and the git history modal works — 125 tests across 11 spec files.
+**E2E tests** (Playwright) spin up the built site and verify every page renders correctly, navigation works, all links resolve, the sitemap/RSS feeds are valid, the git history modal works, and backstage.io easter egg — 146 tests across 13 spec files.
 
 **Code coverage** — Jest collects coverage for all utility functions and logic in `src/lib/` and `src/utils/`. The CI pipeline enforces an 80% minimum threshold on statements, branches, functions, and lines. Coverage currently stands at 100% across all metrics. The `test:coverage` script generates an lcov report locally.
 

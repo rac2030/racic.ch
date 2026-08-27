@@ -159,4 +159,79 @@ import { SITE } from '../consts';
       </div>
     </div>
   </section>
+
+  <!-- Backstage.io Easter Egg -->
+  <div id="backstage-icon" class="backstage-easter-egg" style="
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 1000;
+    opacity: 0.8;
+    transition: transform 0.3s, opacity 0.3s;
+    pointer-events: auto;
+  " title="Backstage.io">
+    <img src="https://backstage.io/img/logo.svg" alt="Backstage" style="width: 100%; height: 100%; pointer-events: none;" />
+  </div>
+
+  <style>
+    #backstage-icon.expanded {
+      transform: scale(3) !important;
+      opacity: 1 !important;
+    }
+  </style>
+
+  <script is:inline>
+    (function() {
+      var icon = document.getElementById('backstage-icon');
+      if (!icon) return;
+
+      var x = Math.random() * (window.innerWidth - 40);
+      var y = Math.random() * (window.innerHeight - 40);
+      var vx = 3 + Math.random() * 2;
+      var vy = 2 + Math.random() * 2;
+      var expanded = false;
+
+      icon.style.left = x + 'px';
+      icon.style.top = y + 'px';
+
+      function animate() {
+        if (expanded) {
+          requestAnimationFrame(animate);
+          return;
+        }
+
+        x += vx;
+        y += vy;
+
+        if (x <= 0 || x >= window.innerWidth - 40) {
+          vx = -vx;
+          x = Math.max(0, Math.min(x, window.innerWidth - 40));
+        }
+        if (y <= 0 || y >= window.innerHeight - 40) {
+          vy = -vy;
+          y = Math.max(0, Math.min(y, window.innerHeight - 40));
+        }
+
+        icon.style.left = x + 'px';
+        icon.style.top = y + 'px';
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+
+      icon.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        expanded = true;
+        icon.classList.add('expanded');
+        setTimeout(function() {
+          window.open('https://backstage.io', '_blank');
+          icon.classList.remove('expanded');
+          expanded = false;
+        }, 500);
+      });
+    })();
+  </script>
 </Base>
