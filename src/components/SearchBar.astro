@@ -141,8 +141,9 @@
     dropdown.style.display = 'block';
   }
 
+  loadIndex();
+
   input.addEventListener('focus', function() {
-    loadIndex();
     if (input.value.trim()) {
       var results = search(input.value.trim());
       render(results);
