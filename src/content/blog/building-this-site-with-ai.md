@@ -3,7 +3,7 @@ title: "Building This Site with AI: A Behind-the-Scenes Account"
 pubDate: 2026-08-23
 description: "An AI-generated blog post documenting how this very page was built — the prompts, the thinking, the design choices, and the development workflow."
 category: "generated"
-tags: ["ai", "astro", "opencode"]
+tags: ["ai", "astro", "opencode", "experiment"]
 heroImage: /images/projects/opencode-ai-hero.svg
 draft: false
 aliases:
@@ -557,6 +557,21 @@ This is a legal requirement, not optional. The AI will not自发 add license att
 - **Testing on real devices** — Verifying the site looks correct on actual mobile devices, not just browser responsive mode
 - **DNS configuration** — Pointing the `racic.ch` domain to GitHub Pages
 - **Content proofreading** — Reviewing migrated content for accuracy, broken links, and formatting issues
+
+## Service Worker (Offline Support)
+
+A service worker (`public/sw.js`) implements lazy caching with content-hashed cache names and localStorage-based version tracking.
+
+**Cache-busting on every build** — The build script `scripts/stamp-sw.js` generates an MD5 hash of the SW file content and stamps it into `CACHE_NAME` (e.g., `racic-ch-d6057eff`). This means every build produces a unique cache name. When the new SW activates, it deletes all old caches that don't match the current hash. The registration script calls `reg.update()` on every page load to check for a new SW file.
+
+**Caching strategy:**
+
+1. **First visit** — the page loads normally, the service worker installs and caches all assets. If the network fails on first visit (no cache yet), a 503 is returned — no banner is shown.
+2. **Subsequent visits** — the cached version is served immediately while the SW fetches fresh content in the background.
+3. **Update detected** — if the new response body differs from the cached version (byte-by-byte comparison), the SW increments a version counter in localStorage and posts a `NEW_VERSION` message to all clients, triggering a blue banner ("New version available — click to refresh"). Clicking the banner reloads the page.
+4. **Offline with cache** — when the network is unavailable but a cached version exists, the cached page loads silently. No offline banner is shown.
+
+**E2E tests** (`tests/e2e/service-worker.spec.ts` — 13 tests) verify: SW registration, script content (install/fetch/activate listeners, localStorage usage, version tracking, client notification), update banner existence/visibility/text/toggle/reload, and page functionality after SW activation.
 
 ## The Sources
 
