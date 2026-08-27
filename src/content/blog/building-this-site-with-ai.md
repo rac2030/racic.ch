@@ -386,8 +386,8 @@ The site uses **GitHub Actions** for continuous integration and deployment. The 
 flowchart TD
 P["Push to branch or open PR"] --> T1["Unit Tests"]
 P --> T2["E2E Tests"]
-T1 -->|"All 74 pass"| B{"Is push to main?"}
-T2 -->|"All 81 pass"| B
+T1 -->|"All 97 pass"| B{"Is push to main?"}
+T2 -->|"All 125 pass"| B
 B -->|"Yes"| Build["Astro Build"]
 B -->|"No (PR only)"| Stop["Tests pass, no deploy"]
 Build --> Upload["Upload dist/ artifact"]
@@ -395,9 +395,11 @@ Upload --> Deploy["Deploy to GitHub Pages"]
 Deploy --> Live["Site live at racic.ch"]
 </div>
 
-**Unit tests** (Jest) validate utility functions, content schemas, site constants, and git log data — 74 tests that run in under a second.
+**Unit tests** (Jest) validate utility functions, content schemas, site constants, and git log data — 97 tests that run in under a second.
 
-**E2E tests** (Playwright) spin up the built site and verify every page renders correctly, navigation works, all links resolve, the sitemap/RSS feeds are valid, and the git history modal works — 81 tests across 7 spec files.
+**E2E tests** (Playwright) spin up the built site and verify every page renders correctly, navigation works, all links resolve, the sitemap/RSS feeds are valid, and the git history modal works — 125 tests across 11 spec files.
+
+**Code coverage** — Jest collects coverage for all utility functions and logic in `src/lib/` and `src/utils/`. The CI pipeline enforces an 80% minimum threshold on statements, branches, functions, and lines. Coverage currently stands at 100% across all metrics. The `test:coverage` script generates an lcov report locally.
 
 The build only runs on pushes to `main`. Pull requests run the test suite but do not deploy. This prevents broken content from reaching production.
 
