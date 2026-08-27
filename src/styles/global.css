@@ -1500,8 +1500,11 @@ hr {
 /* ===== FOOTER ===== */
 .site-footer {
   text-align: center;
-  padding: 1.5rem 0;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+  padding: 0.6rem 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footer-links {
