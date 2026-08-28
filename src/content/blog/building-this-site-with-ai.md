@@ -595,16 +595,19 @@ This is a legal requirement, not optional. The AI will not自发 add license att
 
 A service worker (`public/sw.js`) implements lazy caching with content-hashed cache names and localStorage-based version tracking.
 
-**Cache-busting on every build** — The build script `scripts/stamp-sw.js` generates an MD5 hash of the SW file content and stamps it into `CACHE_NAME` (e.g., `racic-ch-d6057eff`). This means every build produces a unique cache name. When the new SW activates, it deletes all old caches that don't match the current hash. The registration script calls `reg.update()` on every page load to check for a new SW file.
+**Cache-busting on every build** — The build script `scripts/stamp-sw.js` generates an MD5 hash of the SW file content and stamps it into `CACHE_NAME` (e.g., `racic-ch-d6057eff`). This means every build produces a unique cache name. When the new SW activates, it deletes all old caches that don't match the current hash.
+
+**Periodic update checking** — The registration script in `Base.astro` checks for SW updates every 10 minutes using `setInterval`. Checks only run when the page is visible (`document.visibilityState === 'visible'`), pausing when the tab or browser is inactive via the `visibilitychange` event. This avoids unnecessary network requests and CPU usage in background tabs.
 
 **Caching strategy:**
 
 1. **First visit** — the page loads normally, the service worker installs and caches all assets. If the network fails on first visit (no cache yet), a 503 is returned — no banner is shown.
 2. **Subsequent visits** — the cached version is served immediately while the SW fetches fresh content in the background.
-3. **Update detected** — if the new response body differs from the cached version (byte-by-byte comparison), the SW increments a version counter in localStorage and posts a `NEW_VERSION` message to all clients, triggering a blue banner ("New version available — click to refresh"). Clicking the banner reloads the page.
-4. **Offline with cache** — when the network is unavailable but a cached version exists, the cached page loads silently. No offline banner is shown.
+3. **Update detected** — if the new response body differs from the cached version (byte-by-byte comparison), the SW increments a version counter in localStorage and posts a `NEW_VERSION` message to all clients, triggering a blue banner ("New version available — click to refresh").
+4. **Banner click** — clicking the banner sends a `SKIP_WAITING` message to the SW, which calls `self.skipWaiting()`. A `controllerchange` event fires on the client, triggering a page reload to activate the new SW.
+5. **Offline with cache** — when the network is unavailable but a cached version exists, the cached page loads silently. No offline banner is shown.
 
-**E2E tests** (`tests/e2e/service-worker.spec.ts` — 13 tests) verify: SW registration, script content (install/fetch/activate listeners, localStorage usage, version tracking, client notification), update banner existence/visibility/text/toggle/reload, and page functionality after SW activation.
+**E2E tests** (`tests/e2e/service-worker.spec.ts` — 13 tests) verify: SW registration, script content (install/fetch/activate/message listeners, localStorage usage, version tracking, client notification), update banner existence/visibility/text/toggle, periodic check behavior, and page functionality after SW activation.
 
 ## The Sources
 

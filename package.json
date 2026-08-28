@@ -4,8 +4,9 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/generate-git-log.mjs && node scripts/stamp-sw.js && node scripts/build-search.js && astro build",
+    "build": "node scripts/generate-git-log.mjs && node scripts/build-sw.js && node scripts/stamp-sw.js && node scripts/build-search.js && astro build",
     "build:git": "node scripts/generate-git-log.mjs",
+    "build:sw": "node scripts/build-sw.js && node scripts/stamp-sw.js",
     "build:search": "node scripts/build-search.js",
     "preview": "astro preview",
     "astro": "astro",

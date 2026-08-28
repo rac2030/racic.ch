@@ -60,25 +60,63 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
     <script is:inline>
       if ('serviceWorker' in navigator) {
         var updateBanner = document.getElementById('sw-update-banner');
+        var swReg = null;
+        var checkTimer = null;
+        var CHECK_INTERVAL = 10 * 60 * 1000;
+
+        function checkForUpdate() {
+          if (!swReg) return;
+          swReg.update().catch(function() {});
+        }
+
+        function startTimer() {
+          stopTimer();
+          checkTimer = setInterval(function() {
+            if (document.visibilityState === 'visible') {
+              checkForUpdate();
+            }
+          }, CHECK_INTERVAL);
+        }
+
+        function stopTimer() {
+          if (checkTimer) {
+            clearInterval(checkTimer);
+            checkTimer = null;
+          }
+        }
 
         window.addEventListener('load', function() {
           navigator.serviceWorker.register('/sw.js').then(function(reg) {
-            reg.update();
+            swReg = reg;
+            checkForUpdate();
+            startTimer();
           });
+        });
+
+        document.addEventListener('visibilitychange', function() {
+          if (document.visibilityState === 'visible') {
+            checkForUpdate();
+            startTimer();
+          } else {
+            stopTimer();
+          }
         });
 
         navigator.serviceWorker.addEventListener('message', function(e) {
           if (e.data && e.data.type === 'NEW_VERSION') {
             updateBanner.style.display = 'block';
           }
-
         });
 
-        updateBanner.addEventListener('click', function() {
+        navigator.serviceWorker.addEventListener('controllerchange', function() {
           window.location.reload();
         });
 
-
+        updateBanner.addEventListener('click', function() {
+          if (swReg && swReg.waiting) {
+            swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
       }
     </script>
   </body>

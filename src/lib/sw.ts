@@ -1,17 +1,24 @@
-const CACHE_NAME = 'racic-ch-d6057eff';
+// Service Worker — lazy caching with content comparison and version tracking
+
+declare const self: any;
+declare const caches: any;
+
 const CACHE_VERSION_KEY = 'racic-ch-cache-version';
 
-function getVersion() {
+// Default cache name — stamp-sw.js replaces this with a content-hashed version
+export const CACHE_NAME = 'racic-ch-v1';
+
+export function getVersion(): string {
   try { return localStorage.getItem(CACHE_VERSION_KEY) || '0'; }
   catch { return '0'; }
 }
 
-function setVersion(v) {
+export function setVersion(v: string): void {
   try { localStorage.setItem(CACHE_VERSION_KEY, v); }
   catch {}
 }
 
-function notifyClients(type, data) {
+export function notifyClients(type: string, data?: Record<string, unknown>): void {
   self.clients.matchAll().then(function(clients) {
     clients.forEach(function(client) {
       client.postMessage(Object.assign({ type: type }, data || {}));
@@ -32,6 +39,12 @@ self.addEventListener('activate', function(event) {
       );
     }).then(function() { return self.clients.claim(); })
   );
+});
+
+self.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('fetch', function(event) {

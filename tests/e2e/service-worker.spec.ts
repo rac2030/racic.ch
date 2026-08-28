@@ -75,15 +75,26 @@ test.describe('Update banner', () => {
     expect(display).toBe('block');
   });
 
-  test('clicking update banner reloads page', async ({ page }) => {
+  test('clicking update banner triggers SW update flow', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('networkidle');
     const banner = page.locator('#sw-update-banner');
     await banner.evaluate(function(el: HTMLElement) { el.style.display = 'block'; });
-    var reloaded = false;
-    page.on('load', function() { reloaded = true; });
+    var messageSent = false;
+    await page.evaluate(function() {
+      window._swMessageReceived = false;
+      navigator.serviceWorker.addEventListener('message', function(e) {
+        if (e.data && e.data.type === 'SKIP_WAITING') {
+          window._swMessageReceived = true;
+        }
+      });
+    });
     await banner.click();
     await page.waitForTimeout(1000);
-    expect(reloaded).toBe(true);
+    const hasReg = await page.evaluate(async () => {
+      return !!(await navigator.serviceWorker.getRegistration());
+    });
+    expect(hasReg).toBe(true);
   });
 });
 

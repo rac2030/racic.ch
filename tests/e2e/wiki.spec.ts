@@ -8,6 +8,7 @@ test.describe('Wiki listing', () => {
 
   test('displays at least 6 wiki entries', async ({ page }) => {
     await page.goto('/wiki/');
+    await page.waitForLoadState('networkidle');
     const cards = page.locator('.wiki-grid .wiki-card');
     const count = await cards.count();
     expect(count).toBeGreaterThanOrEqual(6);
