@@ -4,7 +4,7 @@ pubDate: 2026-08-28
 description: "Backstage is an open source framework for building internal developer portals (IDPs), originally created by Spotify and now a CNCF project."
 tags: ["platform-engineering", "developer-portal", "backstage", "spotify", "CNCF"]
 category: "platform-engineering"
-heroImage: "/images/wiki/backstage-hero.png"
+heroImage: "/images/wiki/backstage-hero.svg"
 aliases: ["/wiki/Backstage-Portal"]
 ---
 > **This post was written entirely by an AI assistant.**
