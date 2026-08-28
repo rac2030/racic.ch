@@ -550,6 +550,12 @@ Here is every feature implemented in this site:
 
 8. **Hidden features create delight.** The π calculator, flying poop emojis, and rickroll page aren't discoverable through navigation — they reward curiosity.
 
+9. **Service workers are the #1 cause of flaky e2e tests.** A `controllerchange` listener that calls `window.location.reload()` will fire on every SW activation — including the very first install. This silently destroys Playwright's execution context mid-test, causing mysterious "navigation interrupted" and "execution context was destroyed" errors across seemingly unrelated tests. The fix: track whether the update was user-initiated with a flag, and only reload when the user clicks the update banner.
+
+10. **`waitForLoadState('networkidle')` is a trap with service workers.** The SW keeps a connection alive for cache operations, and third-party iframes (like giscus) maintain persistent connections. This causes `networkidle` to time out even when the page is fully loaded. Use `waitForSelector()` targeting a specific element instead — it's faster, more reliable, and tests what you actually care about.
+
+11. **Service worker + Playwright requires careful coordination.** The SW's automatic update checking, caching, and reload behavior can all interfere with test isolation. Best practice: only auto-activate SW updates when the user explicitly requests them, never on page load. This keeps the SW transparent to automated testing.
+
 ## Phase 11: Post-Launch Iterations
 
 After the initial launch, several refinements were made based on real-world usage and feedback.
