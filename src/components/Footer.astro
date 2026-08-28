@@ -5,6 +5,169 @@ import { SITE } from '../consts';
 <footer class="site-footer">
   <div class="container">
     <p class="footer-copy">&copy; {new Date().getFullYear()} {SITE.author}. Built with Astro. Design: <a href="https://html5up.net/aerial" style="border-bottom: none; color: var(--text-muted);">Aerial</a> by <a href="https://html5up.net" style="border-bottom: none; color: var(--text-muted);">HTML5 UP</a>
+    · <a href="https://github.com/rac2030/racic.ch" class="source-link" id="source-link" target="_blank" rel="noopener noreferrer">May the source be with you</a>
     </p>
   </div>
+  <div class="yoda-hologram" id="yoda-hologram">
+    <div class="yoda-speech">
+      <p>Explore the source, you must!</p>
+      <p>The source, the power it is — open, it needs to be!</p>
+    </div>
+    <div class="yoda-figure">
+      <svg viewBox="0 0 120 160" width="80" height="107" xmlns="http://www.w3.org/2000/svg">
+        <!-- Yoda body -->
+        <ellipse cx="60" cy="130" rx="30" ry="25" fill="rgba(80, 140, 80, 0.6)" />
+        <!-- Robe -->
+        <path d="M30 115 Q60 100 90 115 L85 155 Q60 160 35 155 Z" fill="rgba(60, 100, 60, 0.5)" />
+        <!-- Head -->
+        <ellipse cx="60" cy="85" rx="22" ry="20" fill="rgba(100, 160, 80, 0.6)" />
+        <!-- Ears -->
+        <ellipse cx="30" cy="78" rx="18" ry="7" fill="rgba(90, 150, 75, 0.5)" transform="rotate(-20 30 78)" />
+        <ellipse cx="90" cy="78" rx="18" ry="7" fill="rgba(90, 150, 75, 0.5)" transform="rotate(20 90 78)" />
+        <!-- Eyes -->
+        <circle cx="52" cy="82" r="4" fill="rgba(200, 220, 180, 0.7)" />
+        <circle cx="68" cy="82" r="4" fill="rgba(200, 220, 180, 0.7)" />
+        <circle cx="53" cy="81" r="1.5" fill="rgba(30, 30, 10, 0.8)" />
+        <circle cx="69" cy="81" r="1.5" fill="rgba(30, 30, 10, 0.8)" />
+        <!-- Mouth -->
+        <path d="M52 92 Q60 96 68 92" stroke="rgba(60, 100, 50, 0.6)" fill="none" stroke-width="1.5" />
+        <!-- Wrinkles -->
+        <path d="M45 76 Q60 72 75 76" stroke="rgba(70, 120, 60, 0.4)" fill="none" stroke-width="1" />
+        <path d="M46 88 Q60 92 74 88" stroke="rgba(70, 120, 60, 0.4)" fill="none" stroke-width="1" />
+        <!-- Staff -->
+        <line x1="95" y1="60" x2="95" y2="155" stroke="rgba(140, 110, 60, 0.5)" stroke-width="3" stroke-linecap="round" />
+        <circle cx="95" cy="58" r="5" fill="rgba(160, 200, 255, 0.4)" />
+      </svg>
+    </div>
+  </div>
 </footer>
+
+<style>
+  .footer-source {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .source-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: none;
+    transition: color 0.3s, text-shadow 0.3s;
+    cursor: pointer;
+  }
+
+  .source-link:hover {
+    color: #ffe81f;
+    text-shadow: 0 0 8px rgba(255, 232, 31, 0.6), 0 0 20px rgba(255, 232, 31, 0.3);
+  }
+
+  .yoda-hologram {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 200;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease, transform 0.4s ease;
+    transform: translateY(20px) scale(0.9);
+    pointer-events: none;
+  }
+
+  .yoda-hologram.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .yoda-speech {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 0 20px var(--panel-glow);
+    position: relative;
+    max-width: 220px;
+    animation: yodaPulse 2s ease-in-out infinite;
+  }
+
+  .yoda-speech::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid var(--panel-border);
+  }
+
+  .yoda-speech p {
+    margin: 0;
+    padding: 0;
+    font-size: 0.75rem;
+    color: var(--accent);
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .yoda-speech p + p {
+    margin-top: 0.3rem;
+    font-style: italic;
+    opacity: 0.8;
+  }
+
+  .yoda-figure {
+    display: flex;
+    justify-content: center;
+    filter: drop-shadow(0 0 10px rgba(100, 200, 100, 0.3));
+    animation: yodaFloat 3s ease-in-out infinite;
+  }
+
+  .yoda-figure :global(svg) {
+    opacity: 0.85;
+  }
+
+  @keyframes yodaFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  @keyframes yodaPulse {
+    0%, 100% { box-shadow: 0 0 20px var(--panel-glow); }
+    50% { box-shadow: 0 0 30px rgba(52, 140, 178, 0.2), 0 0 50px rgba(52, 140, 178, 0.1); }
+  }
+</style>
+
+<script is:inline>
+(function() {
+  var link = document.getElementById('source-link');
+  var yoda = document.getElementById('yoda-hologram');
+  if (!link || !yoda) return;
+
+  var hideTimeout = null;
+
+  link.addEventListener('mouseenter', function() {
+    if (hideTimeout) clearTimeout(hideTimeout);
+    yoda.classList.add('visible');
+  });
+
+  link.addEventListener('mouseleave', function() {
+    hideTimeout = setTimeout(function() {
+      yoda.classList.remove('visible');
+    }, 300);
+  });
+
+  yoda.addEventListener('mouseenter', function() {
+    if (hideTimeout) clearTimeout(hideTimeout);
+  });
+
+  yoda.addEventListener('mouseleave', function() {
+    yoda.classList.remove('visible');
+  });
+})();
+</script>

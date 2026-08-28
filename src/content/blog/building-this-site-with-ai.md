@@ -303,6 +303,20 @@ On the About page, the official [Backstage.io logo](https://backstage.io/img/log
 
 This is a nod to the internal developer platform built on Backstage mentioned in the About page content.
 
+### Yoda Source Code Hologram
+
+In the footer, "May the source be with you" links to the site's GitHub repository. On mouse hover:
+- The text glows with a **Star Wars yellow** (`#ffe81f`) `text-shadow` effect
+- A **Yoda hologram** appears above the footer with a floating animation
+  - SVG Yoda figure with translucent green hologram style, ears, eyes, robe, and a staff with a glowing orb
+  - Hologram uses `drop-shadow` glow and `backdrop-filter: blur()` panel styling
+  - Yoda floats up and down with a 3s `yodaFloat` keyframe animation
+- A **speech bubble** in hologram panel style displays Yoda-speak:
+  - "Explore the source, you must!"
+  - "The source, the power it is — open, it needs to be!"
+  - The bubble has a pulsing glow border animation (`yodaPulse`)
+- Moving the mouse away hides Yoda with a 300ms delay
+
 ## Development Workflow
 
 ### Project Structure
@@ -511,6 +525,7 @@ Here is every feature implemented in this site:
 | Bookmarks | Separate collection with hero images, alphabetical tree layout |
 | 404 page | Flying 💩 emojis, URL-based search using SearchLib (exact + fuzzy), duck jump game with double jump and arrow key movement |
 | π easter egg | Nearly invisible symbol (bottom-right), hidden page with pi calculator |
+| Yoda hologram | "May the source be with you" footer link, Star Wars glow, Yoda speech bubble easter egg |
 | 💩 easter egg | Flying poop on 404 navigates to rickroll page |
 | Responsive design | Mobile menu, responsive breakpoints, background scaling |
 | RSS feed | Auto-generated from blog posts |
