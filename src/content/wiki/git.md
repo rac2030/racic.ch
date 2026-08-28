@@ -3,7 +3,7 @@ title: "GIT"
 pubDate: 2011-02-16T12:10:57+01:00
 description: "Some useful notes on GIT usage"
 author: "Michel Racic"
-tags: ["SCM","GIT"]
+tags: ["git","scm","version-control","submodule","reference"]
 category: "development"
 heroImage: "/images/logo/git.png"
 aliases: ["/post/dev/git","/wiki/Git"]

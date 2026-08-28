@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9b59b6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3498db;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#3498db;stop-opacity:0.18" />
+      <stop offset="100%" style="stop-color:#3498db;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="320" fill="url(#bg)"/>
+  <circle cx="950" cy="160" r="150" fill="url(#glow)"/>
+  <g transform="translate(320,160)" opacity="0.06" fill="none" stroke="url(#accent)"><path d="M-90,-50 L-20,-50 L0,-26 L60,-26 L60,52 L-90,52Z"/></g>
+  <g transform="translate(950,160)">
+    <path d="M-100,-58 L-22,-58 L0,-32 L70,-32 L70,60 L-100,60Z" fill="none" stroke="url(#accent)" stroke-width="5" stroke-linejoin="round"/>
+    <line x1="-82" y1="-16" x2="52" y2="-16" stroke="url(#accent)" stroke-width="4"/>
+    <rect x="18" y="14" width="58" height="58" rx="8" fill="none" stroke="url(#accent)" stroke-width="4"/>
+    <circle cx="47" cy="43" r="20" fill="none" stroke="url(#accent)" stroke-width="4"/>
+    <line x1="62" y1="58" x2="84" y2="80" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/></g>
+  <text x="840" y="148" text-anchor="end" font-family="'Source Sans Pro', sans-serif" font-size="42" font-weight="900" fill="white" letter-spacing="-1">Scanning a Filesystem</text>
+  <text x="840" y="188" text-anchor="end" font-family="'Source Sans Pro', sans-serif" font-size="15" fill="rgba(255,255,255,0.6)" letter-spacing="2.5">FILES WITH WEAK RESTRICTIONS</text>
+</svg>

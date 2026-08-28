@@ -2,9 +2,10 @@
 title: 'Using Google'
 pubDate: 2008-01-04T14:35:41Z
 description: "Reference of useful Google search operators and techniques for advanced web searching."
+heroImage: "/images/wiki/using-google-hero.svg"
 author: "Michel Racic"
 category: "howto"
-tags: ["google", "searching"]
+tags: ["google","searching","operators","reference"]
 aliases: ["/wiki/Using_Google"]
 ---
 

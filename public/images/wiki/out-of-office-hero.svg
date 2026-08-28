@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9b59b6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3498db;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#3498db;stop-opacity:0.18" />
+      <stop offset="100%" style="stop-color:#3498db;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="320" fill="url(#bg)"/>
+  <circle cx="950" cy="160" r="150" fill="url(#glow)"/>
+  <g transform="translate(320,160)" opacity="0.06" fill="none" stroke="url(#accent)"><rect x="-90" y="-46" width="180" height="92" rx="10"/><path d="M-90,-30 L0,6 L90,-30"/></g>
+  <g transform="translate(950,160)">
+    <rect x="-105" y="-52" width="210" height="104" rx="12" fill="none" stroke="url(#accent)" stroke-width="5"/>
+    <path d="M-105,-32 L0,8 L105,-32" fill="none" stroke="url(#accent)" stroke-width="5"/>
+    <path d="M-70,18 l-26,38 h20 l28,-28" fill="none" stroke="url(#accent)" stroke-width="3" opacity="0.6"/>
+    <path d="M70,18 l26,38 h-20 l-28,-28" fill="none" stroke="url(#accent)" stroke-width="3" opacity="0.6"/></g>
+  <text x="840" y="148" text-anchor="end" font-family="'Source Sans Pro', sans-serif" font-size="42" font-weight="900" fill="white" letter-spacing="-1">Out of Office Meldungen</text>
+  <text x="840" y="188" text-anchor="end" font-family="'Source Sans Pro', sans-serif" font-size="15" fill="rgba(255,255,255,0.6)" letter-spacing="2.5">FUNNY AUTO-REPLY MESSAGES</text>
+</svg>

@@ -1,11 +1,11 @@
 ---
 title: "Apache Ant"
 pubDate: 2008-01-05T16:21:28Z
-description: ''
+description: "Notes on how Apache Ant build files are structured – targets, properties and the build.xml layout."
 author: "Michel Racic"
-tags: ["java","programming","compile"]
+tags: ["java","ant","build","programming","compile"]
 category: "development"
-heroImage: ''
+heroImage: "/images/wiki/ant-hero.svg"
 aliases: ["/wiki/ANT"]
 ---
 

@@ -3,7 +3,7 @@ title: "Arduino"
 pubDate: 2017-02-21T01:30:24+01:00
 description: "Various arduino links by topics"
 author: "Michel Racic"
-tags: []
+tags: ["arduino","electronics","sensors","diy","links"]
 heroImage: "/images/logo/arduino.png"
 aliases: ["/links/arduino"]
 ---

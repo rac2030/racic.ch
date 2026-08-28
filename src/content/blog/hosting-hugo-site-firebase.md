@@ -4,7 +4,7 @@ pubDate: 2017-03-05T00:09:41+01:00
 description: "Howto host your Hugo site on firebase using gitlab for source and CI"
 author: "Michel Racic"
 category: "howto"
-tags: ["hugo", "firebase", "hosting"]
+tags: ["hugo","firebase","hosting","deployment","static-site"]
 heroImage: /images/firebase.png
 aliases: ["/post/hugo/firebase", "/hugo/firebase"]
 ---

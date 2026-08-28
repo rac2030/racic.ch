@@ -5,7 +5,7 @@ updatedDate: 2026-08-29
 description: "An AI-generated blog post documenting how this very page was built — the prompts, the thinking, the design choices, and the development workflow."
 author: "AI-generated"
 category: "generated"
-tags: ["ai", "astro", "opencode", "experiment"]
+tags: ["ai","astro","opencode","hugo","experiment"]
 heroImage: /images/projects/opencode-ai-hero.svg
 draft: false
 aliases:
@@ -635,12 +635,12 @@ After the first full content migration of the 26 rac.su articles, a detailed com
 
 - **"rename antenna-fundamentals.md back to ant.md"** — Restored the correct filename `src/content/wiki/ant.md` so the URL is `/wiki/ant/` (the content was always about the Apache Ant build tool, so the earlier "Antenna Fundamentals" naming was wrong). Updated the screenshot script and file map accordingly.
 
-- **Restoring the two lost bookmarks** — `3d-printing.md` and `friendly-robots.md` had staged (uncommitted) deletions; they were restored from `git HEAD` so all 10 bookmarks are present again. This also fixed the build: the restored files brought the page count back up and the report's file map now resolves all 26 entries.
+- **Restoring the two lost bookmarks** — `3d-printing.md` and `friendly-robots.md` had staged (uncommitted) deletions; they were restored from `git HEAD`, which fixed the build. (Retro-note: both the `friendly-robots` and the `3d-printing` article were later retired as no longer required, so those two bookmark pages were removed permanently — the site now has 8 bookmarks and the file map resolves 24 articles.)
 
 ### How the Fix Was Verified
 
 The migration report was regenerated from fresh builds and fresh screenshots:
-- **Screenshots:** All 26 articles were re-captured on the new site (port 4322 local server) at 1280×800, and the old rac.su pages were captured live. The report renders them side-by-side so the floating-image layouts, video embeds, and image placement can be compared pixel-for-pixel.
+- **Screenshots:** All 26 articles (24 after the `friendly-robots` and `3d-printing` removals) were re-captured on the new site (port 4322 local server) at 1280×800, and the old rac.su pages were captured live. The report renders them side-by-side so the floating-image layouts, video embeds, and image placement can be compared pixel-for-pixel.
 - **Markdown diff:** Each article shows an LCS-based line diff of old vs. new so remaining differences are visible. After the fixes, the diffs are dominated by intentional frontmatter differences (Astro schema vs. Hugo) and the shortcode→HTML conversions, not by missing content.
 - **Tests:** 151 Jest unit tests and 177 Playwright e2e tests pass after the content changes.
 
@@ -657,6 +657,40 @@ The migration report was regenerated from fresh builds and fresh screenshots:
 5. **Floating/figure CSS must be ported, not re-invented.** The new site's `.article-content img` rule centered every image by default, which fought the original floats. Reusing the original theme's figure classes (`.floatright30`, `.floatright`) with the exact margins preserved the intended look with minimal custom CSS.
 
 6. **Videos need real embeds, not links.** A "Videos" section with plain `[Video](...)` links is a clear signal the conversion dropped the embed shortcode. Responsive iframe wrappers (56.25% padding) keep the 16:9 aspect ratio across viewports — same technique as the site's hidden π page.
+
+## Phase 13: Content Polish — Tags, Wide Hero Images, and Bookmark Cleanup
+
+After the migration report was regenerated, a final content-polish pass was done to make the site's metadata and card layouts feel complete.
+
+### Tagging the Whole Site
+
+The prompt was: *"go through all pages and add tags that fit the content but limit it to a maximum of 5 most relevant tags."*
+
+- Every article now has a relevant `tags` array — no empty tag lists remain across the 24 articles.
+- The most relevant tags were chosen per article based on its actual body content (e.g. the mobifloc project got `["arduino", "hackathon", "lorawan", "iot", "sensor"]`, the badge got `["hackathon", "makezurich", "badge", "electronics", "wifi"]`).
+- Tag names were normalized to lowercase reference style (`git`, `scm`, `cncf`) for consistent `/tags/<name>` URLs.
+- Note: the page count grows when new tags are added because Astro generates a `/tags/<tag>/` listing page per tag (137 pages total after the final cleanup).
+
+### Wide Hero Images
+
+The original hero SVGs were 800×400 with a centered icon and the title stacked underneath. On the overview pages the hero is rendered as a cropped thumbnail (`object-fit: cover`, anchored right-center), so the centered layout shrank and got cut off awkwardly.
+
+- All hero images were regenerated as **1200×320 wide banners** with the icon and the title/subtitle arranged **on one horizontal line**, placed right-of-center so the composition survives the card thumbnail crop.
+- The Backstage hero was regenerated in the same wide style (hexagon-node motif on the right, title beside it).
+- Pitfall hit: a raw `&` in SVG text (`HINTS & TIPS…`, `WILDCARD VIRTUALHOSTS & DNS`) is invalid XML and silently breaks SVG rendering — every ampersand in SVG text must be written as `&amp;`.
+
+### Bookmark Cleanup
+
+Two bookmark articles were retired as no longer required:
+
+- `friendly-robots.md` — "Friendly links"
+- `3d-printing.md` — "3D Printing maybe things"
+
+Both markdown files, their hero SVGs, the file-map entries, and the screenshot-script references were removed. Both old URLs (and their alias pages) now correctly return 404. The site went from 10 → 8 bookmark articles.
+
+### Test Note
+
+One e2e test (`backstage icon expands on click`) flaked once under fully-parallel load (a 100 ms timing assertion while the site serves ~140 pages). It passes consistently in isolation and on re-runs — a pre-existing timing flake, not a regression from these changes.
 
 ## Manual Changes Required
 

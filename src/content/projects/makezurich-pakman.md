@@ -4,7 +4,7 @@ pubDate: 2018-07-02
 description: "LoRaWAN-connected delivery box that monitors temperature, humidity, and VOCs, alerting recipients of contamination during medical transport."
 author: "Michel Racic"
 category: "hackathon"
-tags: ["arduino", "hackathon", "lorawan"]
+tags: ["arduino","makezurich","hackathon","lorawan","iot","sensor"]
 heroImage: /images/projects/MakeZurich-logo.png
 aliases: ["/project/MakeZurich-PakMan"]
 ---

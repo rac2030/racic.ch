@@ -2,9 +2,10 @@
 title: 'Apache Force SSL on vhost'
 pubDate: 2007-12-31T11:44:11Z
 description: "Howto force all HTTP requests to HTTPS using Apache .htaccess rewrite rules."
+heroImage: "/images/wiki/apache-force-ssl-hero.svg"
 author: "Michel Racic"
 category: "howto"
-tags: ["security", "apache", "ssl"]
+tags: ["apache","ssl","security","https","redirect"]
 aliases: ["/wiki/Apache_Force_SSL_on_vhost"]
 ---
 

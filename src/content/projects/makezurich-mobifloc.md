@@ -4,7 +4,7 @@ pubDate: 2017-02-04
 description: "A cheap and portable bike commuter flow counter node to enhance the existing sensor network."
 author: "Michel Racic"
 category: "hackathon"
-tags: ["arduino", "hackathon", "lorawan"]
+tags: ["arduino","makezurich","hackathon","lorawan","iot","sensor"]
 heroImage: /images/projects/MakeZurich-logo.png
 aliases: ["/project/MakeZurich-MoBiFloC"]
 ---

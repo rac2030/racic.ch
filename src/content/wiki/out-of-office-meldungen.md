@@ -1,9 +1,10 @@
 ---
 title: 'Out of Office Meldungen'
 description: 'Ein paar lustige OOO Meldungen.'
+heroImage: "/images/wiki/out-of-office-hero.svg"
 pubDate: 2007-12-28T00:23:10Z
 author: "Michel Racic"
-tags: ["fun"]
+tags: ["fun","humor","email","auto-reply"]
 category: "fun"
 aliases: ["/fun/out-of-office-meldungen/"]
 ---

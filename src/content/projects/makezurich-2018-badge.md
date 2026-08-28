@@ -4,7 +4,7 @@ pubDate: 2018-05-27
 description: "IoT conference badge with e-Paper display, Sensirion sensors, and WiFi connectivity, designed and built for the MakeZurich vol. II hackathon."
 author: "Michel Racic"
 category: "hackathon"
-tags: []
+tags: ["hackathon","makezurich","badge","electronics","wifi"]
 heroImage: /images/projects/messydesk.jpg
 aliases: ["/mz18/", "/project/MakeZurich-18-badge"]
 ---

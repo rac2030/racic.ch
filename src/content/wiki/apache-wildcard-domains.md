@@ -2,9 +2,10 @@
 title: 'Apache Wildcard Domains'
 pubDate: 2007-12-31T11:27:23Z
 description: "Apache VirtualHost configuration for wildcard domain routing with dynamic document roots."
+heroImage: "/images/wiki/apache-wildcard-hero.svg"
 author: "Michel Racic"
 category: "howto"
-tags: ["apache"]
+tags: ["apache","wildcard","virtualhost","dns","domain"]
 aliases: ["/wiki/Apache_Wildcard_Domains"]
 ---
 

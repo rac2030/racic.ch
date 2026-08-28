@@ -4,7 +4,7 @@ pubDate: 2017-02-21T18:14:01+01:00
 description: "Display GIT metadata in Hugo"
 author: "Michel Racic"
 category: "howto"
-tags: ["hugo", "git"]
+tags: ["hugo","git","ci","templates"]
 heroImage: /images/git.png
 aliases: ["/post/hugo/gitinfo", "/hugo/gitinfo"]
 ---

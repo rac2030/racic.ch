@@ -4,7 +4,7 @@ pubDate: 2017-02-04
 description: "Arduino library for interfacing with the Sensirion SDP3x differential pressure sensor over I2C."
 author: "Michel Racic"
 category: "library"
-tags: ["arduino", "sensor"]
+tags: ["arduino","makezurich","sensor","library","i2c","pressure"]
 heroImage: '/images/projects/sdp3x-hero.svg'
 repo: 'https://github.com/rac2030/Arduino-Sensirion-SDP3x-driver'
 aliases: ["/libs/sensirion-sdp3x-driver"]
