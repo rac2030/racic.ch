@@ -6,6 +6,9 @@ author: "Michel Racic"
 category: "electronics"
 tags: []
 heroImage: /images/projects/nina-w102-breakout.png
+aliases:
+  - /ninab/
+  - /project/nina-w102-minimal-breakout
 ---
 
 While working on the [badge design for MakeZurich 2018](/projects/makezurich-2018-badge), I had the need to first make a breakout for the NINA-W102 we got from [u-blox](https://www.u-blox.com) to see what is possible, do some tryouts with different components like the display and start developing drivers and firmware.
@@ -24,13 +27,13 @@ This is the outcome of it and as we did go on with the badge design, we switched
 
 ## Pinout
 
-[![Pinout diagram](/images/projects/nina-w102-pinout.png)](https://github.com/rac2030/breakout-boards/raw/master/ublox_NINA-W102/pinout/pinout-diagram.pdf)
+[![Pinout diagram](/images/projects/nina-w102/pinout-diagram.png)](https://github.com/rac2030/breakout-boards/raw/master/ublox_NINA-W102/pinout/pinout-diagram.pdf)
 
 Made by [gnz.io](http://gnz.io).
 
 ## Schematics
 
-[![Schematic](/images/projects/nina-w102-schematic.png)](https://github.com/rac2030/breakout-boards/raw/master/ublox_NINA-W102/NINA-W102_minimal_breakout-rev.0.5.pdf)
+[![Schematic](/images/projects/nina-w102/NINA-W102_minimal_breakout_schematic_rev.0.5.png)](https://github.com/rac2030/breakout-boards/raw/master/ublox_NINA-W102/NINA-W102_minimal_breakout-rev.0.5.pdf)
 
 ## BOM
 

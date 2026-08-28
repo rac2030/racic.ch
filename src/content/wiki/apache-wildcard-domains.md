@@ -5,6 +5,7 @@ description: "Apache VirtualHost configuration for wildcard domain routing with 
 author: "Michel Racic"
 category: "howto"
 tags: ["apache"]
+aliases: ["/wiki/Apache_Wildcard_Domains"]
 ---
 
 Notizen zum Konfigurieren von Wildcard Domains in Apache.

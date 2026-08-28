@@ -5,7 +5,7 @@ description: "Using STM32 microcontroller"
 author: "Michel Racic"
 tags: []
 heroImage: "/images/logo/STM32.png"
-aliases: []
+aliases: ["/links/STM32"]
 ---
 
 ## IDE

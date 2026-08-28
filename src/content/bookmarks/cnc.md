@@ -5,7 +5,7 @@ description: "Various links for building a CNC machine"
 author: "Michel Racic"
 tags: []
 heroImage: ''
-aliases: []
+aliases: ["/links/CNC"]
 ---
 
 * [How to make mini CNC 2D plotter using scrap DVD drive, l293d motor shield & Arduino](http://www.instructables.com/id/How-to-Make-Mini-CNC-2D-Plotter-Using-Scrap-DVD-Dr/?ALLSTEPS)

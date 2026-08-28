@@ -6,6 +6,7 @@ author: "Michel Racic"
 category: "howto"
 tags: ["hugo", "firebase", "hosting"]
 heroImage: /images/firebase.png
+aliases: ["/post/hugo/firebase", "/hugo/firebase"]
 ---
 
 This are all the steps needed to deploy your static Hugo page on Firebase for free (until you exceed the traffic of the free tier a.k.a Spark plan).

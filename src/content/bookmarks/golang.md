@@ -5,7 +5,7 @@ description: "Various links and libraries about Golang"
 author: "Michel Racic"
 tags: ["development"]
 heroImage: "/images/logo/golang.png"
-aliases: []
+aliases: ["/links/GO"]
 ---
 
 ## Libraries

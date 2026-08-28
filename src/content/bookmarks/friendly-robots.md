@@ -5,7 +5,7 @@ description: "Collection of links to sites of friends and projects I made / was 
 author: "Michel Racic"
 tags: ["friends"]
 heroImage: ''
-aliases: []
+aliases: ["/links/friendly"]
 ---
 
 ## Schools

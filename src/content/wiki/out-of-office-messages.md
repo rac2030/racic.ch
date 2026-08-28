@@ -1,9 +1,11 @@
 ---
 title: 'Out of Office Messages'
 description: 'Ein paar lustige OOO Meldungen.'
+pubDate: 2007-12-28
 author: "Michel Racic"
 tags: ["fun"]
 category: "fun"
+aliases: ["/fun/out-of-office-meldungen/"]
 ---
 
 Ein paar lustige Out of Office Meldungen.

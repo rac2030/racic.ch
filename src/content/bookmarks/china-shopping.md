@@ -5,7 +5,7 @@ description: "Links, hints and tips about shopping from china (mainly electronic
 author: "Michel Racic"
 tags: []
 heroImage: ''
-aliases: []
+aliases: ["/links/chinashopping"]
 ---
 
 ## Aliexpress

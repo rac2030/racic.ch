@@ -6,11 +6,14 @@ author: "Michel Racic"
 category: "hackathon"
 tags: ["arduino", "hackathon", "lorawan"]
 heroImage: /images/projects/MakeZurich-logo.png
+aliases: ["/project/MakeZurich-PakMan"]
 ---
 
 Project entry for the [MakeZurich](https://makezurich.ch) 2018 Hackathon. A delivery box which monitors the environment of its content and send an alarm via LoRaWAN in case a threshold breach gets detected.
 
 ## Challenge
+
+![Challenge slide](/images/projects/makezurich-pakman/challenge-4.png)
 
 Due to the fact that the challenge owner was absent all the time, we came up with our own use case.
 
@@ -44,13 +47,21 @@ Additionally:
 
 The team was formed ad-hoc at MakeZurich and consisted of [Manuel Di Cerbo](http://www.nexus-computing.ch), [Tony Kümin](http://kumin.ch) and [Michel Racic](http://racic.ch).
 
+## The Hack
+
+![Final box](/images/projects/makezurich-pakman/the-hack.jpeg)
+
 ## Hacking the Miromico SOS Button
 
 This was my main goal and I had most fun fiddling around with it to see what's possible. Through the programmer interface, I tried to exploit the AT commands to inject a payload.
 
+![SOS Button PCB](/images/projects/makezurich-pakman/sosbutton-overview-labeled.png)
+
 We found that we could use the button itself — pin one side to ground and the other to a GPIO set to high. By using a custom delay as parameter, we could generate different payloads as event types using different delays. We saw 3 different payloads (0, 2 and 4).
 
-![Hivemind platform showing LoRa packets received](/images/hivemind-data.png)
+![Hivemind platform showing LoRa packets received](/images/projects/makezurich-pakman/hivemind-data.png)
+
+![SOS Button back](/images/projects/makezurich-pakman/sosbutton-back.jpg)
 
 ## Source Code
 

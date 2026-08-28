@@ -6,9 +6,12 @@ author: "Michel Racic"
 category: "howto"
 tags: ["hugo", "git"]
 heroImage: /images/git.png
+aliases: ["/post/hugo/gitinfo", "/hugo/gitinfo"]
 ---
 
 In order to display the last updated timestamp of a page, I had to set [EnableGitInfo](https://gohugo.io/extras/gitinfo/) to `true` in the `config.toml` but this caused CI on wercker to fail as soon as I did a `git push`.
+
+![Wercker build failing after git push](/images/hugo/gitinfo/01-wercker-fail.png)
 
 After some analysis, I found the root cause was with Unicode filenames which I used for some easter eggs failing when `gitinfo.go` tries to fetch info for every file it encountered. I filed this on [hugo-3071](https://github.com/spf13/hugo/issues/3071). While git itself had no troubles working with this, it did add it to the repository as `content/\360\237\222\251.md` and this then caused the failing on getting the meta data in `gitinfo.go`.
 

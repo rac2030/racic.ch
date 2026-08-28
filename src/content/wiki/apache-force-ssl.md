@@ -5,6 +5,7 @@ description: "Howto force all HTTP requests to HTTPS using Apache .htaccess rewr
 author: "Michel Racic"
 category: "howto"
 tags: ["security", "apache", "ssl"]
+aliases: ["/wiki/Apache_Force_SSL_on_vhost"]
 ---
 
 Force all HTTP requests to HTTPS using .htaccess:

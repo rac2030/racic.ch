@@ -5,6 +5,7 @@ description: "Reference of useful Google search operators and techniques for adv
 author: "Michel Racic"
 category: "howto"
 tags: ["google", "searching"]
+aliases: ["/wiki/Using_Google"]
 ---
 
 Google Hacking reference, something I always wanted to write down for myself.

@@ -5,7 +5,7 @@ description: "Stuff I consider to maybe print someday"
 author: "Michel Racic"
 tags: []
 heroImage: ''
-aliases: []
+aliases: ["/links/3D-printing-maybe-things"]
 ---
 
 ## Brio

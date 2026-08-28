@@ -7,7 +7,7 @@ category: "library"
 tags: ["arduino", "sensor"]
 heroImage: '/images/projects/sdp3x-hero.svg'
 repo: 'https://github.com/rac2030/Arduino-Sensirion-SDP3x-driver'
-aliases: []
+aliases: ["/libs/sensirion-sdp3x-driver"]
 ---
 
 This Arduino library can be used to interface the [SDP3x](https://www.sensirion.com/products/differential-pressure-sensors/worlds-smallest-differential-pressure-sensor/) differential pressure sensor from [Sensirion](https://www.sensirion.com) over I2C to get the pressure difference and the temperature reading it exposes.

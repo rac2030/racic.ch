@@ -5,7 +5,7 @@ description: "Stuff around processing videos from my el cheapo fish-eye action-c
 author: "Michel Racic"
 tags: []
 heroImage: ''
-aliases: []
+aliases: ["/links/360video"]
 ---
 
 * [Transform360 Library](https://github.com/facebook/transform360) - Transform from equirectangular to cubemap projection

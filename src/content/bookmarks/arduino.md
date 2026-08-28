@@ -5,7 +5,7 @@ description: "Various arduino links by topics"
 author: "Michel Racic"
 tags: []
 heroImage: "/images/logo/arduino.png"
-aliases: []
+aliases: ["/links/arduino"]
 ---
 
 ## Inventory tracking

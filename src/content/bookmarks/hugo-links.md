@@ -5,7 +5,7 @@ description: "Links to usefull stuff for working with Hugo"
 author: "Michel Racic"
 tags: []
 heroImage: "/images/logo/hugo.png"
-aliases: []
+aliases: ["/links/hugo"]
 ---
 
 Some links I collected with information about how to use Hugo. Articles about [hugo](https://gohugo.io) on this site can be found under the [hugo tag](/tags/hugo).

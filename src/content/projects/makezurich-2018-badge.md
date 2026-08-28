@@ -6,6 +6,7 @@ author: "Michel Racic"
 category: "hackathon"
 tags: []
 heroImage: /images/projects/messydesk.jpg
+aliases: ["/mz18/", "/project/MakeZurich-18-badge"]
 ---
 
 You received your [MakeZurich vol. II](https://makezurich.ch) participants badge and want to know more about it?
@@ -18,13 +19,19 @@ As a badge should do what a badge needs to do, it will display your name in the 
 
 ### Name View
 
+![Name view](/images/projects/makezurich-18-badge/nameView.jpg)
+
 This is the standard view which gets loaded once your name has been registered and it did connect to the Kraftwerk wifi to fetch the details from the server.
 
 ### QR Initialisation View
 
+![QR view](/images/projects/makezurich-18-badge/qrView.jpg)
+
 When the badge is not yet registered, this view will be shown until it fetches a name from the server. Press SW1 (button on the lower left) to get to this view again. Whenever you go to that view, it will startup wifi, connect to Kraftwerk and fetch the name from the server and update it.
 
 ### Sensor View
+
+![Sensor view](/images/projects/makezurich-18-badge/sensorView.jpg)
 
 The sensor module has an SHTC3 Temperature and Humidity sensor as well as an SGPC3 Gas sensor sponsored from [Sensirion](https://www.sensirion.com) on board. This view displays the current data and refreshes itself every 5 seconds.
 
@@ -55,6 +62,12 @@ I adapted the Arduino library from Sensirion's GitHub for the sensor module — 
 ### I2C Devices
 
 You have 2 I2C buses on the NINA. See [i2c_scanner.ino](https://github.com/rac2030/IoT-conference-badge/blob/firmware/firmware/examples/i2c_scanner/i2c_scanner.ino) for an example.
+
+## PCB Layout
+
+Here is a rendering of the backside:
+
+![Badge back render](/images/projects/makezurich-18-badge/badgebackrender.png)
 
 ## Sources
 

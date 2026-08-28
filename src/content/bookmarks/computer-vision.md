@@ -5,7 +5,7 @@ description: "Various links"
 author: "Michel Racic"
 tags: []
 heroImage: ''
-aliases: []
+aliases: ["/links/computervision"]
 ---
 
 ## Java libraries
