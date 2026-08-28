@@ -1,6 +1,7 @@
 ---
 title: "Building This Site with AI: A Behind-the-Scenes Account"
 pubDate: 2026-08-23
+updatedDate: 2026-08-29
 description: "An AI-generated blog post documenting how this very page was built — the prompts, the thinking, the design choices, and the development workflow."
 author: "AI-generated"
 category: "generated"
@@ -607,6 +608,55 @@ The key implementation challenge was Vite's JSON import handling during Astro's 
 The modal worked on every page except this very blog post. The trigger text "(updated DATE)" appeared, but clicking it did nothing. The root cause was an HTML `id` collision: the blog post content contains a `## Git History Modal` heading, which Astro renders as `<h3 id="git-history-modal">Git History Modal</h3>`. The modal component also used `id="git-history-modal"` on its `<div>`. Since `document.getElementById()` returns the first matching element in DOM order, the script grabbed the heading instead of the modal div — so the click handler was attached to the wrong element, and `modal.style.display = 'flex'` set display on a heading that was already visible.
 
 The fix was to prefix the component IDs (`gh-modal`, `gh-modal-close`, `gh-modal-backdrop`) to avoid collisions with any content-generated IDs. This is a general risk when components use `id` attributes that could match headings or anchors in user-authored content — scoped CSS classes or `data-*` selectors are safer for interactive components.
+
+## Phase 12: Content Migration Fixes
+
+After the first full content migration of the 26 rac.su articles, a detailed comparison (side-by-side screenshots of old vs. new site plus markdown diffs, generated into a migration report) revealed that the *bodies* and *image layout* of several articles did not match the originals. The first automated conversion had copied most text but dropped images, mangled paths, and flattened the original float-based layouts. This phase documents what went wrong and the fix prompts/manual fixes that resolved each issue.
+
+### What Went Wrong in the First Conversion
+
+1. **Hugo shortcodes were lost.** The original rac.su articles relied heavily on Hugo shortcodes like `{{< figure src="..." >}}`, `{{< figure class="floatright30" src="..." >}}`, and `{{< youtube id="..." >}}`. The first conversion replaced these with plain markdown images (`![](...)`) or dropped them entirely. This destroyed the original layouts — floating images became centered blocks, captioned videos became plain text links.
+
+2. **Image paths were broken.** Hugo used /relative content URLs such as `/project/makezurich-18-badge/nameView.jpg`. The conversion rewrote many of these to the wrong location or left the old path intact, producing 404s for the badge's inline photos, the pakman SOS-button images, and the NINA pinout diagram.
+
+3. **Missing images were silently skipped.** A handful of images (e.g. the pakman `hivemind-data.png`, the mobifloc and badge photos) existed in the old repo but were never copied into `public/images/`, so the links 404'd or the image tags were simply removed from the markdown.
+
+4. **Body content was not restored.** Early in the session the migration report flagged that 4 articles had all their inline body photos removed. The frontmatter was migrated but the body had been truncated.
+
+5. **A file got lost in a rename.** During the work the wiki "ANT" article and two bookmarks (`3d-printing`, `friendly-robots`) ended up in an inconsistent state — the ant file was renamed prematurely and two bookmark files had a staged deletion that was never intentional.
+
+### The Fix Prompts and Manual Fixes
+
+- **"restore the original body content"** — Re-ran a content normalizer (`/tmp/fix-content.cjs`) that replaced all 26 new `.md` file bodies with the *exact* original text from the old repo, then re-applied the Hugo shortcode conversions and fixed internal links. Only frontmatter was preserved from the new files.
+
+- **"fix image styling so the floating images and positioning look like the original"** (mobifloc, pakman, badge) — Re-added the original float CSS classes (`.floatright30`, `.floatright`) to `global.css` (ported from the mainroad theme's `style.css`) and wrapped the specific images in HTML `<figure class="floatright30">` / `<figure class="floatright">` elements exactly where the original used those shortcodes. This restored right-float at 30% width for the SHT31/brainstorming/participant-badge/qrView/sensorView/sosbutton images and the plain right-float for the day2 prototype photo.
+
+- **"the youtube videos should be embedded"** — Replaced the plain `[Video](...)` links in the mobifloc "Videos" section with responsive 16:9 YouTube iframes (`<iframe src="https://www.youtube.com/embed/...">` inside a 56.25% padding wrapper), matching the original `{{< youtube >}}` shortcodes (the three videos: first outdoor trials, the LoRaWAN web GUI in action, and the presentation).
+
+- **"rename antenna-fundamentals.md back to ant.md"** — Restored the correct filename `src/content/wiki/ant.md` so the URL is `/wiki/ant/` (the content was always about the Apache Ant build tool, so the earlier "Antenna Fundamentals" naming was wrong). Updated the screenshot script and file map accordingly.
+
+- **Restoring the two lost bookmarks** — `3d-printing.md` and `friendly-robots.md` had staged (uncommitted) deletions; they were restored from `git HEAD` so all 10 bookmarks are present again. This also fixed the build: the restored files brought the page count back up and the report's file map now resolves all 26 entries.
+
+### How the Fix Was Verified
+
+The migration report was regenerated from fresh builds and fresh screenshots:
+- **Screenshots:** All 26 articles were re-captured on the new site (port 4322 local server) at 1280×800, and the old rac.su pages were captured live. The report renders them side-by-side so the floating-image layouts, video embeds, and image placement can be compared pixel-for-pixel.
+- **Markdown diff:** Each article shows an LCS-based line diff of old vs. new so remaining differences are visible. After the fixes, the diffs are dominated by intentional frontmatter differences (Astro schema vs. Hugo) and the shortcode→HTML conversions, not by missing content.
+- **Tests:** 151 Jest unit tests and 177 Playwright e2e tests pass after the content changes.
+
+### Lessons Learned
+
+1. **Treat shortcodes as part of the content, not markup to discard.** Hugo `{{< figure >}}` and `{{< youtube >}}` carry layout and media semantics. A blind text extraction that strips them will silently flatten the whole visual design. Shortcodes should be mapped 1:1 to their HTML/component equivalent during migration.
+
+2. **Reconcile the target file map against disk before generating reports.** The file map and migration plan drifted from reality (renamed ant file, renamed out-of-office file, two deleted bookmarks). Running a path-existence check over the whole file map surfaced all four broken entries before the report was regenerated.
+
+3. **Git "staged deletion" is a silent content killer.** Two bookmark files existed in `HEAD` but were deleted in the working tree/index without any commit. The site built fine without them (they just weren't linked strongly), so the loss went unnoticed until the migration report compared file counts. Always reconcile the file map against both the working tree *and* git.
+
+4. **Restore original bodies exactly, then re-apply the conversion deterministically.** Rather than hand-fixing each article, re-derive the body from the source of truth (the old repo) and apply a deterministic shortcode→HTML transform. This guarantees the text matches and makes differences reviewable in a diff.
+
+5. **Floating/figure CSS must be ported, not re-invented.** The new site's `.article-content img` rule centered every image by default, which fought the original floats. Reusing the original theme's figure classes (`.floatright30`, `.floatright`) with the exact margins preserved the intended look with minimal custom CSS.
+
+6. **Videos need real embeds, not links.** A "Videos" section with plain `[Video](...)` links is a clear signal the conversion dropped the embed shortcode. Responsive iframe wrappers (56.25% padding) keep the 16:9 aspect ratio across viewports — same technique as the site's hidden π page.
 
 ## Manual Changes Required
 

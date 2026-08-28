@@ -8,5 +8,5 @@ heroImage: "/images/logo/golang.png"
 aliases: ["/links/GO"]
 ---
 
-## Libraries
+# Libraries
 * [CLI with COBRA](https://github.com/spf13/cobra)

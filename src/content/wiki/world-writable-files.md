@@ -13,6 +13,6 @@ Howto find world writable files that could be attacked on your server?
 
 <!--more-->
 
-```bash
+```sh
 find / -perm -2 ! -type l -ls
 ```

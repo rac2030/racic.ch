@@ -1,6 +1,6 @@
 ---
 title: 'Using Google'
-pubDate: 2008-01-04
+pubDate: 2008-01-04T14:35:41Z
 description: "Reference of useful Google search operators and techniques for advanced web searching."
 author: "Michel Racic"
 category: "howto"
@@ -8,55 +8,86 @@ tags: ["google", "searching"]
 aliases: ["/wiki/Using_Google"]
 ---
 
-Google Hacking reference, something I always wanted to write down for myself.
+no comments...
 
-**Note:** This is a collection of useful Google search operators and techniques. Some of these may not work anymore as Google updates their search algorithms.
+<!--more-->
 
-## Basic Operators
+# search tools of google
+* site - searching only on pages of this domain / subdoamins of this domain
+* cache - searching in cache
+* intitle - searches in title
+* filetype - searching of a concrete file type
+* inurl - searching of a term included in url
+* allintext - searches text on a concrete page
 
-- `OR` - Boolean OR
-- `" "` - Exact match
-- `+` - Force inclusion of common words
-- `-` - Exclude a term
-- `*` - Wildcard
+# Netzwerk Kameras
+* inurl:"viewerframe?mode=motion" (requires activeX)
 
-## File Type Searching
+* intitle:"snc-rz30 home" (requires activeX)
 
-`filetype:pdf` - Search for specific file types (pdf, doc, xls, ppt, etc.)
+* intitle:"WJ-NT104 Main"
 
-Example: `filetype:pdf site:example.com` - Find all PDFs on a specific site
+* inurl:LvAppl intitle:liveapplet (great pan and zoom)
 
-## Site Search
+* intitle:"Live View / - AXIS"
 
-`site:example.com` - Limit results to a specific site
+* inurl:indexFrame.shtml "Axis Video Server"
 
-`site:example.com filetype:pdf` - Find all PDFs on example.com
+*  "powered by webcamXP"
 
-## Intitle and Inurl
+# Pages that are hidden for google robots
+* "robots.txt" "disallow:" filetype:txt
 
-`intitle:index of` - Find open directories
+# Passwords
+* intitle:index of ws_ftp.ini
 
-`inurl:admin` - Find pages with "admin" in the URL
+* intitle:"index of" passwd passwd.bak
 
-`intitle:"index of" "parent directory"` - Find directory listings
+* inurl:passlist.txt
 
-## Cache and Related
+* inurl:password.txt
 
-`cache:example.com` - View Google's cached version
+* inurl:config.php
 
-`related:example.com` - Find similar sites
+* intext:(password | passcode) intext:(username | userid | user)   filetype:csv
 
-## Combining Operators
+* filetype:inc mysql_connect OR mysql_pconnect
 
-You can combine operators for more precise results:
+# Frontpage 
+* inurl:_vti_pvt "service.pwd"
 
-- `"machine learning" site:arxiv.org filetype:pdf` - PDFs about machine learning on arxiv.org
-- `intitle:"index of" inurl:mp3` - Find open MP3 directories
-- `site:*.gov filetype:pdf "confidential"` - Find potentially sensitive government documents
+# PHP PHOTO ALBUMS
+* inurl:"phphotoalbum/upload"
 
-## Other Useful Tricks
+# VNC Servers
+*  "vnc desktop" inurl:5800
+  bis port 5806
 
-- `define:word` - Get dictionary definition
-- `weather:location` - Get weather forecast
-- `stocks:SYMBOL` - Get stock information
-- `map:location` - Get map results
+# PRINTER CONTROL PANELS
+* intext"UAA(MSB)" Lexmark -ext:pdf
+  
+* inurl:"port_255" -htm
+
+# phpMyAdmin
+* intitle:phpMyAdmin "Welcome to phpMyAdmin ***" "running on * as root@*"
+
+# secret documents
+  intitle:"not for" filetype:doc site:gov
+
+# eBook
+* -inurl:(htm|html|php) intitle:"index of" +"last modified" +"parent directory" +description +size +(.txt|.lit|.doc|.rtf|.zip|.rar|.pdf|.chm) "hacking linux"
+
+# Music
+* -inurl:(htm|html|php) intitle:"index of" +"last modified" +"parent directory" +description +size +(.mp3|.wma|.ogg) "band name or song"
+* "band name or song" -inurl:(htm|html|php|pls|txt) intitle:index.of "last modified" (wma|mp3) -"index-of-mp3" -vmp3 -shexy -pickbrains -kaboodle -mp3gle -ihackr -indexofmp3 -blogspot -franceradio -insanbilimleri -"english-4-free" -audiozen -hyooge -"game-freaks"
+
+* intitle:"index.of" (mp3|mp4|avi) tricky -html -htm -php -asp -cf -jsp -e-mp3s.eu
+# Video
+* -inurl:(htm|html|php) intitle:"index of" +"last modified" +"parent directory" +description +size +(.mpg|.mpeg|.mov|.avi|.wmv|.di|.mp4) "video name"
+
+# Serial Key, Licence
+*  "computer profile summary" AND "licence" AND "key:" AND "vista"
+
+# Links / Referenzen
+* http://airdump.net/papers/google-hacking
+* http://google.wikia.com/wiki/Google_Hacks

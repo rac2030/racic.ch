@@ -3,17 +3,17 @@ import { test, expect } from '@playwright/test';
 test.describe('Blog post pages', () => {
   test('renders Hosting Hugo with Firebase post', async ({ page }) => {
     await page.goto('/blog/hosting-hugo-site-firebase/');
-    await expect(page.locator('article h1')).toHaveText('Hosting a Hugo Site with Firebase');
+    await expect(page.locator('.article-header h1')).toHaveText('Hosting a Hugo Site with Firebase');
   });
 
   test('renders Displaying GIT Metadata post', async ({ page }) => {
     await page.goto('/blog/displaying-git-metadata-hugo-templates/');
-    await expect(page.locator('article h1')).toContainText('GIT Metadata');
+    await expect(page.locator('.article-header h1')).toContainText('GIT Metadata');
   });
 
   test('renders Enabling Offline Usage post', async ({ page }) => {
     await page.goto('/blog/enabling-offline-usage-hugo-pwa/');
-    await expect(page.locator('article h1')).toContainText('Offline Usage');
+    await expect(page.locator('.article-header h1')).toContainText('Offline Usage');
   });
 
   test('post has article with substantial content', async ({ page }) => {

@@ -47,7 +47,7 @@ test.describe('SEO meta tags', () => {
   test('blog article has title tag matching h1', async ({ page }) => {
     await page.goto('/blog/hosting-hugo-site-firebase/');
     const title = await page.title();
-    const h1 = await page.locator('h1').textContent();
+    const h1 = await page.locator('.article-header h1').textContent();
     expect(title).toContain(h1?.trim() || '__never__');
   });
 

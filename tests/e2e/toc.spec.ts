@@ -44,7 +44,7 @@ test.describe('Table of Contents', () => {
   });
 
   test('project article has TOC', async ({ page }) => {
-    await page.goto('/projects/sensirion-sdp3x-driver');
+    await page.goto('/projects/makezurich-2018-badge');
     await page.waitForSelector('#table-of-contents');
     const toc = page.locator('#table-of-contents');
     await expect(toc).toBeAttached();
