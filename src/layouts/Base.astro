@@ -108,12 +108,17 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
           }
         });
 
+        var userInitiatedUpdate = false;
+
         navigator.serviceWorker.addEventListener('controllerchange', function() {
-          window.location.reload();
+          if (userInitiatedUpdate) {
+            window.location.reload();
+          }
         });
 
         updateBanner.addEventListener('click', function() {
           if (swReg && swReg.waiting) {
+            userInitiatedUpdate = true;
             swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
           }
         });
