@@ -230,6 +230,25 @@ Every `<pre>` block gets:
 - A **language badge** in the top-left corner (reads `data-language` from Shiki output)
 - A **copy button** in the top-right corner that copies code to clipboard with "Copied!" feedback
 
+### Table of Contents (TOC)
+
+A floating **Table of Contents** panel on the right edge of every article page:
+- Extracts h2 and h3 headings from markdown at build time
+- **Slides in from the right** when the mouse hovers near the right border (28px visible tab)
+- **Holodeck/hologram panel** style with `backdrop-filter: blur(16px)` and panel glow
+- **Tron-like animated border** — gradient border with a pulsing glow `@keyframes` animation (3s cycle)
+- **Active section tracking** via scroll spy — highlights the current heading as you scroll
+- Responsive: hidden below 1100px viewport width
+- Positioned `fixed` outside the content resizer to avoid `overflow: hidden` clipping
+
+### Heading Anchor Links
+
+Every h2, h3, and h4 heading in article content gets an **anchor link** (`#`) that:
+- Appears on hover next to the heading text
+- Links directly to the heading's auto-generated ID
+- Enables easy URL copying for deep linking to specific sections
+- Styled as a subtle `#` symbol that fades in with a 0.15s transition
+
 ### Edit Link
 
 All article pages show a **pen icon** in the top-right corner linking to the GitHub edit URL for that file: `https://github.com/rac2030/racic.ch/edit/main/src/content/{section}/{filename}`.
@@ -477,6 +496,8 @@ Here is every feature implemented in this site:
 | Full-text search | Shared `SearchLib` module, exact + fuzzy matching, highlighted excerpts, used by search bar and 404 page |
 | Dedicated search page | Google-like `/search` page with real-time results, hero images, `?q=` param, holocard results panel |
 | SearchBar → search page | Enter key navigates to `/search?q=...` for full-page results |
+| Table of Contents | Floating right-edge panel with Tron-style animated border, scroll spy, holodeck hologram style |
+| Heading anchors | Hover-reveal `#` links on h2/h3/h4 for easy URL copying |
 | Content resizer | Drag handles on article pages, localStorage persistence, full window width |
 | Copy button | One-click code block copying with "Copied!" feedback |
 | Language badge | Shows Shiki language on code blocks (top-left corner) |

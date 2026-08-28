@@ -1,0 +1,53 @@
+<style>
+  .article-content :global(h2),
+  .article-content :global(h3),
+  .article-content :global(h4) {
+    position: relative;
+  }
+
+  .article-content :global(.heading-anchor) {
+    display: inline-block;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    font-size: 0.7em;
+    vertical-align: middle;
+  }
+
+  .article-content :global(h2:hover .heading-anchor),
+  .article-content :global(h3:hover .heading-anchor),
+  .article-content :global(h4:hover .heading-anchor),
+  .article-content :global(.heading-anchor:focus) {
+    opacity: 1;
+  }
+</style>
+
+<script is:inline>
+(function() {
+  function addAnchors() {
+    var article = document.querySelector('.article-content');
+    if (!article) return;
+    var headings = article.querySelectorAll('h2, h3, h4');
+    headings.forEach(function(heading) {
+      if (!heading.id) return;
+      if (heading.querySelector('.heading-anchor')) return;
+      var anchor = document.createElement('a');
+      anchor.className = 'heading-anchor';
+      anchor.href = '#' + heading.id;
+      anchor.textContent = '#';
+      anchor.setAttribute('aria-hidden', 'true');
+      anchor.tabIndex = -1;
+      anchor.style.marginLeft = '0.4em';
+      heading.appendChild(anchor);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addAnchors);
+  } else {
+    addAnchors();
+  }
+})();
+</script>

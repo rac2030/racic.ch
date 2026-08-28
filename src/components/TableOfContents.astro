@@ -1,0 +1,208 @@
+---
+interface Heading {
+  id: string;
+  text: string;
+  level: number;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+const tocHeadings = headings.filter((h) => h.level >= 2 && h.level <= 3);
+---
+
+{tocHeadings.length > 0 && (
+<nav class="toc" id="table-of-contents" aria-label="Table of Contents">
+  <div class="toc-border"></div>
+  <div class="toc-inner">
+    <div class="toc-header">
+      <i class="fa-solid fa-list-ul"></i>
+      <span>Contents</span>
+    </div>
+    <ul class="toc-list">
+      {tocHeadings.map((heading) => (
+        <li class={`toc-item toc-h${heading.level}`}>
+          <a href={`#${heading.id}`} class="toc-link">{heading.text}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+)}
+
+<style>
+  .toc {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) translateX(calc(100% - 28px));
+    z-index: 100;
+    width: max-content;
+    min-width: 180px;
+    max-width: 90%;
+    max-height: 90vh;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .toc:hover,
+  .toc:focus-within {
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .toc-border {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px 0 0 12px;
+    padding: 1px;
+    background: linear-gradient(
+      180deg,
+      var(--accent) 0%,
+      rgba(52, 140, 178, 0.4) 30%,
+      rgba(52, 140, 178, 0.1) 60%,
+      var(--accent) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: tocBorderGlow 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .toc-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 14px 0 0 14px;
+    background: linear-gradient(
+      180deg,
+      var(--accent) 0%,
+      transparent 40%,
+      transparent 60%,
+      var(--accent) 100%
+    );
+    opacity: 0.3;
+    filter: blur(6px);
+    animation: tocBorderGlow 3s ease-in-out infinite;
+  }
+
+  @keyframes tocBorderGlow {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  .toc-inner {
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    border-radius: 12px 0 0 12px;
+    padding: 1rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow:
+      0 0 30px var(--panel-glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .toc-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-item {
+    margin: 0;
+  }
+
+  .toc-link {
+    display: block;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: none;
+    border-left: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    border-radius: 4px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  .toc-link:hover {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(52, 140, 178, 0.08);
+  }
+
+  .toc-link.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(52, 140, 178, 0.1);
+  }
+
+  .toc-h3 {
+    padding-left: 0.75rem;
+  }
+
+  @media (max-width: 1100px) {
+    .toc {
+      display: none;
+    }
+  }
+</style>
+
+<script is:inline>
+(function() {
+  var toc = document.getElementById('table-of-contents');
+  if (!toc) return;
+
+  var links = toc.querySelectorAll('.toc-link');
+  var headings = [];
+  links.forEach(function(link) {
+    var id = link.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) headings.push({ el: el, link: link });
+  });
+
+  function updateActive() {
+    var scrollY = window.scrollY + 120;
+    var current = null;
+    for (var i = headings.length - 1; i >= 0; i--) {
+      if (headings[i].el.offsetTop <= scrollY) {
+        current = headings[i];
+        break;
+      }
+    }
+    links.forEach(function(l) { l.classList.remove('active'); });
+    if (current) current.link.classList.add('active');
+  }
+
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        updateActive();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+  updateActive();
+})();
+</script>

@@ -4,6 +4,8 @@ import Post from '../../layouts/Post.astro';
 import Comments from '../../components/Comments.astro';
 import ContentResizer from '../../components/ContentResizer.astro';
 import GitHistory from '../../components/GitHistory.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import HeadingAnchors from '../../components/HeadingAnchors.astro';
 import gitLogJson from '../../data/git-log.json';
 
 const EDIT_BASE = 'https://github.com/rac2030/racic.ch/edit/main/src/content/blog';
@@ -27,6 +29,15 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+const tocHeadings = (post.body ?? entry.body ?? project.body ?? '')
+  .split('\n')
+  .filter((line) => /^#{2,3}\s/.test(line))
+  .map((line) => {
+    const level = line.match(/^(#{2,3})/)[1].length;
+    const text = line.replace(/^#{2,3}\s+/, '').replace(/\*\*|__|`/g, '').trim();
+    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return { id, text, level };
+  });
 
 const formatDate = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -65,7 +76,9 @@ const effectiveUpdatedDate = post.data.updatedDate || (lastCommit && lastCommit.
         </div>
       </div>
     </div>
+    <TableOfContents headings={tocHeadings} />
     <ContentResizer>
+      <HeadingAnchors />
       <div class="container article-content">
         <Content />
         <Comments />
