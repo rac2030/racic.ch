@@ -8,6 +8,6 @@ heroImage: ''
 aliases: []
 ---
 
-# Schools
+## Schools
 * [Lernort Moosbachhof (Switzerland, Zug)](http://www.lernort-moosbachhof.ch/)
 * [Robinson Schule (Switzerland, Hirzel)](https://robinson-schule.ch/)

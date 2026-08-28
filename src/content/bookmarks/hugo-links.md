@@ -20,7 +20,7 @@ Some links I collected with information about how to use Hugo. Articles about [h
 * [Creating own shortcodes with HTML and javascript snippets](https://gohugo.io/extras/shortcodes/#creating-your-own-shortcodes)
 * [Syntax highlighting in Hugo](https://gohugo.io/extras/highlighting/)
 
-# Themes to have a closer look
+## Themes to have a closer look
 This is mainly a list for myself ;-)
 
 * http://themes.gohugo.io/grid-side

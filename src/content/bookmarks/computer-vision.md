@@ -8,5 +8,5 @@ heroImage: ''
 aliases: []
 ---
 
-# Java libraries
+## Java libraries
 * [BoofCV](http://boofcv.org)

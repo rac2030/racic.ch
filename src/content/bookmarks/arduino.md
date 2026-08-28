@@ -8,33 +8,33 @@ heroImage: "/images/logo/arduino.png"
 aliases: []
 ---
 
-# Inventory tracking
+## Inventory tracking
 * [Docker image for partkeepr](https://github.com/mhubig/docker-partkeepr)
 
-# RFID
+## RFID
 * [Mifare MFRC522 13.56MHz](http://playground.arduino.cc/Learning/MFRC522)
 
-# Input
+## Input
 * [Capacitive sensing](http://playground.arduino.cc//Main/CapacitiveSensor?from=Main.CapSense)
 * Basic Electronics - [Electric charge detector](http://amasci.com/emotor/chargdet.html)
 
-## Speech recognition
+### Speech recognition
 * [uSpeech](https://github.com/arjo129/uSpeech) - Speech recognition toolkit for the arduino
 * [Voice Recognition with Arduino](http://tiriboy.blogspot.ch/2014/08/voice-recognition-with-arduino.html)
 
-# Audio
-## Speech synthesis
+## Audio
+### Speech synthesis
 * [TTS Arduino library](https://github.com/jscrane/TTS)
 * [Talkie](https://github.com/going-digital/Talkie) - Speech library for Arduino
 
-# Power
+## Power
 * Basic Electronics - [High efficiency regulated Joule thief](http://www.instructables.com/id/High-efficiency-regulated-Joule-thief/)
 
-# MOSFETS
+## MOSFETS
 * [High-Power control with N-Channel MOSFET](http://bildr.org/2012/03/rfp30n06le-arduino/)
 * [Using MOSFETS with TTL levels](https://arduinodiy.wordpress.com/2012/05/02/using-mosfets-with-ttl-levels/)
 
-# LED Strips
+## LED Strips
 * [Wemos led strip Arduino sketch example](https://5p.io/building-a-wifi-controlled-led-strip-controller/)
 * [ESP8266 RGB Strip control](http://www.esp8266color.com/hardware/)
 * Thread about [reducing PWM noise](http://electronics.stackexchange.com/questions/69851/reducing-led-pwm-noise-which-is-the-best-option)
@@ -45,8 +45,8 @@ aliases: []
 * [Dimming a 12V LED strip with a mosfet and PWM](http://joost.damad.be/2012/09/dimming-12v-led-strip-with-mosfet-and.html)
 * [A WiFi-enabled RGB LED strip controller](https://www.stavros.io/posts/wifi-enabled-rgb-led-strip-controller/)
 
-# Lora
+## Lora
 * [ESP8266 WeMos Shield for HopeRF RFM95 RFM96 RFM98 Lora Modules](https://github.com/hallard/WeMos-Lora)
 
-# Project Cases
+## Project Cases
 * [ALTINKAYA cheap enclosures and battery holders from Turkey](http://www.altinkaya.eu/)
