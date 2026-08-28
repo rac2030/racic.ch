@@ -49,9 +49,9 @@ test.describe('Fuzzy search', () => {
 
   test('404 page uses SearchLib for search', async ({ page }) => {
     await page.goto('/404.html');
-    await page.waitForLoadState('networkidle');
     const searchResults = page.locator('#search-results');
     await expect(searchResults).toBeAttached({ timeout: 5000 });
+    await page.waitForFunction(() => typeof SearchLib !== 'undefined', { timeout: 5000 });
     const hasSearchLib = await page.evaluate(() => typeof SearchLib !== 'undefined');
     expect(hasSearchLib).toBe(true);
   });
