@@ -2,6 +2,7 @@
 title: 'Scanning a Filesystem for Files with Weak Restrictions'
 pubDate: 2008-06-05
 description: 'Howto find world writable files that could be attacked on your server?'
+author: "Michel Racic"
 category: "security"
 tags: ["shell", "security", "linux", "hacking"]
 ---

@@ -41,6 +41,7 @@ const { tag, blogPosts, projects, wikiEntries } = Astro.props;
                 href={`/blog/${post.id.replace(/\.md$/, '')}`}
                 date={post.data.pubDate}
                 tags={post.data.tags}
+                author={post.data.author}
               />
             ))}
           </div>
@@ -58,6 +59,7 @@ const { tag, blogPosts, projects, wikiEntries } = Astro.props;
                 href={`/projects/${project.id.replace(/\.md$/, '')}`}
                 date={project.data.pubDate}
                 tags={project.data.tags}
+                author={project.data.author}
               />
             ))}
           </div>

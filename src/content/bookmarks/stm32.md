@@ -2,6 +2,7 @@
 title: "STM32"
 pubDate: 2017-02-21T02:50:12+01:00
 description: "Using STM32 microcontroller"
+author: "Michel Racic"
 tags: []
 heroImage: "/images/logo/STM32.png"
 aliases: []

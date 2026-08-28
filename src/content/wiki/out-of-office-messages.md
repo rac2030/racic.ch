@@ -1,6 +1,7 @@
 ---
 title: 'Out of Office Messages'
 description: 'Ein paar lustige OOO Meldungen.'
+author: "Michel Racic"
 tags: ["fun"]
 category: "fun"
 ---

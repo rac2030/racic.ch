@@ -2,6 +2,7 @@
 title: "uBlox NINA-W102 Minimal Breakout"
 pubDate: 2018-05-27
 description: "Minimal single-sided breakout board for the uBlox NINA-W102 WiFi module with FTDI-compatible serial header and hand-solderable 1206 components."
+author: "Michel Racic"
 category: "electronics"
 tags: []
 heroImage: /images/projects/nina-w102-breakout.png

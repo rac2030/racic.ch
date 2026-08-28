@@ -2,6 +2,7 @@
 title: "Enabling Offline Usage of a Hugo Site (PWA)"
 pubDate: 2017-03-12
 description: "Step-by-step guide to adding offline support to a Hugo static site using Service Workers and sw-precache for progressive web app capabilities."
+author: "Michel Racic"
 category: "howto"
 tags: ["hugo", "pwa", "serviceworker"]
 heroImage: /images/hugo/offline-dino.jpg

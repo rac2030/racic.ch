@@ -44,6 +44,7 @@ const allCategories = [...new Set(posts.map((p) => p.data.category).filter(Boole
             draft={post.data.draft}
             updatedDate={post.data.updatedDate}
             heroImage={post.data.heroImage}
+            author={post.data.author}
           />
         ))}
       </div>

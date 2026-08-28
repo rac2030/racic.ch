@@ -2,6 +2,7 @@
 title: 'Apache Wildcard Domains'
 pubDate: 2007-12-31
 description: "Apache VirtualHost configuration for wildcard domain routing with dynamic document roots."
+author: "Michel Racic"
 category: "howto"
 tags: ["apache"]
 ---

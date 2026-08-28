@@ -2,6 +2,7 @@
 title: "Displaying GIT Metadata in Hugo Templates"
 pubDate: 2017-02-21
 description: "Display GIT metadata in Hugo"
+author: "Michel Racic"
 category: "howto"
 tags: ["hugo", "git"]
 heroImage: /images/git.png

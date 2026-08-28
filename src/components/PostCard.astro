@@ -8,10 +8,11 @@ interface Props {
   category?: string;
   updatedDate?: Date;
   heroImage?: string;
+  author?: string;
   draft?: boolean;
 }
 
-const { title, description, href, date, tags = [], category, updatedDate, heroImage, draft } = Astro.props;
+const { title, description, href, date, tags = [], category, updatedDate, heroImage, author, draft } = Astro.props;
 
 const formatDate = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -29,6 +30,7 @@ const formatDate = (d: Date) =>
       {updatedDate && (
         <span>(updated {formatDate(updatedDate)})</span>
       )}
+      {author && <span class="card-author">by {author}</span>}
     </div>
     <h3>{title}{draft && <span class="draft-badge">Draft</span>}</h3>
     <p>{description}</p>

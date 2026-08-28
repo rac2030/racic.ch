@@ -5,6 +5,7 @@ const blog = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().default(''),
+    author: z.string().default('Michel Racic'),
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
@@ -20,6 +21,7 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().default(''),
+    author: z.string().default('Michel Racic'),
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
@@ -36,6 +38,7 @@ const wiki = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().default(''),
+    author: z.string().default('Michel Racic'),
     pubDate: z.coerce.date().optional(),
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
@@ -51,6 +54,7 @@ const bookmarks = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().default(''),
+    author: z.string().default('Michel Racic'),
     pubDate: z.coerce.date().optional(),
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),

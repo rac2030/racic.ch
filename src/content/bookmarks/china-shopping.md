@@ -2,6 +2,7 @@
 title: "Cheap China shopping help"
 pubDate: 2017-03-11T00:45:10+01:00
 description: "Links, hints and tips about shopping from china (mainly electronics)"
+author: "Michel Racic"
 tags: []
 heroImage: ''
 aliases: []

@@ -2,6 +2,7 @@
 title: "Building This Site with AI: A Behind-the-Scenes Account"
 pubDate: 2026-08-23
 description: "An AI-generated blog post documenting how this very page was built — the prompts, the thinking, the design choices, and the development workflow."
+author: "AI-generated"
 category: "generated"
 tags: ["ai", "astro", "opencode", "experiment"]
 heroImage: /images/projects/opencode-ai-hero.svg

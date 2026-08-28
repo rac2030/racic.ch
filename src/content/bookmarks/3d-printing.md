@@ -2,6 +2,7 @@
 title: "3D Printing maybe things"
 pubDate: 2017-02-21T02:02:15+01:00
 description: "Stuff I consider to maybe print someday"
+author: "Michel Racic"
 tags: []
 heroImage: ''
 aliases: []

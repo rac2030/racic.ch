@@ -2,6 +2,7 @@
 title: "Spikey"
 pubDate: 2025-03-12
 description: "Spikey hardware project with assembly instructions and documentation."
+author: "Michel Racic"
 category: "hardware"
 tags: []
 heroImage: https://github.com/rac2030/spike/blob/main/images/spikey.png?raw=true

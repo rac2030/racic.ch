@@ -13,6 +13,7 @@ interface SearchEntry {
   date: string;
   body: string;
   heroImage?: string;
+  author?: string;
 }
 
 export const GET: APIRoute = async () => {
@@ -30,6 +31,7 @@ export const GET: APIRoute = async () => {
       date: post.data.pubDate.toISOString(),
       body: stripHtml(post.body ?? ''),
       heroImage: post.data.heroImage,
+      author: post.data.author,
     });
   }
 
@@ -44,6 +46,7 @@ export const GET: APIRoute = async () => {
       date: project.data.pubDate.toISOString(),
       body: stripHtml(project.body ?? ''),
       heroImage: project.data.heroImage,
+      author: project.data.author,
     });
   }
 
@@ -58,6 +61,7 @@ export const GET: APIRoute = async () => {
       date: entry.data.pubDate?.toISOString() ?? '',
       body: stripHtml(entry.body ?? ''),
       heroImage: entry.data.heroImage,
+      author: entry.data.author,
     });
   }
 
@@ -72,6 +76,7 @@ export const GET: APIRoute = async () => {
       date: entry.data.pubDate?.toISOString() ?? '',
       body: stripHtml(entry.body ?? ''),
       heroImage: entry.data.heroImage,
+      author: entry.data.author,
     });
   }
 

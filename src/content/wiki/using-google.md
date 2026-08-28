@@ -2,6 +2,7 @@
 title: 'Using Google'
 pubDate: 2008-01-04
 description: "Reference of useful Google search operators and techniques for advanced web searching."
+author: "Michel Racic"
 category: "howto"
 tags: ["google", "searching"]
 ---

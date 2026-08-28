@@ -2,6 +2,7 @@
 title: "MakeZurich — MoBiFloC"
 pubDate: 2017-02-04
 description: "A cheap and portable bike commuter flow counter node to enhance the existing sensor network."
+author: "Michel Racic"
 category: "hackathon"
 tags: ["arduino", "hackathon", "lorawan"]
 heroImage: /images/projects/MakeZurich-logo.png

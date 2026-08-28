@@ -57,6 +57,7 @@ const effectiveUpdatedDate = post.data.updatedDate || (lastCommit && lastCommit.
             <a href={`/blog?category=${post.data.category}`} class="article-category">{post.data.category}</a>
           )}
           <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          <span class="article-author">by {post.data.author}</span>
           {effectiveUpdatedDate && (
             <span class="article-updated" id="git-history-trigger" style="cursor:pointer;" title="View change history">(updated <time datetime={effectiveUpdatedDate.toISOString()}>{formatDate(effectiveUpdatedDate)}</time>)</span>
           )}

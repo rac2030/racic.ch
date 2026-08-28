@@ -58,6 +58,7 @@ const effectiveUpdatedDate = entry.data.updatedDate || (lastCommit && entry.data
           {entry.data.pubDate && (
             <time datetime={entry.data.pubDate.toISOString()}>{formatDate(entry.data.pubDate)}</time>
           )}
+          <span class="article-author">by {entry.data.author}</span>
           {effectiveUpdatedDate && (
             <span class="article-updated" id="git-history-trigger" style="cursor:pointer;" title="View change history">(updated <time datetime={effectiveUpdatedDate.toISOString()}>{formatDate(effectiveUpdatedDate)}</time>)</span>
           )}

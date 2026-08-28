@@ -2,6 +2,7 @@
 title: "Antenna Fundamentals"
 pubDate: 2008-01-05T16:21:28Z
 description: ''
+author: "Michel Racic"
 tags: ["java","programming","compile"]
 category: "development"
 heroImage: ''

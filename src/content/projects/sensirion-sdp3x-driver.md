@@ -2,6 +2,7 @@
 title: 'Sensirion SDP3x Arduino Driver'
 pubDate: 2017-02-04
 description: "Arduino library for interfacing with the Sensirion SDP3x differential pressure sensor over I2C."
+author: "Michel Racic"
 category: "library"
 tags: ["arduino", "sensor"]
 heroImage: '/images/projects/sdp3x-hero.svg'

@@ -44,6 +44,7 @@ const allCategories = [...new Set(projects.map((p) => p.data.category).filter(Bo
             draft={project.data.draft}
             updatedDate={project.data.updatedDate}
             heroImage={project.data.heroImage}
+            author={project.data.author}
           />
         ))}
       </div>

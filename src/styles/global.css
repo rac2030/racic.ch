@@ -2054,3 +2054,13 @@ hr {
 .search-page-result {
   position: relative;
 }
+
+.card-author {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.article-author {
+  color: var(--text-muted);
+  font-style: italic;
+}

@@ -2,6 +2,7 @@
 title: "Hugo"
 pubDate: 2017-02-19T23:47:16+01:00
 description: "Links to usefull stuff for working with Hugo"
+author: "Michel Racic"
 tags: []
 heroImage: "/images/logo/hugo.png"
 aliases: []

@@ -2,6 +2,7 @@
 title: "CNC builds"
 pubDate: 2017-02-21T02:48:30+01:00
 description: "Various links for building a CNC machine"
+author: "Michel Racic"
 tags: []
 heroImage: ''
 aliases: []

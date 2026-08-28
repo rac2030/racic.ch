@@ -2,6 +2,7 @@
 title: "GIT"
 pubDate: 2011-02-16T12:10:57+01:00
 description: "Some useful notes on GIT usage"
+author: "Michel Racic"
 tags: ["SCM","GIT"]
 category: "development"
 heroImage: "/images/logo/git.png"
