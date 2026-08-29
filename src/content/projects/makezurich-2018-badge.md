@@ -96,14 +96,14 @@ See [i2c_scanner.ino](https://github.com/rac2030/IoT-conference-badge/blob/firmw
 
 ## Pinout
 The pins on the side are 1:1 mapped to the [NINA-W102 minimal breakout](/projects/nina-w102-minimal-breakout) and you can take this pinout for the badge as well.
-{{< figure src="/images/projects/nina-w102/pinout-diagram.png" link="https://github.com/rac2030/breakout-boards/raw/master/ublox_NINA-W102/pinout/pinout-diagram.pdf" target="_blank" attr="Made by gnz.io" attrlink="http://gnz.io">}}
-
+![NINA-W102 pinout diagram](/images/projects/nina-w102/pinout-diagram.png)
+Made by [gnz.io](http://gnz.io), [Download as pdf](https://github.com/rac2030/breakout-boards/raw/master/ublox_NINA-W102/pinout/pinout-diagram.pdf)
 ## Schematics
 See [badge-mainboard-rev.0.3.7.pdf](https://github.com/rac2030/IoT-conference-badge/blob/master/hardware/badge-mainboard-rev.0.3.7.pdf) and [sensors-module-board-rev.0.1.0.pdf](https://github.com/rac2030/IoT-conference-badge/blob/master/hardware/sensors-module-board-rev.0.1.0.pdf) for the corresponding schematics. Additional you want to look at the [NINA-W102 minimal breakout](/projects/nina-w102-minimal-breakout) for more information on the heart of this badge.
 
 ## PCB Layout
 TBW. but for now, here is a rendering of the backside
-![](/images/projects/makezurich-18-badge/badgebackrender.png)
+![PCB back layout render](/images/projects/makezurich-18-badge/badgebackrender.png)
 
 ## BOM
 Ref     | Qty   | Value     | Digikey       | Price
