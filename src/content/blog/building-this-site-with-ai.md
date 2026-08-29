@@ -745,6 +745,69 @@ The migration report (`migration-report.html`) was regenerated end-to-end with f
 - File-map titles reconciled against the real frontmatter (17 titles were stale, e.g. the ant article now correctly titled "Apache Ant")
 - The report includes the two retired bookmark entries in its Actions completed list and reflects 24 migrated articles / 24 of 26 relevant / 137 pages built
 
+## Phase 15: Migration Leftover Fixes and a Reusable Report Target
+
+A final sweep through the migrated content found the last remaining Hugo shortcode leftovers: two `{{< ... >}}` tags that Astro cannot render. They silently produced broken markup (the raw shortcode text appeared in the page instead of an image) and dead links.
+
+### The `{{< figure >}}` Leftover in the Badge Article
+
+`src/content/projects/makezurich-2018-badge.md` still contained a raw Hugo `{{< figure … >}}` shortcode for the NINA-W102 pinout diagram:
+
+```text
+{{< figure src="/images/projects/nina-w102/pinout-diagram.png"
+  link="https://github.com/rac2030/breakout-boards/raw/master/ublox_NINA-W102/pinout/pinout-diagram.pdf"
+  target="_blank" attr="Made by gnz.io" attrlink="http://gnz.io">}}
+```
+
+Astro's Sätteri markdown processor has no `figure` shortcode, so the page rendered the literal shortcode text and **no image**. The fix converted it to plain HTML that matches how the other migrated figures are handled — a clickable `<a>` wrapping the `<img>` so the image displays and the original PDF download link still works:
+
+```html
+<a href="…/pinout-diagram.pdf" target="_blank" rel="noopener">
+  <img src="/images/projects/nina-w102/pinout-diagram.png" alt="NINA-W102 pinout diagram" />
+</a>
+```
+
+(Following the site's existing figure convention, the `attr="Made by gnz.io"` credit from the original shortcode was not carried over — the established migrated-figure pattern drops shortcode captions/credits.)
+
+### The `{{< ref >}}` Leftover in the MoBiFloC Article
+
+`src/content/projects/makezurich-mobifloc.md` had a Hugo `{{< ref >}}` pageref inside a markdown link:
+
+```text
+[Sensirion SDP3x Arduino driver]({{< ref "libs/sensirion-SDP3x-driver.md" >}})
+```
+
+Hugo resolved this to the SDP3x page at build time; Astro does not, so the href became the literal `{{< ref … >}}` string — a broken link. The file was migrated to the projects collection as `/projects/sensirion-sdp3x-driver`, so the pointer was rewritten to the real internal URL:
+
+```text
+[Sensirion SDP3x Arduino driver](/projects/sensirion-sdp3x-driver)
+```
+
+While auditing, two dead `[video](#)` links (which referenced section anchors that the old Hugo `{{< relref "#…" >}}` resolved) were repointed to their actual on-page headings, `#first-outdoor-trials-with-the-prototype` and `#lorawan-data-receiver-web-gui-in-action` — verified present in the built HTML.
+
+A whole-tree scan (excluding code blocks and this build log's prose, which legitimately document the shortcodes) confirmed no `{{<`/`{{ ` shortcode leftovers remain anywhere in the migrated content.
+
+### A Reusable Migration-Report npm Target
+
+Regenerating the comparison report previously meant juggling several ad-hoc scripts and `/tmp` files. It's now a single npm command:
+
+```bash
+npm run report            # full rebuild + screenshots + report
+npm run report:screenshots
+```
+
+`scripts/migration-report.mjs` orchestrates the whole pipeline:
+
+1. **Ensures the old repo is present** (`RACSU_REPO`, default `/tmp/rac.su`) and clones `github.com/rac2030/rac.su` if missing.
+2. **Builds** the site (`npm run build`).
+3. **Serves** `dist/` locally on port 4322 (overridable with `REPORT_PORT`).
+4. **Captures** fresh side-by-side screenshots via `scripts/screenshot-comparison.mjs` — 24 new pages plus the 24 live `rac.su` originals at 1280×800 (overridable with `SCREENSHOT_DIR`/`NEW_BASE`/`OLD_BASE`).
+5. **Shuts the server down** in a `finally`, then generates `migration-report.html` with `scripts/generate-migration-report.mjs`.
+
+The report generator and the file map now live in the repo (`scripts/generate-migration-report.mjs`, `scripts/migration-file-map.json`) instead of `/tmp`, so the target is self-contained and re-runnable by anyone with Node and Playwright.
+
+This final run produced a fresh report (78.79 MB) from the fixed content — the badge article now shows the pinout image instead of the raw shortcode, and the MoBiFloC diff reflects the corrected SDP3x link. Unit (151) and e2e (177) suites still pass.
+
 ## Manual Changes Required
 
 While the AI handled most of the implementation, certain tasks required manual intervention that an AI assistant cannot do.

@@ -1,0 +1,170 @@
+[
+  {
+    "old": "content/hugo/firebase.md",
+    "new": "src/content/blog/hosting-hugo-site-firebase.md",
+    "label": "blog-firebase",
+    "title": "Hosting a Hugo Site with Firebase",
+    "category": "Blog"
+  },
+  {
+    "old": "content/hugo/gitinfo.md",
+    "new": "src/content/blog/displaying-git-metadata-hugo-templates.md",
+    "label": "blog-gitinfo",
+    "title": "Displaying GIT Metadata in Hugo Templates",
+    "category": "Blog"
+  },
+  {
+    "old": "content/hugo/pwa.md",
+    "new": "src/content/blog/enabling-offline-usage-hugo-pwa.md",
+    "label": "blog-pwa",
+    "title": "Enabling Offline Usage of a Hugo Site (PWA)",
+    "category": "Blog"
+  },
+  {
+    "old": "content/dev/ant.md",
+    "new": "src/content/wiki/ant.md",
+    "label": "wiki-ant",
+    "title": "Apache Ant",
+    "category": "Wiki"
+  },
+  {
+    "old": "content/dev/git.md",
+    "new": "src/content/wiki/git.md",
+    "label": "wiki-git",
+    "title": "GIT",
+    "category": "Wiki"
+  },
+  {
+    "old": "content/fun/out-of-office-meldungen.md",
+    "new": "src/content/wiki/out-of-office-meldungen.md",
+    "label": "wiki-ooo",
+    "title": "Out of Office Meldungen",
+    "category": "Wiki"
+  },
+  {
+    "old": "content/wiki/apache-force-ssl-on-vhost.md",
+    "new": "src/content/wiki/apache-force-ssl.md",
+    "label": "wiki-apache-ssl",
+    "title": "Apache Force SSL on vhost",
+    "category": "Wiki"
+  },
+  {
+    "old": "content/wiki/apache-wildcard-domains.md",
+    "new": "src/content/wiki/apache-wildcard-domains.md",
+    "label": "wiki-apache-wildcard",
+    "title": "Apache Wildcard Domains",
+    "category": "Wiki"
+  },
+  {
+    "old": "content/wiki/using-google.md",
+    "new": "src/content/wiki/using-google.md",
+    "label": "wiki-google",
+    "title": "Using Google",
+    "category": "Wiki"
+  },
+  {
+    "old": "content/security/world-writeable-files.md",
+    "new": "src/content/wiki/world-writable-files.md",
+    "label": "wiki-world-writable",
+    "title": "Finding World-Writable Files",
+    "category": "Wiki"
+  },
+  {
+    "old": "content/project/MakeZurich-18-badge.md",
+    "new": "src/content/projects/makezurich-2018-badge.md",
+    "label": "proj-badge",
+    "title": "MakeZurich 2018 Badge",
+    "category": "Projects"
+  },
+  {
+    "old": "content/project/MakeZurich-MoBiFloC.md",
+    "new": "src/content/projects/makezurich-mobifloc.md",
+    "label": "proj-mobifloc",
+    "title": "MakeZurich — MoBiFloC",
+    "category": "Projects"
+  },
+  {
+    "old": "content/project/MakeZurich-PakMan.md",
+    "new": "src/content/projects/makezurich-pakman.md",
+    "label": "proj-pakman",
+    "title": "MakeZurich — PakMan",
+    "category": "Projects"
+  },
+  {
+    "old": "content/project/NINA-W102-minimal-breakout.md",
+    "new": "src/content/projects/nina-w102-minimal-breakout.md",
+    "label": "proj-nina",
+    "title": "uBlox NINA-W102 Minimal Breakout",
+    "category": "Projects"
+  },
+  {
+    "old": "content/libs/sensirion-SDP3x-driver.md",
+    "new": "src/content/projects/sensirion-sdp3x-driver.md",
+    "label": "proj-sdp3x",
+    "title": "Sensirion SDP3x Arduino Driver",
+    "category": "Projects"
+  },
+  {
+    "old": "content/project/Spikey.md",
+    "new": "src/content/projects/spikey.md",
+    "label": "proj-spikey",
+    "title": "Spikey",
+    "category": "Projects"
+  },
+  {
+    "old": "content/links/360video.md",
+    "new": "src/content/bookmarks/360-video.md",
+    "label": "bk-360",
+    "title": "360° Video processing",
+    "category": "Bookmarks"
+  },
+  {
+    "old": "content/links/arduino.md",
+    "new": "src/content/bookmarks/arduino.md",
+    "label": "bk-arduino",
+    "title": "Arduino",
+    "category": "Bookmarks"
+  },
+  {
+    "old": "content/links/chinashopping.md",
+    "new": "src/content/bookmarks/china-shopping.md",
+    "label": "bk-china",
+    "title": "Cheap China shopping help",
+    "category": "Bookmarks"
+  },
+  {
+    "old": "content/links/CNC.md",
+    "new": "src/content/bookmarks/cnc.md",
+    "label": "bk-cnc",
+    "title": "CNC builds",
+    "category": "Bookmarks"
+  },
+  {
+    "old": "content/links/computervision.md",
+    "new": "src/content/bookmarks/computer-vision.md",
+    "label": "bk-cv",
+    "title": "ComputerVision",
+    "category": "Bookmarks"
+  },
+  {
+    "old": "content/links/GO.md",
+    "new": "src/content/bookmarks/golang.md",
+    "label": "bk-golang",
+    "title": "GO",
+    "category": "Bookmarks"
+  },
+  {
+    "old": "content/links/hugo.md",
+    "new": "src/content/bookmarks/hugo-links.md",
+    "label": "bk-hugo",
+    "title": "Hugo",
+    "category": "Bookmarks"
+  },
+  {
+    "old": "content/links/STM32.md",
+    "new": "src/content/bookmarks/stm32.md",
+    "label": "bk-stm32",
+    "title": "STM32",
+    "category": "Bookmarks"
+  }
+]

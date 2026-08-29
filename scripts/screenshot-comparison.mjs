@@ -2,14 +2,14 @@ import { chromium } from 'playwright';
 import fs from 'fs';
 import path from 'path';
 
-const NEW_BASE = 'http://127.0.0.1:4322';
-const OLD_BASE = 'https://rac.su';
-const SCREENSHOT_DIR = '/tmp/migration-screenshots';
+const NEW_BASE = process.env.NEW_BASE || 'http://127.0.0.1:4322';
+const OLD_BASE = process.env.OLD_BASE || 'https://rac.su';
+const SCREENSHOT_DIR = process.env.SCREENSHOT_DIR || '/tmp/migration-screenshots';
 
 const ARTICLES = [
-  { newPath: '/blog/hosting-hugo-site-firebase', oldPath: '/post/hugo/firebase/', label: 'blog-firebase', title: 'Hosting Hugo with Firebase', category: 'Blog' },
-  { newPath: '/blog/displaying-git-metadata-hugo-templates', oldPath: '/post/hugo/gitinfo/', label: 'blog-gitinfo', title: 'Displaying GIT Metadata in Hugo Templates', category: 'Blog' },
-  { newPath: '/blog/enabling-offline-usage-hugo-pwa', oldPath: '/post/hugo/pwa/', label: 'blog-pwa', title: 'Enabling Offline Usage (PWA)', category: 'Blog' },
+  { newPath: '/blog/hosting-hugo-site-firebase', oldPath: '/hugo/firebase/', label: 'blog-firebase', title: 'Hosting Hugo with Firebase', category: 'Blog' },
+  { newPath: '/blog/displaying-git-metadata-hugo-templates', oldPath: '/hugo/gitinfo/', label: 'blog-gitinfo', title: 'Displaying GIT Metadata in Hugo Templates', category: 'Blog' },
+  { newPath: '/blog/enabling-offline-usage-hugo-pwa', oldPath: '/hugo/pwa/', label: 'blog-pwa', title: 'Enabling Offline Usage (PWA)', category: 'Blog' },
   { newPath: '/wiki/ant', oldPath: '/dev/ant/', label: 'wiki-ant', title: 'Antenna Fundamentals', category: 'Wiki' },
   { newPath: '/wiki/git', oldPath: '/dev/git/', label: 'wiki-git', title: 'Git', category: 'Wiki' },
   { newPath: '/wiki/out-of-office-meldungen', oldPath: '/fun/out-of-office-meldungen/', label: 'wiki-ooo', title: 'Out of Office Messages', category: 'Wiki' },
@@ -33,15 +33,57 @@ const ARTICLES = [
   { newPath: '/bookmarks/stm32', oldPath: '/links/stm32/', label: 'bk-stm32', title: 'STM32', category: 'Bookmarks' },
 ];
 
-async function screenshotPage(page, url, filePath) {
+async function forceImagesLoaded(page) {
+  // Scroll through the full page to trigger lazy-loaded images, then wait
+  // until every <img> has actually rendered (complete && naturalWidth > 0).
+  await page.evaluate(async () => {
+    const scroll = async () => {
+      document.documentElement.style.scrollBehavior = 'auto';
+      document.body.style.scrollBehavior = 'auto';
+      const height = () => Math.max(
+        document.body.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.clientHeight,
+        document.documentElement.scrollHeight,
+        document.documentElement.offsetHeight,
+      );
+      let y = 0;
+      const step = window.innerHeight;
+      while (y < height()) {
+        window.scrollTo(0, y);
+        y += step;
+        await new Promise((r) => setTimeout(r, 150));
+      }
+      window.scrollTo(0, 0);
+    };
+    await scroll();
+    await scroll();
+  });
+
+  // Wait until all images are fully loaded, with a retry loop.
+  await page.waitForFunction(() => {
+    const imgs = Array.from(document.images);
+    if (imgs.length === 0) return true;
+    return imgs.every((img) => img.complete && img.naturalWidth > 0);
+  }, { timeout: 30000 }).catch(() => {});
+
+  // Give footer/hero transition animations a moment to settle.
+  await page.waitForTimeout(500);
+}
+
+async function screenshotPage(browser, url, filePath) {
+  const page = await browser.newPage();
+  await page.setViewportSize({ width: 1280, height: 800 });
   try {
     const response = await page.goto(url, { waitUntil: 'load', timeout: 20000 });
-    await page.waitForTimeout(1500);
+    await forceImagesLoaded(page);
     await page.screenshot({ path: filePath, fullPage: true });
     const status = response?.status() || 0;
     return { ok: status < 400, status };
   } catch (e) {
     return { ok: false, error: e.message };
+  } finally {
+    await page.close();
   }
 }
 
@@ -53,23 +95,18 @@ async function main() {
 
   // Screenshot new site
   console.log('=== New site (racic.ch) ===');
-  const newPage = await browser.newPage();
-  await newPage.setViewportSize({ width: 1280, height: 800 });
   for (const a of ARTICLES) {
     const fp = path.join(SCREENSHOT_DIR, `new-${a.label}.png`);
-    const r = await screenshotPage(newPage, `${NEW_BASE}${a.newPath}`, fp);
+    const r = await screenshotPage(browser, `${NEW_BASE}${a.newPath}`, fp);
     results.push({ ...a, newStatus: r.status || 'error', newFile: fp, newError: r.error });
     console.log(`  ${r.ok ? '✓' : '✗'} ${a.label} [${r.status || r.error}]`);
   }
-  await newPage.close();
 
   // Screenshot old site
   console.log('\n=== Old site (rac.su) ===');
-  const oldPage = await browser.newPage();
-  await oldPage.setViewportSize({ width: 1280, height: 800 });
   for (const a of ARTICLES) {
     const fp = path.join(SCREENSHOT_DIR, `old-${a.label}.png`);
-    const r = await screenshotPage(oldPage, `${OLD_BASE}${a.oldPath}`, fp);
+    const r = await screenshotPage(browser, `${OLD_BASE}${a.oldPath}`, fp);
     const idx = results.findIndex(x => x.label === a.label);
     if (idx >= 0) {
       results[idx].oldStatus = r.status || 'error';
@@ -78,7 +115,6 @@ async function main() {
     }
     console.log(`  ${r.ok ? '✓' : '✗'} ${a.label} [${r.status || r.error}]`);
   }
-  await oldPage.close();
 
   await browser.close();
 
