@@ -11,6 +11,7 @@ import {
   buildTagUrl,
   filterDrafts,
   extractAllTags,
+  extractHeadings,
 } from '../../src/lib/utils';
 
 describe('stripMdExtension', () => {
@@ -232,5 +233,120 @@ describe('extractAllTags', () => {
       { data: { tags: ['a', 'c'] } },
     ];
     expect(extractAllTags(items)).toEqual(['a', 'b', 'c']);
+  });
+});
+
+describe('extractHeadings', () => {
+  test('extracts level 2 and 3 headings in order', () => {
+    const body = [
+      '## Section',
+      'some text',
+      '### Subsection',
+      '',
+      '## Another',
+    ].join('\n');
+    expect(extractHeadings(body)).toEqual([
+      { id: 'section', text: 'Section', level: 2 },
+      { id: 'subsection', text: 'Subsection', level: 3 },
+      { id: 'another', text: 'Another', level: 2 },
+    ]);
+  });
+
+  test('ignores level 1 and level 4+ headings', () => {
+    const body = ['# Title', '## Real', '#### Too deep'].join('\n');
+    expect(extractHeadings(body)).toEqual([
+      { id: 'real', text: 'Real', level: 2 },
+    ]);
+  });
+
+  test('ignores headings inside fenced code blocks', () => {
+    const body = [
+      '## Real Section',
+      '```ts',
+      '## Fake Heading',
+      '```',
+      '## After',
+    ].join('\n');
+    expect(extractHeadings(body)).toEqual([
+      { id: 'real-section', text: 'Real Section', level: 2 },
+      { id: 'after', text: 'After', level: 2 },
+    ]);
+  });
+
+  test('does not extract headings inside code fences with trailing info strings', () => {
+    const body = [
+      '```bash',
+      '# comment-ish but in fence',
+      '## Subheadings in code',
+      '```',
+      '## Visible',
+    ].join('\n');
+    expect(extractHeadings(body)).toEqual([
+      { id: 'visible', text: 'Visible', level: 2 },
+    ]);
+  });
+
+  test('handles nested fences by toggling on each fence line', () => {
+    const body = [
+      '## Before',
+      '```',
+      '## Hidden One',
+      '```',
+      '## Middle',
+      '```',
+      '## Hidden Two',
+      '```',
+      '## After',
+    ].join('\n');
+    expect(extractHeadings(body)).toEqual([
+      { id: 'before', text: 'Before', level: 2 },
+      { id: 'middle', text: 'Middle', level: 2 },
+      { id: 'after', text: 'After', level: 2 },
+    ]);
+  });
+
+  test('handles tildes as fence delimiters', () => {
+    const body = ['## Real', '~~~', '## Fenced', '~~~', '## End'].join('\n');
+    expect(extractHeadings(body)).toEqual([
+      { id: 'real', text: 'Real', level: 2 },
+      { id: 'end', text: 'End', level: 2 },
+    ]);
+  });
+
+  test('strips bold, italic and inline-code markers from text', () => {
+    const body = ['## **Bold** and `code`'].join('\n');
+    const headings = extractHeadings(body);
+    expect(headings).toEqual([
+      { id: 'bold-and-code', text: 'Bold and code', level: 2 },
+    ]);
+  });
+
+  test('generates slug ids from heading text', () => {
+    const body = ['## Hello, World! (2026)'].join('\n');
+    expect(extractHeadings(body)).toEqual([
+      { id: 'hello-world-2026', text: 'Hello, World! (2026)', level: 2 },
+    ]);
+  });
+
+  test('returns empty array for empty body', () => {
+    expect(extractHeadings('')).toEqual([]);
+  });
+
+  test('returns empty array when there are no level 2/3 headings', () => {
+    expect(extractHeadings('just some text\nno headings here')).toEqual([]);
+  });
+
+  test('preserves order across headings and author-defined ids match anchors', () => {
+    const body = [
+      '## The Migration Report as a Permanent Archive',
+      'Some prose with a `## Subheadings` snippet currently bugging TOCs.',
+    ].join('\n');
+    expect(extractHeadings(body)).toEqual([
+      {
+        id: 'the-migration-report-as-a-permanent-archive',
+        text: 'The Migration Report as a Permanent Archive',
+        level: 2,
+      },
+    ]);
   });
 });

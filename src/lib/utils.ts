@@ -67,3 +67,31 @@ export function extractAllTags<T extends { data: { tags: string[] } }>(
   }
   return Array.from(tagSet).sort();
 }
+
+export interface Heading {
+  id: string;
+  text: string;
+  level: number;
+}
+
+export function extractHeadings(body: string): Heading[] {
+  const headings: Heading[] = [];
+  let inFence = false;
+  for (const line of body.split('\n')) {
+    if (/^\s*(```|~~~)/.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    const match = line.match(/^(#{2,3})\s+(.+)$/);
+    if (!match) continue;
+    const level = match[1].length;
+    const text = match[2].replace(/\*\*|__|`/g, '').trim();
+    const id = text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    headings.push({ id, text, level });
+  }
+  return headings;
+}
