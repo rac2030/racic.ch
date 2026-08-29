@@ -792,8 +792,8 @@ A whole-tree scan (excluding code blocks and this build log's prose, which legit
 Regenerating the comparison report previously meant juggling several ad-hoc scripts and `/tmp` files. It's now a single npm command:
 
 ```bash
-npm run report            # full rebuild + screenshots + report
-npm run report:screenshots
+npm run migration-report            # full rebuild + screenshots + archived report
+npm run migration-report:screenshots
 ```
 
 `scripts/migration-report.mjs` orchestrates the whole pipeline:
@@ -802,11 +802,17 @@ npm run report:screenshots
 2. **Builds** the site (`npm run build`).
 3. **Serves** `dist/` locally on port 4322 (overridable with `REPORT_PORT`).
 4. **Captures** fresh side-by-side screenshots via `scripts/screenshot-comparison.mjs` — 24 new pages plus the 24 live `rac.su` originals at 1280×800 (overridable with `SCREENSHOT_DIR`/`NEW_BASE`/`OLD_BASE`).
-5. **Shuts the server down** in a `finally`, then generates `migration-report.html` with `scripts/generate-migration-report.mjs`.
+5. **Shuts the server down** in a `finally`, then generates the report with `scripts/generate-migration-report.mjs`.
 
 The report generator and the file map now live in the repo (`scripts/generate-migration-report.mjs`, `scripts/migration-file-map.json`) instead of `/tmp`, so the target is self-contained and re-runnable by anyone with Node and Playwright.
 
-This final run produced a fresh report (78.79 MB) from the fixed content — the badge article now shows the pinout image instead of the raw shortcode, and the MoBiFloC diff reflects the corrected SDP3x link. Unit (151) and e2e (177) suites still pass.
+### The Migration Report as a Permanent Archive
+
+The report is now treated as the **final outcome of the migration** and is archived where the built site serves it: `public/archive/migration-report.html` → <a href="/archive/migration-report.html">/archive/migration-report.html</a>. The Säteri/Astro build copies anything under `public/` verbatim, so the report lives on the live site as a browsable side-by-side record of the old vs. new pages (screenshots and markdown diffs for all 24 articles).
+
+> Note: the report is a large single HTML file (~79 MB, all screenshots embedded as data URIs), so it is archived rather than linked into the main navigation — open it directly to review or download it as the migration record.
+
+This final run produced a fresh report from the fixed content — the badge article now shows the pinout image instead of the raw shortcode, and the MoBiFloC diff reflects the corrected SDP3x link. Unit (151) and e2e (177) suites still pass.
 
 ## Manual Changes Required
 

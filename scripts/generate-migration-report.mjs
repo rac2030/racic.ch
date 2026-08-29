@@ -232,6 +232,9 @@ html += '<div class="article"><div class="migration-plan">' + escapeHtml(MIGRATI
 
 html += '</div></body></html>';
 
-fs.writeFileSync(path.join(NEW_REPO, 'migration-report.html'), html);
-console.log('Report generated: migration-report.html');
+const outDir = path.join(NEW_REPO, 'public', 'archive');
+fs.mkdirSync(outDir, { recursive: true });
+const outFile = process.env.REPORT_OUTPUT || path.join(outDir, 'migration-report.html');
+fs.writeFileSync(outFile, html);
+console.log('Report generated: ' + outFile);
 console.log('Size: ' + (html.length / 1024 / 1024).toFixed(2) + ' MB');
