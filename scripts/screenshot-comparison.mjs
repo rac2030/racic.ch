@@ -1,0 +1,91 @@
+import { chromium } from 'playwright';
+import fs from 'fs';
+import path from 'path';
+
+const NEW_BASE = 'http://127.0.0.1:4322';
+const OLD_BASE = 'https://rac.su';
+const SCREENSHOT_DIR = '/tmp/migration-screenshots';
+
+const ARTICLES = [
+  { newPath: '/blog/hosting-hugo-site-firebase', oldPath: '/post/hugo/firebase/', label: 'blog-firebase', title: 'Hosting Hugo with Firebase', category: 'Blog' },
+  { newPath: '/blog/displaying-git-metadata-hugo-templates', oldPath: '/post/hugo/gitinfo/', label: 'blog-gitinfo', title: 'Displaying GIT Metadata in Hugo Templates', category: 'Blog' },
+  { newPath: '/blog/enabling-offline-usage-hugo-pwa', oldPath: '/post/hugo/pwa/', label: 'blog-pwa', title: 'Enabling Offline Usage (PWA)', category: 'Blog' },
+  { newPath: '/wiki/ant', oldPath: '/dev/ant/', label: 'wiki-ant', title: 'Antenna Fundamentals', category: 'Wiki' },
+  { newPath: '/wiki/git', oldPath: '/dev/git/', label: 'wiki-git', title: 'Git', category: 'Wiki' },
+  { newPath: '/wiki/out-of-office-meldungen', oldPath: '/fun/out-of-office-meldungen/', label: 'wiki-ooo', title: 'Out of Office Messages', category: 'Wiki' },
+  { newPath: '/wiki/apache-force-ssl', oldPath: '/wiki/apache-force-ssl-on-vhost/', label: 'wiki-apache-ssl', title: 'Apache Force SSL', category: 'Wiki' },
+  { newPath: '/wiki/apache-wildcard-domains', oldPath: '/wiki/apache-wildcard-domains/', label: 'wiki-apache-wildcard', title: 'Apache Wildcard Domains', category: 'Wiki' },
+  { newPath: '/wiki/using-google', oldPath: '/wiki/using-google/', label: 'wiki-google', title: 'Using Google', category: 'Wiki' },
+  { newPath: '/wiki/world-writable-files', oldPath: '/security/world-writeable-files/', label: 'wiki-world-writable', title: 'World Writable Files', category: 'Wiki' },
+  { newPath: '/projects/makezurich-2018-badge', oldPath: '/project/makezurich-18-badge/', label: 'proj-badge', title: 'MakeZurich 2018 Badge', category: 'Projects' },
+  { newPath: '/projects/makezurich-mobifloc', oldPath: '/project/makezurich-mobifloc/', label: 'proj-mobifloc', title: 'MakeZurich MoBiFloC', category: 'Projects' },
+  { newPath: '/projects/makezurich-pakman', oldPath: '/project/makezurich-pakman/', label: 'proj-pakman', title: 'MakeZurich PakMan', category: 'Projects' },
+  { newPath: '/projects/nina-w102-minimal-breakout', oldPath: '/project/nina-w102-minimal-breakout/', label: 'proj-nina', title: 'NINA-W102 Breakout', category: 'Projects' },
+  { newPath: '/projects/sensirion-sdp3x-driver', oldPath: '/libs/sensirion-sdp3x-driver/', label: 'proj-sdp3x', title: 'Sensirion SDP3x Driver', category: 'Projects' },
+  { newPath: '/projects/spikey', oldPath: '/project/spikey/', label: 'proj-spikey', title: 'Spikey', category: 'Projects' },
+  { newPath: '/bookmarks/360-video', oldPath: '/links/360video/', label: 'bk-360', title: '360° Video', category: 'Bookmarks' },
+  { newPath: '/bookmarks/arduino', oldPath: '/links/arduino/', label: 'bk-arduino', title: 'Arduino', category: 'Bookmarks' },
+  { newPath: '/bookmarks/china-shopping', oldPath: '/links/chinashopping/', label: 'bk-china', title: 'China Shopping', category: 'Bookmarks' },
+  { newPath: '/bookmarks/cnc', oldPath: '/links/cnc/', label: 'bk-cnc', title: 'CNC', category: 'Bookmarks' },
+  { newPath: '/bookmarks/computer-vision', oldPath: '/links/computervision/', label: 'bk-cv', title: 'Computer Vision', category: 'Bookmarks' },
+  { newPath: '/bookmarks/golang', oldPath: '/links/go/', label: 'bk-golang', title: 'Go', category: 'Bookmarks' },
+  { newPath: '/bookmarks/hugo-links', oldPath: '/links/hugo/', label: 'bk-hugo', title: 'Hugo Links', category: 'Bookmarks' },
+  { newPath: '/bookmarks/stm32', oldPath: '/links/stm32/', label: 'bk-stm32', title: 'STM32', category: 'Bookmarks' },
+];
+
+async function screenshotPage(page, url, filePath) {
+  try {
+    const response = await page.goto(url, { waitUntil: 'load', timeout: 20000 });
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: filePath, fullPage: true });
+    const status = response?.status() || 0;
+    return { ok: status < 400, status };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+}
+
+async function main() {
+  fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
+
+  const browser = await chromium.launch();
+  const results = [];
+
+  // Screenshot new site
+  console.log('=== New site (racic.ch) ===');
+  const newPage = await browser.newPage();
+  await newPage.setViewportSize({ width: 1280, height: 800 });
+  for (const a of ARTICLES) {
+    const fp = path.join(SCREENSHOT_DIR, `new-${a.label}.png`);
+    const r = await screenshotPage(newPage, `${NEW_BASE}${a.newPath}`, fp);
+    results.push({ ...a, newStatus: r.status || 'error', newFile: fp, newError: r.error });
+    console.log(`  ${r.ok ? '✓' : '✗'} ${a.label} [${r.status || r.error}]`);
+  }
+  await newPage.close();
+
+  // Screenshot old site
+  console.log('\n=== Old site (rac.su) ===');
+  const oldPage = await browser.newPage();
+  await oldPage.setViewportSize({ width: 1280, height: 800 });
+  for (const a of ARTICLES) {
+    const fp = path.join(SCREENSHOT_DIR, `old-${a.label}.png`);
+    const r = await screenshotPage(oldPage, `${OLD_BASE}${a.oldPath}`, fp);
+    const idx = results.findIndex(x => x.label === a.label);
+    if (idx >= 0) {
+      results[idx].oldStatus = r.status || 'error';
+      results[idx].oldFile = fp;
+      results[idx].oldError = r.error;
+    }
+    console.log(`  ${r.ok ? '✓' : '✗'} ${a.label} [${r.status || r.error}]`);
+  }
+  await oldPage.close();
+
+  await browser.close();
+
+  fs.writeFileSync(path.join(SCREENSHOT_DIR, 'results.json'), JSON.stringify(results, null, 2));
+  const newOk = results.filter(r => r.newStatus && r.newStatus < 400).length;
+  const oldOk = results.filter(r => r.oldStatus && r.oldStatus < 400).length;
+  console.log(`\nDone! New: ${newOk}/${results.length}, Old: ${oldOk}/${results.length}`);
+}
+
+main().catch(console.error);
