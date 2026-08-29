@@ -44,14 +44,15 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
     </script>
   </head>
   <body>
-    <div id="sw-update-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:10000;background:#348cb2;color:#fff;text-align:center;padding:0.6rem 1rem;font-size:0.9rem;cursor:pointer;">
+    <div id="sw-update-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:10000;background:#205878;color:#fff;text-align:center;padding:0.6rem 1rem;font-size:0.9rem;cursor:pointer;">
       New version available — click to refresh
     </div>
     <div id="bg"></div>
     <div id="overlay"></div>
     <div id="wrapper">
+      <a href="#main" class="skip-link">Skip to main content</a>
       <Header />
-      <main id="main">
+      <main id="main" tabindex="-1">
         <slot />
       </main>
       <Footer />

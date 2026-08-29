@@ -68,25 +68,31 @@ test.describe('About page backstage.io easter egg', () => {
 
   test('backstage icon expands on click', async ({ page }) => {
     await page.goto('/about');
-    
-    await page.evaluate(function() {
-      document.getElementById('backstage-icon')?.click();
+
+    const expanded = await page.evaluate(function() {
+      const el = document.getElementById('backstage-icon');
+      if (!el) return false;
+      el.click();
+      return el.classList.contains('expanded');
     });
-    
-    await page.waitForTimeout(100);
-    const icon = page.locator('#backstage-icon');
-    await expect(icon).toHaveClass(/expanded/);
+
+    expect(expanded).toBe(true);
   });
 
   test('backstage icon returns to bouncing after click', async ({ page }) => {
     await page.goto('/about');
-    
-    await page.evaluate(function() {
-      document.getElementById('backstage-icon')?.click();
+
+    const beganExpanded = await page.evaluate(function() {
+      const el = document.getElementById('backstage-icon');
+      if (!el) return false;
+      el.click();
+      return el.classList.contains('expanded');
     });
-    
-    await page.waitForTimeout(600);
-    const icon = page.locator('#backstage-icon');
-    await expect(icon).not.toHaveClass(/expanded/);
+    expect(beganExpanded).toBe(true);
+
+    await page.waitForFunction(function() {
+      const el = document.getElementById('backstage-icon');
+      return el ? !el.classList.contains('expanded') : true;
+    });
   });
 });

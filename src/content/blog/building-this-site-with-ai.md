@@ -181,7 +181,7 @@ Articles can be marked `draft: true` in frontmatter. In production builds, draft
 
 ### Bookmarks Collection
 
-Bookmark entries (10 curated link collections originally in the wiki's `links/` section) were moved to their own `bookmarks` collection. They appear only on the `/bookmarks/` page in an alphabetical tree layout. Each bookmark item supports a hero image that spans the full width of the row with a CSS gradient mask fading from the left. Bookmark detail pages use the same Post layout with ContentResizer.
+Bookmark entries (originally 10 curated link collections from the wiki's `links/` section, retired to 8 in Phase 13) were moved to their own `bookmarks` collection. They appear only on the `/bookmarks/` page in an alphabetical tree layout. Each bookmark item supports a hero image that spans the full width of the row with a CSS gradient mask fading from the left. Bookmark detail pages use the same Post layout with ContentResizer.
 
 ## Phase 9: Interactive Features
 
@@ -332,10 +332,10 @@ B --> B2["pages/"]
 B --> B3["components/"]
 B --> B4["layouts/"]
 B --> B5["styles/"]
-B1 --> B1a["blog - 5 posts"]
+B1 --> B1a["blog - 4 posts"]
 B1 --> B1b["projects - 6 entries"]
 B1 --> B1c["wiki - 9 entries"]
-B1 --> B1d["bookmarks - 10 entries"]
+B1 --> B1d["bookmarks - 8 entries"]
 B2 --> B2a["blog/[...slug].astro"]
 B2 --> B2b["projects/[...slug].astro"]
 B2 --> B2c["wiki/[...slug].astro"]
@@ -452,8 +452,8 @@ The site uses **GitHub Actions** for continuous integration and deployment. The 
 flowchart TD
 P["Push to branch or open PR"] --> T1["Unit Tests"]
 P --> T2["E2E Tests"]
-T1 -->|"All 97 pass"| B{"Is push to main?"}
-T2 -->|"All 125 pass"| B
+T1 -->|"All 151 pass"| B{"Is push to main?"}
+T2 -->|"All 177 pass"| B
 B -->|"Yes"| Build["Astro Build"]
 B -->|"No (PR only)"| Stop["Tests pass, no deploy"]
 Build --> Upload["Upload dist/ artifact"]
@@ -461,9 +461,9 @@ Upload --> Deploy["Deploy to GitHub Pages"]
 Deploy --> Live["Site live at racic.ch"]
 </div>
 
-**Unit tests** (Jest) validate utility functions, content schemas, site constants, and git log data — 97 tests that run in under a second.
+**Unit tests** (Jest) validate utility functions, content schemas, site constants, and git log data — 151 tests that run in under a second.
 
-**E2E tests** (Playwright) spin up the built site and verify every page renders correctly, navigation works, all links resolve, the sitemap/RSS feeds are valid, the git history modal works, and backstage.io easter egg — 146 tests across 13 spec files.
+**E2E tests** (Playwright) spin up the built site and verify every page renders correctly, navigation works, all links resolve, the sitemap/RSS feeds are valid, the git history modal works, and backstage.io easter egg — 177 tests across 13 spec files.
 
 **Code coverage** — Jest collects coverage for all utility functions and logic in `src/lib/` and `src/utils/`. The CI pipeline enforces an 80% minimum threshold on statements, branches, functions, and lines. Coverage currently stands at 100% across all metrics. The `test:coverage` script generates an lcov report locally.
 
@@ -691,6 +691,59 @@ Both markdown files, their hero SVGs, the file-map entries, and the screenshot-s
 ### Test Note
 
 One e2e test (`backstage icon expands on click`) flaked once under fully-parallel load (a 100 ms timing assertion while the site serves ~140 pages). It passes consistently in isolation and on re-runs — a pre-existing timing flake, not a regression from these changes.
+
+## Phase 14: Accessibility, Scaffolding, and Test Hardening
+
+After the content polish, the site got a dedicated accessibility pass, a set of npm scaffolding commands for adding new content, and a flaky-test hunt. Finally, a fresh migration report was generated from new screenshots.
+
+### Accessibility & Readability Pass
+
+The prompt was: *"review contrast and readability of pages and accessibility of content and change accordingly."* I computed WCAG contrast ratios for every text/background pairing instead of eyeballing them, then fixed what failed:
+
+- **Primary blue `#348cb2 → #205878`.** White text on the old blue (the header, buttons, and the service-worker banner) only reached **3.43:1** — below WCAG AA's 4.5:1 for normal text. The darker `#205878` hits **6.96:1** with white, and secondary text on it reaches 5.98:1. Accent link text (`#7dd3fc` on blue) is 4.62:1.
+- **Muted text opacity `0.65 → 0.8`.** Muted labels on the blue background went from 2.33:1 to **5.12:1**; on the dark panels they land above 6:1. Secondary text on panels is ~9:1.
+- **Base font-weight 300 → 400** on `<html>`, the hero subtitle, and the search-page inputs. Hairline weights at 300 made body text (especially sub-1rem labels) harder to read; 400 keeps the Source Sans Pro look while being more legible.
+- **Draft badge and watermark fixed.** The old draft badge was a hue-on-hue design (semi-transparent amber over a dark panel) that measured just **3.41:1**. It's now a solid `#fbbf24` background with dark `#1a1a2e` text (**10.22:1**), used by both the badge and the watermark bar.
+- **Keyboard accessibility.** Added a global `:focus-visible` outline (2px white, 2px offset), a skip link ("Skip to main content") on the Base and Post layouts (with `tabindex="-1"` on `<main>` so it can receive focus), and a `prefers-reduced-motion` block that disables the scrolling sky background and collapses transition/animation durations for users who request reduced motion.
+
+Verified by build (137 pages) and by recomputing the ratios; screenshots were captured for a manual visual check.
+
+### Scaffold Commands for New Content
+
+Adding a post/project/wiki/bookmark previously meant hand-writing a markdown file with all frontmatter. Now four npm scripts scaffold a draft skeleton interactively:
+
+```bash
+npm run new:blog
+npm run new:project
+npm run new:wiki
+npm run new:bookmark
+```
+
+(`npm run new` also exists as an alias that guesses the type by title.) Every scaffold:
+
+- Asks for **title** (required), **description**, and — only where the schema supports them — **category** and (for projects) a **repo URL**
+- Auto-fills `pubDate` with today's date
+- Sets `draft: true`, `tags: []`, and a `<!-- Start writing here -->` placeholder body
+- Slugifies the title and refuses to overwrite an existing file
+
+The script (`scripts/new-post.mjs`) uses Node's built-in `readline` and works both interactively (TTY) and with piped answers (one per line), so it's CI-friendly. Testing surfaced a real quirk: `readline.createInterface` up-front with piped stdin is flaky — answers are read line-by-line and the questions must be answered in order; the piped-input path was verified for all four types plus the duplicate-abort case.
+
+### Flaky Test Hunt
+
+The prompt was to run the test suite multiple times to find flaky tests and fix them. Results:
+
+- **Jest unit tests: 151 passed** across 3 consecutive runs (no flakes).
+- **Playwright e2e: 177 passed** across 5 consecutive full runs plus a final verification run.
+- One **known timing flake** was found and hardened: `tests/e2e/about-backstage.spec.ts`'s "icon expands on click" test asserted a 100 ms expansion *asynchronously* — a race that failed once under fully-parallel load. The tests now click and read the `expanded` class **synchronously** in the same `page.evaluate`, and the "returns to bouncing" test waits on class removal with `waitForFunction` instead of a fixed sleep. Verified: the spec now passes 3× in isolation and in the full suite (8 tests each run).
+
+### Fresh Migration Report
+
+The migration report (`migration-report.html`) was regenerated end-to-end with fresh data:
+
+- Site rebuilt (137 pages), served locally on port 4322
+- **New screenshots** captured for all 24 articles at 1280×800, and the 24 old rac.su pages re-captured live (all HTTP 200)
+- File-map titles reconciled against the real frontmatter (17 titles were stale, e.g. the ant article now correctly titled "Apache Ant")
+- The report includes the two retired bookmark entries in its Actions completed list and reflects 24 migrated articles / 24 of 26 relevant / 137 pages built
 
 ## Manual Changes Required
 
