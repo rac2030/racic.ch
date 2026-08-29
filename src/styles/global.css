@@ -970,11 +970,17 @@ hr {
 
 .card-meta {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
+  row-gap: 0rem;
   margin-bottom: 0.5rem;
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+.card-updated {
+  flex-basis: 100%;
 }
 
 .card h3 {
