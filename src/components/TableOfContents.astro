@@ -30,6 +30,9 @@ const tocHeadings = headings.filter((h) => h.level >= 2 && h.level <= 3);
     </ul>
   </div>
 </nav>
+<button class="toc-toggle" id="toc-toggle" aria-label="Table of contents" aria-expanded="false">
+  <i class="fa-solid fa-list-ul"></i>
+</button>
 )}
 
 <style>
@@ -160,9 +163,75 @@ const tocHeadings = headings.filter((h) => h.level >= 2 && h.level <= 3);
     padding-left: 0.75rem;
   }
 
+  .toc-toggle {
+    display: none;
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    z-index: 150;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 3.2rem;
+    height: 3.2rem;
+    padding: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    cursor: pointer;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 50%;
+    box-shadow:
+      0 0 24px var(--panel-glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s, background 0.2s, border-color 0.2s;
+    font-family: inherit;
+  }
+
+  .toc-toggle:hover {
+    background: var(--card-hover);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
   @media (max-width: 1100px) {
     .toc {
-      display: none;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: auto;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      max-height: 80vh;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 16px 16px 0 0;
+    }
+
+    .toc:hover,
+    .toc:focus-within {
+      transform: translateY(100%);
+    }
+
+    .toc.open {
+      transform: translateY(0);
+    }
+
+    .toc-border {
+      border-radius: 16px 16px 0 0;
+    }
+
+    .toc-inner {
+      border-radius: 16px 16px 0 0;
+      max-height: 80vh;
+    }
+
+    .toc-toggle {
+      display: inline-flex;
     }
   }
 </style>
@@ -204,5 +273,26 @@ const tocHeadings = headings.filter((h) => h.level >= 2 && h.level <= 3);
     }
   });
   updateActive();
+
+  var toggle = document.getElementById('toc-toggle');
+  if (toggle && toc) {
+    function setOpen(open) {
+      toc.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      setOpen(!toc.classList.contains('open'));
+    });
+    links.forEach(function(link) {
+      link.addEventListener('click', function() { setOpen(false); });
+    });
+    document.addEventListener('click', function(e) {
+      if (toc.classList.contains('open') &&
+          !toc.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
+        setOpen(false);
+      }
+    });
+  }
 })();
 </script>

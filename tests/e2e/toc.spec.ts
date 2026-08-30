@@ -1,5 +1,66 @@
 import { test, expect } from '@playwright/test';
 
+const TOC_PAGE = '/blog/building-this-site-with-ai';
+
+async function isTocOnScreen(page) {
+  return page.evaluate(() => {
+    const el = document.getElementById('table-of-contents');
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    return r.top < vh && r.bottom > 0;
+  });
+}
+
+test.describe('Table of Contents (mobile menu)', () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test('main slideout panel is not visible on mobile', async ({ page }) => {
+    await page.goto(TOC_PAGE);
+    await page.waitForSelector('#table-of-contents');
+    await expect(page.locator('#table-of-contents')).toBeAttached();
+    expect(await isTocOnScreen(page)).toBe(false);
+  });
+
+  test('icon-only toggle button is visible on mobile', async ({ page }) => {
+    await page.goto(TOC_PAGE);
+    await page.waitForSelector('#toc-toggle');
+    await expect(page.locator('#toc-toggle')).toBeVisible();
+    const text = await page.locator('#toc-toggle').textContent();
+    expect(text!.trim()).toBe('');
+    expect(page.locator('#toc-toggle i.fa-list-ul')).toHaveCount(1);
+  });
+
+  test('clicking the toggle button opens the TOC overlay', async ({ page }) => {
+    await page.goto(TOC_PAGE);
+    await page.waitForSelector('#toc-toggle');
+    expect(await isTocOnScreen(page)).toBe(false);
+    await page.click('#toc-toggle');
+    await expect(page.locator('#table-of-contents')).toHaveClass(/open/);
+    expect(await isTocOnScreen(page)).toBe(true);
+    expect(await page.locator('#toc-toggle').getAttribute('aria-expanded')).toBe('true');
+  });
+
+  test('clicking a TOC link closes the overlay', async ({ page }) => {
+    await page.goto(TOC_PAGE);
+    await page.waitForSelector('#toc-toggle');
+    await page.click('#toc-toggle');
+    await expect(page.locator('#table-of-contents')).toHaveClass(/open/);
+    await page.locator('.toc-link').first().click();
+    await expect(page.locator('#table-of-contents')).not.toHaveClass(/open/);
+    await expect.poll(() => isTocOnScreen(page)).toBe(false);
+  });
+
+  test('clicking outside the overlay closes it', async ({ page }) => {
+    await page.goto(TOC_PAGE);
+    await page.waitForSelector('#toc-toggle');
+    await page.click('#toc-toggle');
+    await expect(page.locator('#table-of-contents')).toHaveClass(/open/);
+    await page.mouse.click(10, 10);
+    await expect(page.locator('#table-of-contents')).not.toHaveClass(/open/);
+  });
+});
+
 test.describe('Table of Contents', () => {
   test('blog article has TOC panel', async ({ page }) => {
     await page.goto('/blog/building-this-site-with-ai');

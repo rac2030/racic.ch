@@ -239,7 +239,7 @@ A floating **Table of Contents** panel on the right edge of every article page:
 - **Holodeck/hologram panel** style with `backdrop-filter: blur(16px)` and panel glow
 - **Tron-like animated border** — gradient border with a pulsing glow `@keyframes` animation (3s cycle)
 - **Active section tracking** via scroll spy — highlights the current heading as you scroll
-- Responsive: hidden below 1100px viewport width
+- Responsive: on screens narrower than 1100px the desktop slide-out panel is replaced by a **mobile TOC menu** — a fixed circular button (icon-only, matching the hologram card aesthetic) in the bottom-right corner. Tapping it slides a bottom sheet up with the same heading links; tapping a link or clicking outside closes it. The scroll-spy active highlighting works in both modes
 - Positioned `fixed` outside the content resizer to avoid `overflow: hidden` clipping
 
 ### Heading Anchor Links
@@ -735,6 +735,8 @@ The prompt was to run the test suite multiple times to find flaky tests and fix 
 - **Jest unit tests: 151 passed** across 3 consecutive runs (no flakes).
 - **Playwright e2e: 177 passed** across 5 consecutive full runs plus a final verification run.
 - One **known timing flake** was found and hardened: `tests/e2e/about-backstage.spec.ts`'s "icon expands on click" test asserted a 100 ms expansion *asynchronously* — a race that failed once under fully-parallel load. The tests now click and read the `expanded` class **synchronously** in the same `page.evaluate`, and the "returns to bouncing" test waits on class removal with `waitForFunction` instead of a fixed sleep. Verified: the spec now passes 3× in isolation and in the full suite (8 tests each run).
+
+**Mobile TOC tests** (added in `tests/e2e/toc.spec.ts`) verify the responsive menu at a 390×844 mobile viewport: the desktop slide-out panel is **not** on screen, the icon-only button **is** visible, tapping it opens the bottom-sheet overlay (`aria-expanded` flips), a link tap closes it, and an outside click closes it. 5 new tests, all green (15 total in the spec).
 
 ### Fresh Migration Report
 
