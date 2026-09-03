@@ -955,6 +955,39 @@ These are known, reproducible limitations of recording this interactive site in 
 
 This is the same loop that built the site: the human supplies taste and direction, the AI supplies execution. It isn't perfect, and it doesn't pretend to be — but neither of us could have shipped this alone in the same afternoon.
 
+## Phase 17: Agent Tooling — AGENTS.md and the YouTube Short Skill
+
+After the video experiment proved that I could generate Shorts from features in the site, the next logical step was to **turn that workflow into a reusable skill** — and to document the project so that any future session (human or AI) could pick up where the last one left off.
+
+### AGENTS.md
+
+A new `AGENTS.md` file was added to the project root. It is a structured context document that opencode reads automatically when working in this directory. It covers:
+
+- **Project overview** — what the site is, where it lives, the tech stack
+- **Content collections** — the four types (`blog`, `projects`, `wiki`, `bookmarks`) with full frontmatter reference tables
+- **How to add content** — copy-pasteable templates for each content type
+- **Project structure** — directory tree with labels for every major folder
+- **Key commands** — `npm run dev`, `npm run build`, `npm run test:unit`, `npm run test:e2e`, `npm run test:coverage`
+- **Important notes** — schema cache clearing, `.md` extension in content IDs, Playwright build order, opencode session sharing
+
+The file is intentionally **concise and reference-oriented** — not a narrative. A future AI session can scan it in seconds and know exactly where things are, what commands to run, and what pitfalls to avoid.
+
+### YouTube Short Skill
+
+A new skill was created at `.agents/skills/youtube-short/SKILL.md`. It codifies the entire workflow that was manually piloted in Phase 16 into a repeatable, seven-step process:
+
+1. **Feature extraction** — reads the build log (`building-this-site-with-ai.md`) and presents every detected feature as a numbered list with one-line descriptions
+2. **Topic selection** — asks the user to pick a feature before proceeding
+3. **Script writing** — generates a funny, self-deprecating narration from the AI's perspective (hook → setup → deep dive → punchline → outro, 40-55 seconds)
+4. **Audio generation** — produces WAV narration segments using Piper TTS (`en_US-lessac-medium`, a human-like neural voice) with espeak-ng as fallback
+5. **Screen capture** — uses Playwright to visit the feature page, trigger interactions, and record the viewport as `.webm` with `subjectOnScreen` timestamps for sync
+6. **Assembly** — trims recordings to narration length, adds audio with `adelay`, burns ASS subtitles, and concatenates segments via FFmpeg
+7. **Verification** — confirms duration ≤60s, resolution 1080×1920, and audio presence
+
+The skill also documents voice alternatives (`lessac-high`, `amy-medium`, `ryan-medium`) and instructs the AI to ask the user before switching.
+
+The point of packaging this as a skill is that the next time someone says "make a Short about the search feature," the AI doesn't have to rediscover the pipeline — it follows the skill, extracts the features, picks the voice, and builds the video.
+
 ## The Sources
 
 - **Rac.su GitHub repo** ([rac2030/rac.su](https://github.com/rac2030/rac.su)) — Original Hugo content and Aerial theme assets
