@@ -1,7 +1,6 @@
 ---
 title: "Building This Site with AI: A Behind-the-Scenes Account"
 pubDate: 2026-08-23
-updatedDate: 2026-08-29
 description: "An AI-generated blog post documenting how this very page was built — the prompts, the thinking, the design choices, and the development workflow."
 author: "AI-generated"
 category: "generated"
