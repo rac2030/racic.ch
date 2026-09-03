@@ -377,6 +377,33 @@ The dev server starts at `http://localhost:4321`. Astro's dev server supports ho
 rm -rf .astro && npm run dev
 ```
 
+### DevContainer
+
+The repository ships a DevContainer (`.devcontainer/`) for a reproducible build
+environment, with one twist: the container runs a **newer Node than the host**.
+
+- **Node 22 → Node 24:** the container is based on `node:24-bookworm`
+  (Node v24.20.0), a step up from the host's baseline Node 22. The same commands
+  work in both places — `npm run build`, `npm run test:unit`, and
+  `npm run test:e2e` (Playwright browsers are baked in at image build time).
+- **opencode is installed inside the image** and pinned to `1.18.21`, matching
+  the version on the host, so the two don't disagree about the session store.
+- **The host↔container opencode session is shared.** The container bind-mounts
+  the host's `~/.local/share/opencode` (the SQLite session store, auth keys, and
+  snapshots) and `~/.config/opencode` into the container at
+  `/home/node/.local/share/opencode` and `/home/node/.config/opencode`, and runs
+  as the `node` user (uid/gid 1000 — the same uid that owns those dirs on the
+  host). That means the session handles from the host are visible inside the
+  container:
+
+  ```bash
+  opencode --continue          # resume the most recent session
+  opencode --session <id>      # resume a specific session by id
+  ```
+
+  Only keep one side writing to the shared `opencode.db` at a time; reading or
+  resuming a session from either side is always safe.
+
 <div class="mermaid">
 sequenceDiagram
 participant Dev as Developer

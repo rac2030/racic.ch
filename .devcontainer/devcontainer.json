@@ -1,0 +1,47 @@
+{
+  "name": "racic.ch",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "node",
+
+  "containerEnv": {
+    "OPENCODE_DISABLE_AUTOUPDATE": "1",
+    "OPENCODE_CONFIG_DIR": "/home/node/.config/opencode"
+  },
+
+  "mounts": [
+    {
+      "source": "${localEnv:HOME}/.local/share/opencode",
+      "target": "/home/node/.local/share/opencode",
+      "type": "bind",
+      "consistency": "cached"
+    },
+    {
+      "source": "${localEnv:HOME}/.config/opencode",
+      "target": "/home/node/.config/opencode",
+      "type": "bind",
+      "consistency": "cached"
+    },
+    {
+      "source": "${localEnv:HOME}/.cache/ms-playwright",
+      "target": "/home/node/.cache/ms-playwright",
+      "type": "bind",
+      "consistency": "cached"
+    }
+  ],
+
+  "forwardPorts": [4321, 4322],
+  "portsAttributes": {
+    "4321": { "label": "Astro dev server", "onAutoForward": "notify" },
+    "4322": { "label": "Playwright preview", "onAutoForward": "notify" }
+  },
+
+  "postCreateCommand": "npm install && opencode --version && node -v",
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["opencode.opencode"]
+    }
+  }
+}
