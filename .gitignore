@@ -35,3 +35,8 @@ Thumbs.db
 markdown-portfolio-wiki-and-blog-site.json
 public/search.js
 public/sw.js
+
+# open-mem: Auto-generated folder context files.
+# Uncomment to exclude from version control (recommended for large projects):
+# **/AGENTS.md
+.open-mem/
