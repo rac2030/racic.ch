@@ -7,6 +7,7 @@ import {
   escapeHtml,
   highlight,
   getExcerpt,
+  sectionPriority,
   SearchItem,
 } from '../../src/lib/search';
 
@@ -209,6 +210,75 @@ describe('search', () => {
   test('mixed exact and fuzzy', () => {
     const result = search(testData, 'makezurich');
     expect(result.exact.length).toBeGreaterThan(0);
+  });
+});
+
+describe('sectionPriority', () => {
+  test('Blog has the highest priority', () => {
+    expect(sectionPriority('Blog')).toBeGreaterThan(sectionPriority('Bookmarks'));
+  });
+
+  test('Bookmarks have the lowest priority', () => {
+    expect(sectionPriority('Bookmarks')).toBe(1);
+    const sections = ['Blog', 'Projects', 'Wiki', 'Page'];
+    for (const s of sections) {
+      expect(sectionPriority(s)).toBeGreaterThan(sectionPriority('Bookmarks'));
+    }
+  });
+
+  test('unknown section falls back to lowest priority', () => {
+    expect(sectionPriority('Unknown')).toBe(1);
+  });
+});
+
+describe('bookmarks as lowest priority', () => {
+  const mixedData: SearchItem[] = [
+    {
+      title: 'Arduino Bookmark',
+      description: 'Arduino resources',
+      tags: ['arduino'],
+      url: '/bookmarks/arduino',
+      section: 'Bookmarks',
+      body: 'Links about arduino.',
+    },
+    {
+      title: 'Arduino Blog Post',
+      description: 'An arduino tutorial',
+      tags: ['arduino'],
+      url: '/blog/arduino-post',
+      section: 'Blog',
+      body: 'A detailed arduino tutorial.',
+    },
+    {
+      title: 'Arduino Wiki',
+      description: 'Reference for arduino',
+      tags: ['arduino'],
+      url: '/wiki/arduino',
+      section: 'Wiki',
+      body: 'Knowledge about arduino.',
+    },
+  ];
+
+  test('exact results order bookmarks last', () => {
+    const results = searchExact(mixedData, ['arduino']);
+    expect(results.length).toBe(3);
+    const last = results[results.length - 1];
+    expect(last.item.section).toBe('Bookmarks');
+    expect(results[0].item.section).toBe('Blog');
+  });
+
+  test('fuzzy results rank bookmarks below higher priority sections', () => {
+    const results = searchFuzzy(mixedData, ['arduino']);
+    expect(results.length).toBe(3);
+    const sections = results.map((r) => r.item.section);
+    expect(sections[0]).toBe('Blog');
+    expect(sections.indexOf('Bookmarks')).toBe(sections.length - 1);
+  });
+
+  test('whole-search result keeps bookmarks at lowest priority', () => {
+    const result = search(mixedData, 'arduino');
+    const order = result.exact.map((r) => r.item.section);
+    expect(order[order.length - 1]).toBe('Bookmarks');
   });
 });
 

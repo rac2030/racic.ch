@@ -1,4 +1,4 @@
-// Shared search module — used by SearchBar.astro and 404.astro
+// Shared search module — used by SearchBar.astro, search.astro and 404.astro
 
 export interface SearchItem {
   title: string;
@@ -28,6 +28,32 @@ export interface FuzzyResult {
 export interface SearchResult {
   exact: ExactResult[];
   fuzzy: FuzzyResult[];
+}
+
+// Higher = higher priority in result ordering. Bookmarks are lowest priority.
+export const SECTION_PRIORITY: Record<string, number> = {
+  Blog: 5,
+  Projects: 4,
+  Wiki: 3,
+  Page: 2,
+  Bookmarks: 1,
+};
+
+export function sectionPriority(section: string): number {
+  return SECTION_PRIORITY[section] ?? 1;
+}
+
+// Score multiplier per section so low-priority sections (Bookmarks) rank last.
+const SECTION_WEIGHT: Record<string, number> = {
+  Blog: 1,
+  Projects: 0.9,
+  Wiki: 0.8,
+  Page: 0.7,
+  Bookmarks: 0.5,
+};
+
+function sectionWeight(section: string): number {
+  return SECTION_WEIGHT[section] ?? 1;
 }
 
 export function fuzzyMatch(query: string, text: string): FuzzyMatchResult {
@@ -76,11 +102,12 @@ export function searchExact(data: SearchItem[], terms: string[]): ExactResult[] 
         (t) => haystack.indexOf(t) !== -1 || bodyHaystack.indexOf(t) !== -1,
       );
     })
-    .map((item) => ({ item, score: 0, bodyMatch: false }));
+    .map((item) => ({ item, score: 0, bodyMatch: false }))
+    .sort((a, b) => sectionPriority(b.item.section) - sectionPriority(a.item.section));
 }
 
 export function searchFuzzy(data: SearchItem[], terms: string[]): FuzzyResult[] {
-  const results: FuzzyResult[] = [];
+  let results: FuzzyResult[] = [];
   for (const item of data) {
     const titleLower = item.title.toLowerCase();
     const descLower = item.description.toLowerCase();
@@ -110,7 +137,13 @@ export function searchFuzzy(data: SearchItem[], terms: string[]): FuzzyResult[] 
       results.push({ item, score: bestScore });
     }
   }
-  results.sort((a, b) => b.score - a.score);
+  results = results
+    .map((r) => ({ ...r, score: Math.round(r.score * sectionWeight(r.item.section)) }))
+    .sort((a, b) => {
+      const diff = b.score - a.score;
+      if (diff !== 0) return diff;
+      return sectionPriority(b.item.section) - sectionPriority(a.item.section);
+    });
   return results.slice(0, 5);
 }
 
@@ -167,7 +200,7 @@ export function getExcerpt(body: string, words: string[]): string {
   return highlight(excerpt, words);
 }
 
-// IIFE bundle for browser usage (SearchBar.astro and 404.astro)
+// IIFE bundle for browser usage (SearchBar.astro, search.astro and 404.astro)
 // This gets compiled to public/search.js
 if (typeof window !== 'undefined') {
   (window as any).SearchLib = {
@@ -178,5 +211,6 @@ if (typeof window !== 'undefined') {
     escapeHtml,
     highlight,
     getExcerpt,
+    sectionPriority,
   };
 }

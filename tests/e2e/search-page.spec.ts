@@ -97,4 +97,18 @@ test.describe('Search page', () => {
     const searchPageInput = page.locator('#search-input');
     await expect(searchPageInput).toHaveValue('makezurich');
   });
+
+  test('search page ranks bookmarks as lowest priority', async ({ page }) => {
+    await page.goto('/search/?q=hugo');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
+    const firstResult = page.locator('.search-page-result').first();
+    await expect(firstResult).toBeVisible();
+    const urls = await page.locator('.search-page-result-url').allTextContents();
+    const blogPos = urls.findIndex((u) => u.includes('/blog/hosting-hugo-site-firebase'));
+    const bookmarkPos = urls.findIndex((u) => u.includes('/bookmarks/hugo-links'));
+    expect(blogPos).toBeGreaterThanOrEqual(0);
+    expect(bookmarkPos).toBeGreaterThan(blogPos);
+    expect(bookmarkPos).toBe(urls.length - 1);
+  });
 });
