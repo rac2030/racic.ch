@@ -27,7 +27,8 @@
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
-    "astro": "^7.2.4"
+    "astro": "^7.2.4",
+    "marked": "^15.0.12"
   },
   "devDependencies": {
     "@jest/globals": "^30.4.1",

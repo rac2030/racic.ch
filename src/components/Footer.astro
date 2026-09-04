@@ -10,8 +10,36 @@ const releaseUrl = `https://github.com/rac2030/racic.ch/releases/tag/v${version}
   <div class="container">
     <p class="footer-copy">&copy; {new Date().getFullYear()} {SITE.author}. Built with Astro. Design: <a href="https://html5up.net/aerial" style="border-bottom: none; color: var(--text-muted);">Aerial</a> by <a href="https://html5up.net" style="border-bottom: none; color: var(--text-muted);">HTML5 UP</a>
     · <a href="https://github.com/rac2030/racic.ch" class="source-link" id="source-link" target="_blank" rel="noopener noreferrer">May the source be with you</a>
-    · <a href={releaseUrl} class="footer-version" id="footer-version" target="_blank" rel="noopener noreferrer" title="View release notes">v{version}</a>
+    · <a href={releaseUrl} class="footer-version" id="footer-version" rel="noopener noreferrer" title="View release notes">v{version}</a>
     </p>
+  </div>
+  <div class="release-modal" id="release-modal" style="display:none;" role="dialog" aria-modal="true" aria-label="Release notes">
+    <div class="release-backdrop" id="release-modal-backdrop"></div>
+    <div class="release-dialog" id="release-dialog">
+      <span class="release-corner rc-tl" aria-hidden="true"></span>
+      <span class="release-corner rc-tr" aria-hidden="true"></span>
+      <span class="release-corner rc-br" aria-hidden="true"></span>
+      <span class="release-corner rc-bl" aria-hidden="true"></span>
+      <div class="release-header" id="release-drag-handle">
+        <div class="release-heading">
+          <span class="release-holo-label">HOLODECK</span>
+          <h3>Release Notes</h3>
+        </div>
+        <button class="release-close" id="release-modal-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="release-body" id="release-modal-body"></div>
+      <div class="release-footer">
+        <a href="https://github.com/rac2030/racic.ch/releases" id="release-all-link" target="_blank" rel="noopener noreferrer">View all releases &rarr;</a>
+      </div>
+      <div class="release-resize rs-n" data-dir="n" aria-hidden="true"></div>
+      <div class="release-resize rs-s" data-dir="s" aria-hidden="true"></div>
+      <div class="release-resize rs-e" data-dir="e" aria-hidden="true"></div>
+      <div class="release-resize rs-w" data-dir="w" aria-hidden="true"></div>
+      <div class="release-resize rs-ne" data-dir="ne" aria-hidden="true"></div>
+      <div class="release-resize rs-nw" data-dir="nw" aria-hidden="true"></div>
+      <div class="release-resize rs-se" data-dir="se" aria-hidden="true"></div>
+      <div class="release-resize rs-sw" data-dir="sw" aria-hidden="true"></div>
+    </div>
   </div>
   <div class="yoda-hologram" id="yoda-hologram">
     <div class="yoda-speech">
@@ -78,6 +106,290 @@ const releaseUrl = `https://github.com/rac2030/racic.ch/releases/tag/v${version}
   .footer-version:hover {
     color: var(--accent);
     text-shadow: 0 0 8px rgba(52, 140, 178, 0.6), 0 0 20px rgba(52, 140, 178, 0.3);
+  }
+
+  .release-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+  }
+  .release-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 6, 0.75);
+    backdrop-filter: blur(2px);
+  }
+  .release-dialog {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    min-width: 280px;
+    min-height: 200px;
+    width: 680px;
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 18% 0%, rgba(52, 140, 178, 0.16), transparent 60%),
+      linear-gradient(165deg, rgba(8, 18, 30, 0.96), rgba(14, 26, 42, 0.96));
+    border: 1px solid rgba(112, 200, 255, 0.4);
+    border-radius: 6px;
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.5),
+      0 0 25px rgba(52, 140, 178, 0.35),
+      0 0 70px rgba(52, 140, 178, 0.18),
+      inset 0 0 45px rgba(52, 140, 178, 0.10);
+    text-align: left;
+  }
+  .release-dialog::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      linear-gradient(rgba(52, 140, 178, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(52, 140, 178, 0.07) 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.55;
+  }
+  .release-dialog::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(90deg, transparent, rgba(112, 200, 255, 0.9), transparent);
+    opacity: 0.7;
+  }
+  .release-corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+    z-index: 4;
+  }
+  .rc-tl { top: 0; left: 0; border-top: 2px solid rgba(112, 200, 255, 0.85); border-left: 2px solid rgba(112, 200, 255, 0.85); border-top-left-radius: 5px; }
+  .rc-tr { top: 0; right: 0; border-top: 2px solid rgba(112, 200, 255, 0.85); border-right: 2px solid rgba(112, 200, 255, 0.85); border-top-right-radius: 5px; }
+  .rc-br { bottom: 0; right: 0; border-bottom: 2px solid rgba(112, 200, 255, 0.85); border-right: 2px solid rgba(112, 200, 255, 0.85); border-bottom-right-radius: 5px; }
+  .rc-bl { bottom: 0; left: 0; border-bottom: 2px solid rgba(112, 200, 255, 0.85); border-left: 2px solid rgba(112, 200, 255, 0.85); border-bottom-left-radius: 5px; }
+  .release-resize {
+    position: absolute;
+    z-index: 6;
+  }
+  .rs-n { top: -4px; left: 12px; right: 12px; height: 8px; cursor: ns-resize; }
+  .rs-s { bottom: -4px; left: 12px; right: 12px; height: 8px; cursor: ns-resize; }
+  .rs-e { right: -4px; top: 12px; bottom: 12px; width: 8px; cursor: ew-resize; }
+  .rs-w { left: -4px; top: 12px; bottom: 12px; width: 8px; cursor: ew-resize; }
+  .rs-ne { top: -5px; right: -5px; width: 14px; height: 14px; cursor: nesw-resize; }
+  .rs-nw { top: -5px; left: -5px; width: 14px; height: 14px; cursor: nwse-resize; }
+  .rs-se { bottom: -5px; right: -5px; width: 14px; height: 14px; cursor: nwse-resize; }
+  .rs-sw { bottom: -5px; left: -5px; width: 14px; height: 14px; cursor: nesw-resize; }
+  .release-header {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 1.2rem;
+    border-bottom: 1px solid rgba(112, 200, 255, 0.2);
+    background: linear-gradient(180deg, rgba(52, 140, 178, 0.2), rgba(52, 140, 178, 0.03));
+    cursor: grab;
+    user-select: none;
+    flex: 0 0 auto;
+  }
+  .release-header:active {
+    cursor: grabbing;
+  }
+  .release-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+  .release-holo-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.28em;
+    color: #5fb8e6;
+    font-weight: 600;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .release-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #f0f4f8;
+    font-weight: 600;
+    text-align: left;
+  }
+  .release-close {
+    background: none;
+    border: none;
+    color: #9be1ff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 0.2rem;
+    opacity: 0.8;
+    transition: opacity 0.2s, color 0.2s, text-shadow 0.2s;
+  }
+  .release-close:hover {
+    opacity: 1;
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(112, 200, 255, 0.8);
+  }
+  .release-body {
+    position: relative;
+    z-index: 1;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0.8rem 1.2rem;
+    text-align: left;
+  }
+  .release-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(120, 180, 220, 0.12);
+  }
+  .release-item:last-child {
+    border-bottom: none;
+  }
+  .release-title {
+    margin: 0;
+    font-size: 1rem;
+    color: #7dd3fc;
+    font-weight: 600;
+    text-align: left;
+  }
+  .release-title a {
+    color: #7dd3fc;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .release-title a:hover {
+    color: #3b82f6;
+    text-decoration: underline;
+  }
+  .release-date {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.75rem;
+    color: #9aa5b1;
+    text-align: left;
+  }
+  .release-notes {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #d7e0ea;
+    word-break: break-word;
+    text-align: left;
+  }
+  .release-notes > :first-child {
+    margin-top: 0;
+  }
+  .release-notes > :last-child {
+    margin-bottom: 0;
+  }
+  .release-notes p {
+    margin: 0.5rem 0;
+  }
+  .release-notes h1,
+  .release-notes h2,
+  .release-notes h3,
+  .release-notes h4,
+  .release-notes h5,
+  .release-notes h6 {
+    color: #f0f4f8;
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 1rem 0 0.4rem;
+  }
+  .release-notes h1 {
+    font-size: 1.05rem;
+  }
+  .release-notes h2 {
+    font-size: 1rem;
+  }
+  .release-notes h3,
+  .release-notes h4 {
+    font-size: 0.95rem;
+  }
+  .release-notes ul,
+  .release-notes ol {
+    margin: 0.4rem 0;
+    padding-left: 1.4rem;
+  }
+  .release-notes li {
+    margin: 0.2rem 0;
+  }
+  .release-notes a {
+    color: #7dd3fc;
+    text-decoration: none;
+  }
+  .release-notes a:hover {
+    color: #3b82f6;
+    text-decoration: underline;
+  }
+  .release-notes code {
+    background: rgba(52, 140, 178, 0.15);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8em;
+    color: #7dd3fc;
+  }
+  .release-notes pre {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(120, 180, 220, 0.2);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    margin: 0.6rem 0;
+  }
+  .release-notes pre code {
+    background: none;
+    padding: 0;
+    color: #d7e0ea;
+  }
+  .release-notes blockquote {
+    margin: 0.6rem 0;
+    padding: 0.25rem 1rem;
+    border-left: 3px solid rgba(52, 140, 178, 0.5);
+    color: #b9c4cf;
+  }
+  .release-notes hr {
+    border: none;
+    border-top: 1px solid rgba(120, 180, 220, 0.2);
+    margin: 0.8rem 0;
+  }
+  .release-loading,
+  .release-error,
+  .release-empty {
+    color: #9aa5b1;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 2rem 0;
+  }
+  .release-footer {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+    padding: 0.6rem 1.2rem;
+    border-top: 1px solid rgba(112, 200, 255, 0.2);
+    background: linear-gradient(0deg, rgba(52, 140, 178, 0.12), transparent);
+    text-align: right;
+  }
+  .release-footer a {
+    color: #7dd3fc;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  .release-footer a:hover {
+    color: #3b82f6;
+    text-decoration: underline;
   }
 
   .yoda-hologram {
@@ -188,5 +500,207 @@ const releaseUrl = `https://github.com/rac2030/racic.ch/releases/tag/v${version}
   yoda.addEventListener('mouseleave', function() {
     yoda.classList.remove('visible');
   });
+})();
+</script>
+
+<script>
+import { marked } from 'marked';
+
+(function() {
+  var versionLink = document.getElementById('footer-version');
+  var modal = document.getElementById('release-modal');
+  var backdrop = document.getElementById('release-modal-backdrop');
+  var closeBtn = document.getElementById('release-modal-close');
+  var body = document.getElementById('release-modal-body');
+  var dialog = document.getElementById('release-dialog');
+  var dragHandle = document.getElementById('release-drag-handle');
+
+  marked.setOptions({ gfm: true, breaks: true });
+
+  if (!versionLink || !modal || !body || !dialog) return;
+
+  document.body.appendChild(modal);
+
+  var MARGIN = 16;
+  var MIN_WIDTH = 280;
+  var MIN_HEIGHT = 200;
+  var PREF_WIDTH = 680;
+  var PREF_HEIGHT = 480;
+  var dragState = null;
+
+  function applyPos(left, top) {
+    dialog.style.left = left + 'px';
+    dialog.style.top = top + 'px';
+  }
+
+  function openModal() {
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    fitDialog();
+    if (!body.dataset.loaded) loadReleases();
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function fitDialog() {
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var maxW = vw - MARGIN * 2, maxH = vh - MARGIN * 2;
+    var w = Math.min(PREF_WIDTH, maxW);
+    if (w < MIN_WIDTH) w = MIN_WIDTH;
+    var h = Math.min(PREF_HEIGHT, maxH);
+    if (h < MIN_HEIGHT) h = MIN_HEIGHT;
+    dialog.style.width = w + 'px';
+    dialog.style.height = h + 'px';
+    var left = Math.round((vw - dialog.offsetWidth) / 2);
+    var top = Math.round((vh - dialog.offsetHeight) / 2);
+    if (left < MARGIN) left = MARGIN;
+    if (top < MARGIN) top = MARGIN;
+    applyPos(left, top);
+  }
+
+  function renderMarkdown(text) {
+    try {
+      return marked.parse(text || '');
+    } catch (e) {
+      return (text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+  }
+
+  function renderReleases(releases) {
+    if (!releases || !releases.length) {
+      body.innerHTML = '<p class="release-empty">No releases yet.</p>';
+    } else {
+      var html = '';
+      releases.forEach(function(r) {
+        var date = new Date(r.published_at);
+        var dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        var title = (r.name || r.tag_name || 'Release').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        var url = r.html_url ? r.html_url : 'https://github.com/rac2030/racic.ch/releases/tag/' + encodeURIComponent(r.tag_name);
+        var notes = renderMarkdown(r.body || 'No release notes.');
+        html +=
+          '<div class="release-item">' +
+            '<h4 class="release-title"><a href="' + url + '" target="_blank" rel="noopener noreferrer">' + title + '</a></h4>' +
+            '<span class="release-date">' + dateStr + '</span>' +
+            '<div class="release-notes">' + notes + '</div>' +
+          '</div>';
+      });
+      body.innerHTML = html;
+    }
+    body.dataset.loaded = '1';
+    fitDialog();
+  }
+
+  function loadReleases() {
+    body.innerHTML = '<p class="release-loading">Loading release notes&hellip;</p>';
+    fetch('https://api.github.com/repos/rac2030/racic.ch/releases?per_page=5')
+      .then(function(res) { return res.json(); })
+      .then(function(data) { renderReleases(data); })
+      .catch(function() {
+        body.innerHTML = '<p class="release-error">Could not load release notes.</p>';
+        fitDialog();
+      });
+  }
+
+  versionLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    openModal();
+  });
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  if (backdrop) backdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.style.display === 'block') closeModal();
+  });
+
+  if (dragHandle) {
+    dragHandle.addEventListener('pointerdown', function(e) {
+      if (e.target.closest('.release-close')) return;
+      e.preventDefault();
+      dragState = {
+        mode: 'drag',
+        startX: e.clientX, startY: e.clientY,
+        origLeft: dialog.offsetLeft, origTop: dialog.offsetTop
+      };
+      dragHandle.setPointerCapture(e.pointerId);
+    });
+  }
+
+  document.querySelectorAll('.release-resize').forEach(function(handle) {
+    handle.addEventListener('pointerdown', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dragState = {
+        mode: 'resize',
+        dir: handle.getAttribute('data-dir'),
+        startX: e.clientX, startY: e.clientY,
+        origLeft: dialog.offsetLeft, origTop: dialog.offsetTop,
+        origWidth: dialog.offsetWidth, origHeight: dialog.offsetHeight
+      };
+      handle.setPointerCapture(e.pointerId);
+    });
+  });
+
+  document.addEventListener('pointermove', function(e) {
+    if (!dragState) return;
+    var st = dragState;
+
+    if (st.mode === 'drag') {
+      var dx = e.clientX - st.startX;
+      var dy = e.clientY - st.startY;
+      var vw = window.innerWidth, vh = window.innerHeight;
+      var left = st.origLeft + dx;
+      var top = st.origTop + dy;
+      left = Math.min(Math.max(left, -dialog.offsetWidth + 80), vw - 80);
+      top = Math.min(Math.max(top, 0), vh - 40);
+      applyPos(left, top);
+      return;
+    }
+
+    if (st.mode === 'resize') {
+      var rdx = e.clientX - st.startX;
+      var rdy = e.clientY - st.startY;
+      var dir = st.dir;
+      var nw = st.origWidth, nh = st.origHeight;
+      var nl = st.origLeft, nt = st.origTop;
+      var vw2 = window.innerWidth, vh2 = window.innerHeight;
+
+      if (dir.indexOf('e') !== -1) nw = st.origWidth + rdx;
+      if (dir.indexOf('s') !== -1) nh = st.origHeight + rdy;
+      if (dir.indexOf('w') !== -1) nw = st.origWidth - rdx;
+      if (dir.indexOf('n') !== -1) nh = st.origHeight - rdy;
+
+      if (nw < MIN_WIDTH) nw = MIN_WIDTH;
+      if (nh < MIN_HEIGHT) nh = MIN_HEIGHT;
+
+      if (dir.indexOf('w') !== -1) {
+        var right = st.origLeft + st.origWidth;
+        if (nw > right - MARGIN) nw = right - MARGIN;
+        nl = right - nw;
+      } else if (dir.indexOf('e') !== -1) {
+        if (nl + nw > vw2 - MARGIN) nw = vw2 - MARGIN - nl;
+      }
+
+      if (dir.indexOf('n') !== -1) {
+        var bottom = st.origTop + st.origHeight;
+        if (nh > bottom - MARGIN) nh = bottom - MARGIN;
+        nt = bottom - nh;
+      } else if (dir.indexOf('s') !== -1) {
+        if (nt + nh > vh2 - MARGIN) nh = vh2 - MARGIN - nt;
+      }
+
+      dialog.style.width = nw + 'px';
+      dialog.style.height = nh + 'px';
+      applyPos(nl, nt);
+    }
+  });
+
+  function endPointer() {
+    dragState = null;
+  }
+  document.addEventListener('pointerup', endPointer);
+  document.addEventListener('pointercancel', endPointer);
 })();
 </script>

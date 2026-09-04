@@ -243,6 +243,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### ./
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 3c2e58cf-63c2-4145-888c-68829647ed13 | 🟣 feature | Footer release-notes modal renders bodies as markdown via bundled marked | 2026-09-04 |
+| 6ad88855-97ba-4a34-bf54-027940a090ec | 🔵 discovery | Playwright config serves dist over python http.server on 4322 | 2026-09-04 |
 | 3d6cea1d-b010-4011-b86e-f4cb9c6f3486 | ✅ change | AGENTS.md now documents semantic-release versioning setup | 2026-09-04 |
 | 2c556465-177c-4a03-8bce-3ff74715a5f8 | 🔵 discovery | Single deploy workflow and package scripts for build chain | 2026-09-04 |
 | 7f9b2e77-d710-426e-b5c7-b0e72d01f58b | 🔵 discovery | semantic-release and plugins already declared in package.json | 2026-09-04 |
@@ -251,10 +253,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | dc6f9c22-3744-4ce6-966f-3d5f82bba142 | 🔵 discovery | Build log documents search architecture in blog post | 2026-09-04 |
 | 24c9922d-50fb-451c-8595-2a7d1629ca22 | ✅ change | Build cache and search index requirements | 2026-09-03 |
 | 2e1b3e36-70ba-44dd-9981-24d0a58c2975 | ✅ change | Build cache and search index requirements | 2026-09-03 |
-| 29b2c7fb-b8ef-41fb-a9c1-99a1780efe62 | ✅ change | Search index build cache and section weighting notes | 2026-09-03 |
-| 9b4d6d4d-6346-4c5c-9cbb-1c06133c31a7 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
 
-**Key concepts:** what-changed, ci-cd, build-tooling, how-it-works, build-log, pattern, search-index, build-cache, bookmarks
+**Key concepts:** feature, markdown, marked, how-it-works, ui-interactions, e2e-testing, what-changed, ci-cd, build-tooling, build-log
 
 ### .github/workflows/
 | ID | Type | Title | Date |
@@ -288,35 +288,48 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### src/components/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 9b3cd9a2-282a-4828-89a4-417595d1fe51 | ✅ change | Footer-version link and its CSS styles in place | 2026-09-04 |
-| c08bd5b9-3ddb-48a4-8c41-58b31fffe84d | ✅ change | Footer now shows version linking to GitHub release notes | 2026-09-04 |
-| cc5306bc-7e85-4df2-8616-16c9a86b2509 | 🔵 discovery | Footer.astro shows copyright, source link, and Yoda hologram | 2026-09-04 |
-| dee07a8e-e302-4d17-a21d-d57141eee67a | 🔵 discovery | Footer-related files identified for version display work | 2026-09-04 |
-| 680bb34f-2b95-4a98-972a-f0d09152af81 | 🔵 discovery | SearchBar.astro: client-side dropdown with keyboard nav | 2026-09-03 |
-| ef197529-ef1b-4b96-8de0-f3556187afe7 | 🔵 discovery | SearchBar dropdown: client-side results with keyboard nav and Enter redirect | 2026-09-03 |
-| 3f630abe-bfb5-421c-afa3-728aebf06fc6 | 🔵 discovery | Search index consumed by SearchBar, search page, and 404 | 2026-09-03 |
-| 72277dc7-2a1f-43d0-a781-d27169eb51f3 | 🔵 discovery | Three UI entry points fetch the shared search index | 2026-09-03 |
-| 4d4107fa-f886-4103-ad72-fb07bd9379cc | 🔵 discovery | Three UI entry points fetch the shared search index | 2026-09-03 |
+| e81637d4-3a6d-4ee3-93bc-208765999466 | 🔴 bugfix | Release-modal not centered / drag-resize broken: full-height clamp + delayed centering | 2026-09-04 |
+| 0115f3e8-ddf0-437a-83b3-50974f9f3ed9 | 🔄 refactor | Release-notes modal script converted to bundled marked import | 2026-09-04 |
+| 1ad536ab-8527-4993-aa80-78b595c1b160 | 🟣 feature | Release-notes modal markup: dialog with header/body/footer | 2026-09-04 |
+| 9ddd3147-f65e-451e-bb6a-24cca776662f | 🟣 feature | Release-notes modal: link, code, blockquote, footer styles | 2026-09-04 |
+| ba4b17c6-4cdf-4996-9ed1-fbe1c1e46c07 | 🟣 feature | Release-notes modal CSS: dialog, header, title, markdown styles | 2026-09-04 |
+| 3c2e58cf-63c2-4145-888c-68829647ed13 | 🟣 feature | Footer release-notes modal renders bodies as markdown via bundled marked | 2026-09-04 |
+| 6eafa57c-a226-476d-bae4-a170b0e49407 | 🟣 feature | Release-notes modal: styled release-date/notes and states | 2026-09-04 |
+| de9cf6cd-f643-4cd3-890f-83b1806be364 | 🟣 feature | Footer release-notes modal wiring and API fetch confirmed | 2026-09-04 |
+| bb8a1f5a-22df-43ea-8a6e-e1270806880b | 🟣 feature | Footer release-notes modal styles defined | 2026-09-04 |
+| cc8d444d-0f3a-4460-a863-c8b1b6820641 | 🟣 feature | Footer: version link href retained but renders hidden modal markup | 2026-09-04 |
 
-**Key concepts:** what-changed, ui-interactions, build-tooling, how-it-works, task-planning, search-bar, gotcha, pattern, search-index, client-side
+**Key concepts:** how-it-works, gotcha, ui-interactions, e2e-testing, refactor, markdown, feature, ui-design, pattern, marked
 
 ### src/content/blog/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 5404b785-8713-4605-826d-c4ab0767af09 | ✅ change | Build log updated to document release-notes modal behavior | 2026-09-04 |
+| 341e0480-d0e6-4c10-8f4c-28614721a638 | ✅ change | Build log semantic-versioning table row stale for modal | 2026-09-04 |
+| ecbc347d-1e98-40b6-a27f-273008075f66 | 🔵 discovery | Build log lessons: migration, Zod defaults, Astro quirks, cache | 2026-09-04 |
+| 2fdd3c4d-dd20-42cc-88a5-7afbb509be69 | ✅ change | Build log footer-version description now stale for modal | 2026-09-04 |
+| dd7f2b0c-70dc-4be5-a211-a3aed0e495f1 | 🔵 discovery | Build log documents SW, semantic-release, migration details | 2026-09-04 |
 | 5ea6e6fb-e13c-4c65-852e-b79a676c5d84 | 🔵 discovery | Build log references CI/CD at several points | 2026-09-04 |
 | 01be707b-6c72-48a1-a0f3-ceb34f78f2c4 | 🔵 discovery | Build and Deployment section documents CI/CD with stale numbers | 2026-09-04 |
 | c8ac2097-9971-4263-8a63-b2384abf0cc8 | 🔵 discovery | Build log table of contents shows full build narrative | 2026-09-04 |
 | 953ffeaa-4f41-4bcd-87c9-e12acb725eac | 🔵 discovery | Build log feature table tracks search, search page, and navigation | 2026-09-04 |
 | a83c9dca-0aa6-4208-9f20-3d17a4caaef0 | 🔴 bugfix | Duplicate Highlighting paragraph in build log | 2026-09-04 |
-| c4bf013a-6067-4ca7-953b-4c6af7570f91 | 🔵 discovery | Search architecture and scoring weights documented in build log | 2026-09-04 |
-| 2c97712e-5485-47af-8591-20a02969c05c | 🔵 discovery | Blog documents AGENTS.md role and YouTube Short creation skill workflow | 2026-09-03 |
-| 85815e19-c2a4-479a-8481-138937d2ee08 | 🔵 discovery | Blog post documents site search architecture and scoring algorithms | 2026-09-03 |
 
-**Key concepts:** build-log, how-it-works, ci-cd, pattern, search-index, deduplication, bugfix, fuzzy-search, why-it-exists
+**Key concepts:** documentation, what-changed, feature, ui-interactions, gotcha, pattern, service-worker, build-log, how-it-works, ci-cd
+
+### src/layouts/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| c5c9556c-5b05-4d11-a743-fa5003f55e1e | 🔵 discovery | Post and GitHistory layouts use inline JS modals | 2026-09-04 |
+
+**Key concepts:** how-it-works, ui-interactions, gotcha
 
 ### src/lib/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| c2d8d07a-84c6-47fb-82c0-d7f5bd588c9b | 🔵 discovery | Service worker: passport-style lazy caching with version diff | 2026-09-04 |
+| 6ade7a1e-7584-46ad-93e8-edcca988ae25 | 🔵 discovery | Service worker fetch handler intercepts all GETs with cache/respondWith | 2026-09-04 |
+| 26acea2e-2ce3-402f-a3f1-98b391856d53 | 🔴 bugfix | Playwright page.route does not intercept SW-originated fetches; use serviceWorkers:'block' | 2026-09-04 |
 | 917c9910-1505-4e8e-83f2-9b395c36d15e | 🔵 discovery | Search module: dual-mode fuzzy search with browser IIFE bundle | 2026-09-04 |
 | caf53d8c-68ff-4edd-9af5-7959730e2815 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
 | 9b4d6d4d-6346-4c5c-9cbb-1c06133c31a7 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
@@ -324,10 +337,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 82bdb07c-518b-4323-8116-e0dbdfe729e0 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
 | 751aaead-6ee2-483e-a837-cf525956e571 | ✅ change | Bookmarks priority work refined to section-based weighting | 2026-09-03 |
 | 34035b51-b2f7-443f-9cb3-a55b504d9ea7 | ✅ change | Exploration done; bookmarks weighting task now in progress | 2026-09-03 |
-| cd2ecc3b-1871-4b4f-a2ed-8029baca13ad | 🔵 discovery | Search module: dual-mode fuzzy search with browser IIFE bundle | 2026-09-03 |
-| 75024180-8b3c-4b87-853c-2981b01f8551 | 🔵 discovery | Search module: dual-mode fuzzy search with browser bundle | 2026-09-03 |
 
-**Key concepts:** how-it-works, search-module, fuzzy-search, search-index, bookmarks, task-planning, ranking, pattern, trade-off
+**Key concepts:** how-it-works, service-worker, caching, gotcha, e2e-testing, playwright, route-interception, search-module, fuzzy-search, search-index
 
 ### src/pages/
 | ID | Type | Title | Date |
@@ -343,6 +354,13 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 
 **Key concepts:** what-changed, search-index, bookmarks, author, pattern, client-side, how-it-works, trade-off, search-page, url-state-sync
 
+### src/styles/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 9e19285d-814b-42b2-87f2-fbf0bed01398 | 🔵 discovery | Site theme CSS variables: text, accent, panel, glow | 2026-09-04 |
+
+**Key concepts:** ui-design, how-it-works, pattern
+
 ### tests/
 | ID | Type | Title | Date |
 |----|------|-------|------|
@@ -354,18 +372,18 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### tests/e2e/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| f99d240b-d5be-458b-929f-8c555d59dca2 | ✅ change | New e2e test asserts footer version link to GitHub releases | 2026-09-04 |
-| a599b2e9-0356-4f40-b5cf-73d25e7f292c | 🔵 discovery | site.spec.ts: broad cross-feature e2e coverage | 2026-09-04 |
-| 1cfec4da-05c7-480c-9b3c-e377821bab8a | 🔵 discovery | Yoda easter egg e2e spec covers link and hologram behavior | 2026-09-04 |
-| 558954c0-c3dc-4fef-a655-5f9e96aa3021 | 🔵 discovery | Search page e2e covers state, URL param, cards, and navigation | 2026-09-03 |
-| 4151c4e7-eb8b-481d-b9ff-95755141486f | 🔵 discovery | Fuzzy search e2e spec verifies ranking, dedup, and 404 SearchLib | 2026-09-03 |
-| 0d014ba2-999f-4bd3-ad00-0d60325d7791 | 🔵 discovery | features.spec already expects Bookmarks section in search index | 2026-09-03 |
-| fa15c4c0-a1e9-46a5-9542-731e3e01992b | 🔵 discovery | features.spec.ts: broad cross-feature e2e coverage | 2026-09-03 |
-| 0ccd6598-45c0-4491-b9db-3b778f7ca5e2 | 🔵 discovery | Search feature has unit and e2e test coverage | 2026-09-03 |
-| 2cc7bb02-0863-4fb1-bd63-98b3a499f8cc | 🔵 discovery | Search page e2e spec: full UI interaction coverage | 2026-09-03 |
-| b9abb35e-d992-48fd-aa88-7635c8a9c131 | 🔵 discovery | Search header e2e coverage: fallback locators + index validation | 2026-09-03 |
+| 98d44aa5-97cf-40a5-b441-73b7709cfea2 | 🔴 bugfix | Resize-via-handle test now passes; all 11 modal tests green | 2026-09-04 |
+| 4c2b560e-7b79-43be-b843-0d16c3f2466e | ✅ change | Modal holodeck e2e: 10 pass, resize test skipped | 2026-09-04 |
+| c6ef3b3c-021f-4872-bede-d3a18aab9c29 | 🔵 discovery | Release-notes modal suite: markdown + dismissal tests | 2026-09-04 |
+| 633324c1-d902-444c-ac69-9f66f0a190f7 | 🟣 feature | Release-notes modal new test: dialog centered and in-viewport | 2026-09-04 |
+| 01394075-6619-4f1c-8d2c-9b1cf9c62e2e | 🔵 discovery | Release-notes modal markdown and close-button test lines | 2026-09-04 |
+| 37b4ad5c-8fe9-40e3-9890-51d8a3388837 | 🔵 discovery | Release-notes modal e2e: count, href, view-all, markdown assertions | 2026-09-04 |
+| 02ef2eb6-ab7f-4812-853f-04072d43ee36 | 🔵 discovery | Release-notes modal test: 5 links and View-all assertions | 2026-09-04 |
+| 73adb9ab-9184-4ae7-af6d-4b6f6ba1ebc6 | 🔵 discovery | site.spec.ts broad cross-feature e2e coverage | 2026-09-04 |
+| 3c2e58cf-63c2-4145-888c-68829647ed13 | 🟣 feature | Footer release-notes modal renders bodies as markdown via bundled marked | 2026-09-04 |
+| 3dfc8ff9-f65e-4fdd-8e3b-152cd9b50070 | ✅ change | Release-notes modal e2e: 7 tests now all pass | 2026-09-04 |
 
-**Key concepts:** what-changed, e2e-testing, test-coverage, ui-interactions, how-it-works, search-page, fuzzy-search, e2e-tests, search-index, bookmarks
+**Key concepts:** bugfix, e2e-testing, what-changed, ui-interactions, feature, test-coverage, markdown, marked, how-it-works
 
 ### tests/unit/
 | ID | Type | Title | Date |
