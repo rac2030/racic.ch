@@ -1,11 +1,16 @@
 ---
 import { SITE } from '../consts';
+import pkg from '../../package.json';
+
+const version = pkg.version ?? 'dev';
+const releaseUrl = `https://github.com/rac2030/racic.ch/releases/tag/v${version}`;
 ---
 
 <footer class="site-footer">
   <div class="container">
     <p class="footer-copy">&copy; {new Date().getFullYear()} {SITE.author}. Built with Astro. Design: <a href="https://html5up.net/aerial" style="border-bottom: none; color: var(--text-muted);">Aerial</a> by <a href="https://html5up.net" style="border-bottom: none; color: var(--text-muted);">HTML5 UP</a>
     · <a href="https://github.com/rac2030/racic.ch" class="source-link" id="source-link" target="_blank" rel="noopener noreferrer">May the source be with you</a>
+    · <a href={releaseUrl} class="footer-version" id="footer-version" target="_blank" rel="noopener noreferrer" title="View release notes">v{version}</a>
     </p>
   </div>
   <div class="yoda-hologram" id="yoda-hologram">
@@ -59,6 +64,20 @@ import { SITE } from '../consts';
   .source-link:hover {
     color: #ffe81f;
     text-shadow: 0 0 8px rgba(255, 232, 31, 0.6), 0 0 20px rgba(255, 232, 31, 0.3);
+  }
+
+  .footer-version {
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: none;
+    font-size: 0.8em;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s, text-shadow 0.3s;
+  }
+
+  .footer-version:hover {
+    color: var(--accent);
+    text-shadow: 0 0 8px rgba(52, 140, 178, 0.6), 0 0 20px rgba(52, 140, 178, 0.3);
   }
 
   .yoda-hologram {

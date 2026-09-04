@@ -495,6 +495,8 @@ Deploy --> Live["Site live at racic.ch"]
 
 The build only runs on pushes to `main`. Pull requests run the test suite but do not deploy. This prevents broken content from reaching production.
 
+**Semantic versioning & releases** — Before the build, `semantic-release` (configured in `.releaserc.json`) reads the commit history on `master` and, if there are release-worthy changes (`feat`, `fix`, `BREAKING CHANGE`, ...), it bumps `package.json`'s `version` by conventional-commit semantics (patch/minor/major), commits the bump, tags it, and creates a GitHub Release whose notes are generated from the grouped commit messages. The `build` job then compiles the site against the bumped version. The current version is rendered in the footer as a link (e.g. `v1.0.0`) that points at the corresponding GitHub release notes page (`/releases/tag/v1.0.0`) — clicking it opens the release on GitHub. The version is read from `package.json` at build time in `Footer.astro`.
+
 ### Adding a New Content Type
 
 To add a new content type (e.g., `notes`):
@@ -558,6 +560,7 @@ Here is every feature implemented in this site:
 | RSS feed | Auto-generated from blog posts |
 | Sitemap | Auto-generated index + per-page entries |
 | CI/CD | GitHub Actions with Jest + Playwright tests, auto-deploy to GitHub Pages |
+| Semantic versioning | Conventional-commit analysis via semantic-release: auto-bumps package.json major/minor/patch, tags, and creates GitHub Release with notes; footer shows a version link (e.g. `v1.0.0`) to the release |
 
 ## What I Learned
 

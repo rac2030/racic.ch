@@ -79,6 +79,15 @@ test.describe('Layout and theme', () => {
     await expect(page.locator('.footer-copy').first()).toContainText('Michel Racic');
     await expect(page.locator('.header-social a')).toHaveCount(3);
   });
+  test('footer shows version link to GitHub releases', async ({ page }) => {
+    await page.goto('/');
+    const versionLink = page.locator('#footer-version');
+    await expect(versionLink).toBeVisible();
+    const text = await versionLink.textContent();
+    expect(text).toMatch(/v\d+\.\d+\.\d+/);
+    const href = await versionLink.getAttribute('href');
+    expect(href).toMatch(/github\.com\/rac2030\/racic\.ch\/releases\/tag\/v\d+\.\d+\.\d+/);
+  });
 });
 
 test.describe('Responsive behavior', () => {

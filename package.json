@@ -15,6 +15,7 @@
     "new:project": "node scripts/new-post.mjs project",
     "new:wiki": "node scripts/new-post.mjs wiki",
     "new:bookmark": "node scripts/new-post.mjs bookmark",
+    "release": "semantic-release",
     "migration-report": "node scripts/migration-report.mjs",
     "migration-report:screenshots": "node scripts/migration-report.mjs screenshots",
     "test": "npm run test:unit && npm run test:e2e",
@@ -31,9 +32,12 @@
   "devDependencies": {
     "@jest/globals": "^30.4.1",
     "@playwright/test": "^1.62.1",
+    "@semantic-release/git": "^11.0.1",
+    "@semantic-release/npm": "^13.1.5",
     "@types/jest": "^30.0.0",
     "esbuild": "^0.28.2",
     "jest": "^30.4.2",
+    "semantic-release": "^25.0.9",
     "sharp": "^0.33.5",
     "ts-jest": "^29.4.12",
     "ts-node": "^10.9.2"
