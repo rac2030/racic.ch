@@ -259,12 +259,14 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### .github/workflows/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 4b589fa6-7e52-47e9-ace9-7f1f0b1ace43 | ✅ change | GitHub Actions bumped to v5 majors for Node 24 | 2026-09-04 |
+| b9031ee7-8a59-4572-915b-bbe93527cf45 | ✅ change | Semantic-release step added to deploy workflow before build | 2026-09-04 |
 | c0ad2cd5-13a3-491c-bd2d-d51f180b4eed | ✅ change | Build job scopes contents write permission for release step | 2026-09-04 |
 | 3077dba2-7551-4dfa-9e21-3681162bd4db | ✅ change | Semantic-release step added to deploy workflow before build | 2026-09-04 |
 | c474ab0b-cbe9-4e5e-8ff9-fa9ca966623b | 🔵 discovery | Deploy workflow: three sequential jobs, master-only build | 2026-09-04 |
 | 38c00d7b-885f-40ea-9aae-7f265a2f6ef4 | 🔵 discovery | Deploy workflow: three sequential jobs, master-only build | 2026-09-04 |
 
-**Key concepts:** what-changed, ci-cd, build-tooling, how-it-works
+**Key concepts:** what-changed, ci-cd, how-it-works, build-tooling
 
 ### .opencode/
 | ID | Type | Title | Date |
