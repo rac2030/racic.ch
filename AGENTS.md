@@ -229,6 +229,7 @@ npm run test:e2e:ui     # Playwright UI mode
 - **Schema changes require cache clear:** after editing `src/content.config.ts`, run `rm -rf .astro && npm run dev`.
 - **Content IDs include the `.md` extension** — always use `.replace(/\.md$/, '')` when deriving URL slugs (see `src/lib/utils.ts`).
 - **Search section priority:** search results are ranked by section via `SECTION_PRIORITY` / `SECTION_WEIGHT` in `src/lib/search.ts` — Blog > Projects > Wiki > Page > Bookmarks. Bookmarks are deliberately the **lowest priority match** (weight 0.5, sorted last in both exact and fuzzy results) since they are link collections, not authored content.
+- **Build log:** The build log is the continuously updated blog entry `src/content/blog/building-this-site-with-ai.md`. Whenever you add, change, or fix a site feature (e.g. search scoring/priorities), update the build log in two places: **(1)** the relevant technical narrative section (e.g. "Full-Text Search with Fuzzy Matching") describing the exact behavior, and **(2)** the feature-summary table near the "What I Built" section if it lists the feature. Keep it in sync with the actual implementation in `src/lib/*` — write down the precise scoring/weights (e.g. `SECTION_PRIORITY`, `SECTION_WEIGHT`) so future agents can reconstruct behavior from the log alone. Verify the post still renders after edits (it is a real content page) and dedupe any repeated lines you touch.
 - **opencode session sharing:** the devcontainer bind-mounts host opencode data for shared sessions.
 - **Node version:** Host uses Node 22, devcontainer uses Node 24 — both work identically.
 
@@ -239,12 +240,17 @@ npm run test:e2e:ui     # Playwright UI mode
 ### ./
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| dc6f9c22-3744-4ce6-966f-3d5f82bba142 | 🔵 discovery | Build log documents search architecture in blog post | 2026-09-04 |
+| 24c9922d-50fb-451c-8595-2a7d1629ca22 | ✅ change | Build cache and search index requirements | 2026-09-03 |
+| 2e1b3e36-70ba-44dd-9981-24d0a58c2975 | ✅ change | Build cache and search index requirements | 2026-09-03 |
+| 29b2c7fb-b8ef-41fb-a9c1-99a1780efe62 | ✅ change | Search index build cache and section weighting notes | 2026-09-03 |
+| 9b4d6d4d-6346-4c5c-9cbb-1c06133c31a7 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
 | fe8eb538-3601-425b-b97c-0c5260f45ade | ✅ change | Working tree has untracked skills and AGENTS.md change | 2026-09-03 |
 | e7f78249-2c1a-456e-ad2e-723bc7077078 | 🔵 discovery | Scripts directory holds build, migration, and scaffolding tooling | 2026-09-03 |
 | 7c92c45e-5bdc-4b3b-9de0-1e72d3a33f05 | 🔵 discovery | Project is ESM-only Astro 7 static site with composite build chain | 2026-09-03 |
 | c9125b3d-0426-4bb9-8d87-0e86287295c1 | 🔵 discovery | Astro config: sitemap, shiki theme, collections backcompat | 2026-09-03 |
 
-**Key concepts:** git-status, workspace, skills, uncommitted, how-it-works, pattern, astro-config, sitemap, shiki
+**Key concepts:** how-it-works, search-index, pattern, build-cache, bookmarks, git-status, workspace, skills, uncommitted, astro-config
 
 ### src/
 | ID | Type | Title | Date |
@@ -269,14 +275,19 @@ npm run test:e2e:ui     # Playwright UI mode
 ### src/content/blog/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| c4bf013a-6067-4ca7-953b-4c6af7570f91 | 🔵 discovery | Search architecture and scoring weights documented in build log | 2026-09-04 |
 | 2c97712e-5485-47af-8591-20a02969c05c | 🔵 discovery | Blog documents AGENTS.md role and YouTube Short creation skill workflow | 2026-09-03 |
 | 85815e19-c2a4-479a-8481-138937d2ee08 | 🔵 discovery | Blog post documents site search architecture and scoring algorithms | 2026-09-03 |
 
-**Key concepts:** how-it-works, why-it-exists, pattern, fuzzy-search, search-index
+**Key concepts:** how-it-works, search-index, fuzzy-search, build-log, why-it-exists, pattern
 
 ### src/lib/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| caf53d8c-68ff-4edd-9af5-7959730e2815 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
+| 9b4d6d4d-6346-4c5c-9cbb-1c06133c31a7 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
+| ff24f42b-d4c9-4350-a232-5a47c5ae41be | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
+| 82bdb07c-518b-4323-8116-e0dbdfe729e0 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
 | 751aaead-6ee2-483e-a837-cf525956e571 | ✅ change | Bookmarks priority work refined to section-based weighting | 2026-09-03 |
 | 34035b51-b2f7-443f-9cb3-a55b504d9ea7 | ✅ change | Exploration done; bookmarks weighting task now in progress | 2026-09-03 |
 | cd2ecc3b-1871-4b4f-a2ed-8029baca13ad | 🔵 discovery | Search module: dual-mode fuzzy search with browser IIFE bundle | 2026-09-03 |
@@ -298,6 +309,14 @@ npm run test:e2e:ui     # Playwright UI mode
 
 **Key concepts:** what-changed, search-index, bookmarks, author, pattern, client-side, how-it-works, trade-off, search-page, url-state-sync
 
+### tests/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 9b4d6d4d-6346-4c5c-9cbb-1c06133c31a7 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
+| 82bdb07c-518b-4323-8116-e0dbdfe729e0 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
+
+**Key concepts:** search-index, bookmarks
+
 ### tests/e2e/
 | ID | Type | Title | Date |
 |----|------|-------|------|
@@ -317,11 +336,13 @@ npm run test:e2e:ui     # Playwright UI mode
 ### tests/unit/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 9b4d6d4d-6346-4c5c-9cbb-1c06133c31a7 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
+| 82bdb07c-518b-4323-8116-e0dbdfe729e0 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
 | 0ccd6598-45c0-4491-b9db-3b778f7ca5e2 | 🔵 discovery | Search feature has unit and e2e test coverage | 2026-09-03 |
 | 0a02a746-c81a-4516-b472-10670a57f769 | 🔵 discovery | Search unit tests cover all module behaviors | 2026-09-03 |
 | 712f8f53-28ba-46e7-98e7-5c8d3822d83d | 🔵 discovery | Search module has unit and e2e test coverage | 2026-09-03 |
 
-**Key concepts:** test-coverage, search-module, unit-tests, e2e-tests, how-it-works, fuzzy-search, pattern
+**Key concepts:** search-index, bookmarks, test-coverage, search-module, unit-tests, e2e-tests, how-it-works, fuzzy-search, pattern
 
 💡 *Use `mem-find` to search full details. Use `mem-create` to save important decisions.*
 <!-- /open-mem-context -->

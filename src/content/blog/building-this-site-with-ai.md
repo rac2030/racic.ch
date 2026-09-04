@@ -194,7 +194,7 @@ A build-time search index (`/search-index.json`) generates JSON with the full te
 
 **Exact search** — Multi-word AND matching with scoring: title matches (10pts + 5pt prefix bonus), tag matches (3pts), description matches (1pt), body matches (0.1pt). Results sorted by metadata matches before body matches.
 
-**Fuzzy search** — Character sequence matching with scoring: consecutive char bonus (5x per streak), word boundary bonus (3pts), title weighted 3x, tags 2x, description 1x. Fuzzy results appear below exact results under a "Similar results" header, or as "Did you mean?" when no exact matches exist. Minimum score threshold of 3 prevents noise.
+**Fuzzy search** — Character sequence matching with scoring: consecutive char bonus (5x per streak), word boundary bonus (3pts), title weighted 3x, tags 2x, description 1x. Fuzzy results appear below exact results under a "Similar results" header, or as "Did you mean?" when no exact matches exist. Minimum score threshold of 3 prevents noise. Bookmarks are weighted lowest (0.5x) so they rank after Blog/Projects/Wiki results when scores are comparable.
 
 **Highlighting** — Matching terms wrapped in `<mark>` tags in title, description, and excerpt. Excerpts show 60 chars before and 120 chars after the first match.
 
@@ -534,7 +534,7 @@ Here is every feature implemented in this site:
 | Category system | Optional `category` field, filter buttons on listings, clickable badges on articles |
 | Draft mode | `draft: true` hides from production; visible in dev with yellow watermark |
 | Tag filtering | Autocomplete input, tag cloud, active pills, URL persistence, AND multi-select |
-| Full-text search | Shared `SearchLib` module, exact + fuzzy matching, highlighted excerpts, used by search bar and 404 page |
+| Full-text search | Shared `SearchLib` module, exact + fuzzy matching, highlighted excerpts, section-priority ranking (Blog > Projects > Wiki > Page > Bookmarks), used by search bar and 404 page |
 | Dedicated search page | Google-like `/search` page with real-time results, hero images, `?q=` param, holocard results panel |
 | SearchBar → search page | Enter key navigates to `/search?q=...` for full-page results |
 | Table of Contents | Floating right-edge panel with Tron-style animated border, scroll spy, holodeck hologram style |
