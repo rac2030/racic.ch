@@ -1,7 +1,7 @@
 {
   "name": "racic.ch",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "scripts": {
     "dev": "astro dev",
     "build": "node scripts/generate-git-log.mjs && node scripts/build-sw.js && node scripts/stamp-sw.js && node scripts/build-search.js && astro build",
