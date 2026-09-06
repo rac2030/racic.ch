@@ -77,4 +77,27 @@ test.describe('Search functionality', () => {
     const searchInput = page.locator('#search-bar-input, .search-bar-input');
     await expect(header.locator('#search-bar-input, .search-bar-input')).toBeVisible();
   });
+
+  test('search icon stays inside the input box on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 700 });
+    await page.goto('/');
+    const box = await page.evaluate(() => {
+      const input = document.querySelector('.search-bar-input')?.getBoundingClientRect();
+      const icon = document.querySelector('.search-bar-icon')?.getBoundingClientRect();
+      if (!input || !icon) return null;
+      return {
+        iconLeftOfInput: input.left - icon.left,
+        iconRightPastInput: icon.right - input.right,
+        iconAboveInput: input.top - icon.top,
+        iconBelowInput: icon.bottom - input.bottom,
+      };
+    });
+    expect(box).not.toBeNull();
+    // iconLeftOfInput / iconAboveInput < 0 = icon is right-of / below the input's
+    // top-left edges, i.e. inside the pill.
+    expect(box!.iconLeftOfInput).toBeLessThanOrEqual(0);
+    expect(box!.iconRightPastInput).toBeLessThanOrEqual(0);
+    expect(box!.iconAboveInput).toBeLessThanOrEqual(0);
+    expect(box!.iconBelowInput).toBeLessThanOrEqual(0);
+  });
 });

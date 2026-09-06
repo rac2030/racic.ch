@@ -209,6 +209,7 @@ A full-page search experience at `/search` with a Google-like interface:
 - Results displayed in a floating holocard panel with hero images
 - Hero images use the same mask/fade technique as bookmark entries (right-aligned, 50% width, gradient mask)
 - Pressing Enter in the header SearchBar navigates to `/search?q=...`
+- The header SearchBar's magnifier icon is absolutely positioned at `left: 0.65rem` inside `.search-bar`. On mobile (≤768px) the `.search-bar` gains `padding: 0.5rem 1rem`, which pushed the visible input pill 1rem to the right — but the absolute icon stayed at `0.65rem`, sitting 7px *outside* the box's left edge. Fixed with `.search-bar-icon { left: calc(1rem + 0.65rem) }` inside the mobile media query so the icon stays 13px inside the pill at all widths (e2e regression test asserts the icon bbox is fully within the input bbox at 375px).
 
 ### TypeScript Search Module
 
@@ -546,7 +547,7 @@ Here is every feature implemented in this site:
 | Tag filtering | Autocomplete input, tag cloud, active pills, URL persistence, AND multi-select |
 | Full-text search | Shared `SearchLib` module, exact + fuzzy matching, highlighted excerpts, section-priority ranking (Blog > Projects > Wiki > Page > Bookmarks), used by search bar and 404 page |
 | Dedicated search page | Google-like `/search` page with real-time results, hero images, `?q=` param, holocard results panel |
-| SearchBar → search page | Enter key navigates to `/search?q=...` for full-page results |
+| SearchBar → search page | Enter key navigates to `/search?q=...` for full-page results (mobile header search icon kept inside its pill via `calc(1rem + 0.65rem)` offset) |
 | Table of Contents | Floating right-edge panel with Tron-style animated border, scroll spy, holodeck hologram style |
 | Heading anchors | Hover-reveal `#` links on h2/h3/h4 for easy URL copying |
 | Content resizer | Drag handles on article pages, localStorage persistence, full window width |

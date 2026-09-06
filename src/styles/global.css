@@ -798,6 +798,9 @@ hr {
     border-bottom: 1px solid var(--panel-border);
   }
   .search-bar-input { max-width: none; }
+  .search-bar-icon {
+    left: calc(1rem + 0.65rem);
+  }
   .nav-links {
     display: none;
     position: absolute;

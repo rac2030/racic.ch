@@ -288,6 +288,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### src/components/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 414cc21c-619c-4508-8122-0e2f356d4cdb | 🔴 bugfix | Mobile search-bar icon outside box: absolute-left not accounting for mobile padding | 2026-09-06 |
 | c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
 | 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
 | e81637d4-3a6d-4ee3-93bc-208765999466 | 🔴 bugfix | Release-modal not centered / drag-resize broken: full-height clamp + delayed centering | 2026-09-04 |
@@ -297,9 +298,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | ba4b17c6-4cdf-4996-9ed1-fbe1c1e46c07 | 🟣 feature | Release-notes modal CSS: dialog, header, title, markdown styles | 2026-09-04 |
 | 3c2e58cf-63c2-4145-888c-68829647ed13 | 🟣 feature | Footer release-notes modal renders bodies as markdown via bundled marked | 2026-09-04 |
 | 6eafa57c-a226-476d-bae4-a170b0e49407 | 🟣 feature | Release-notes modal: styled release-date/notes and states | 2026-09-04 |
-| de9cf6cd-f643-4cd3-890f-83b1806be364 | 🟣 feature | Footer release-notes modal wiring and API fetch confirmed | 2026-09-04 |
 
-**Key concepts:** page-header, responsive, mobile, icons, consistency, timeline, reusable-component, git-graph, spine, continuity
+**Key concepts:** search-bar, mobile, icon, css, bugfix, absolute-positioning, page-header, responsive, icons, consistency
 
 ### src/content/blog/
 | ID | Type | Title | Date |
@@ -390,10 +390,11 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### src/styles/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 414cc21c-619c-4508-8122-0e2f356d4cdb | 🔴 bugfix | Mobile search-bar icon outside box: absolute-left not accounting for mobile padding | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
 | 9e19285d-814b-42b2-87f2-fbf0bed01398 | 🔵 discovery | Site theme CSS variables: text, accent, panel, glow | 2026-09-04 |
 
-**Key concepts:** git-log, git-metadata, last-changed-date, timeline, recently-updated, card-design, lazy-reveal, build-log, ui-design, how-it-works
+**Key concepts:** search-bar, mobile, icon, css, bugfix, absolute-positioning, git-log, git-metadata, last-changed-date, timeline
 
 ### tests/
 | ID | Type | Title | Date |
@@ -406,6 +407,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### tests/e2e/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 414cc21c-619c-4508-8122-0e2f356d4cdb | 🔴 bugfix | Mobile search-bar icon outside box: absolute-left not accounting for mobile padding | 2026-09-06 |
 | c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
 | 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
 | 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
@@ -415,9 +417,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | c6ef3b3c-021f-4872-bede-d3a18aab9c29 | 🔵 discovery | Release-notes modal suite: markdown + dismissal tests | 2026-09-04 |
 | 633324c1-d902-444c-ac69-9f66f0a190f7 | 🟣 feature | Release-notes modal new test: dialog centered and in-viewport | 2026-09-04 |
 | 01394075-6619-4f1c-8d2c-9b1cf9c62e2e | 🔵 discovery | Release-notes modal markdown and close-button test lines | 2026-09-04 |
-| 37b4ad5c-8fe9-40e3-9890-51d8a3388837 | 🔵 discovery | Release-notes modal e2e: count, href, view-all, markdown assertions | 2026-09-04 |
 
-**Key concepts:** page-header, responsive, mobile, icons, consistency, timeline, reusable-component, git-graph, spine, continuity
+**Key concepts:** search-bar, mobile, icon, css, bugfix, absolute-positioning, page-header, responsive, icons, consistency
 
 ### tests/unit/
 | ID | Type | Title | Date |
