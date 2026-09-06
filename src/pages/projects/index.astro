@@ -17,7 +17,7 @@ const allCategories = [...new Set(projects.map((p) => p.data.category).filter(Bo
 <Base title="Projects | Michel Racic" description="Hardware and software projects — IoT, LoRaWAN, electronics, and more.">
   <section class="section">
     <div class="container">
-      <PageHeader title="Projects" subtitle="Hardware and software projects — IoT, LoRaWAN, electronics, and more." />
+      <PageHeader title="Projects" icon="fa-solid fa-microchip" subtitle="Hardware and software projects — IoT, LoRaWAN, electronics, and more." />
       <div class="wiki-filter-row">
         <TagFilter tags={allTags} label="Filter projects by tag..." />
         {allCategories.length > 0 && (

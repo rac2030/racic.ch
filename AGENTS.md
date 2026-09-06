@@ -288,6 +288,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### src/components/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
 | 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
 | e81637d4-3a6d-4ee3-93bc-208765999466 | 🔴 bugfix | Release-modal not centered / drag-resize broken: full-height clamp + delayed centering | 2026-09-04 |
 | 0115f3e8-ddf0-437a-83b3-50974f9f3ed9 | 🔄 refactor | Release-notes modal script converted to bundled marked import | 2026-09-04 |
@@ -297,9 +298,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 3c2e58cf-63c2-4145-888c-68829647ed13 | 🟣 feature | Footer release-notes modal renders bodies as markdown via bundled marked | 2026-09-04 |
 | 6eafa57c-a226-476d-bae4-a170b0e49407 | 🟣 feature | Release-notes modal: styled release-date/notes and states | 2026-09-04 |
 | de9cf6cd-f643-4cd3-890f-83b1806be364 | 🟣 feature | Footer release-notes modal wiring and API fetch confirmed | 2026-09-04 |
-| bb8a1f5a-22df-43ea-8a6e-e1270806880b | 🟣 feature | Footer release-notes modal styles defined | 2026-09-04 |
 
-**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor, how-it-works, gotcha, ui-interactions, e2e-testing
+**Key concepts:** page-header, responsive, mobile, icons, consistency, timeline, reusable-component, git-graph, spine, continuity
 
 ### src/content/blog/
 | ID | Type | Title | Date |
@@ -343,6 +343,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### src/pages/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
 | 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
 | 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
@@ -352,30 +353,39 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | e987c486-2e82-4fdc-a435-91f7c7d2500d | 🔵 discovery | Search index already includes bookmarks and static pages | 2026-09-03 |
 | 72277dc7-2a1f-43d0-a781-d27169eb51f3 | 🔵 discovery | Three UI entry points fetch the shared search index | 2026-09-03 |
 | 4d4107fa-f886-4103-ad72-fb07bd9379cc | 🔵 discovery | Three UI entry points fetch the shared search index | 2026-09-03 |
-| 21249530-b236-4df8-a593-dee4aba94330 | 🔵 discovery | Search page: client-side UI shell with URL state sync | 2026-09-03 |
 
-**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor, git-log, timeline, per-commit, exclusion
+**Key concepts:** page-header, responsive, mobile, icons, consistency, timeline, reusable-component, git-graph, spine, continuity
 
 ### src/pages/blog/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
 | 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
 
-**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor
+**Key concepts:** page-header, responsive, mobile, icons, consistency, timeline, reusable-component, git-graph, spine, continuity
 
 ### src/pages/projects/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
 | 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
 
-**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor
+**Key concepts:** page-header, responsive, mobile, icons, consistency, timeline, reusable-component, git-graph, spine, continuity
+
+### src/pages/tags/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
+
+**Key concepts:** page-header, responsive, mobile, icons, consistency, timeline
 
 ### src/pages/wiki/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
 | 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
 
-**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor
+**Key concepts:** page-header, responsive, mobile, icons, consistency, timeline, reusable-component, git-graph, spine, continuity
 
 ### src/styles/
 | ID | Type | Title | Date |
@@ -396,6 +406,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### tests/e2e/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
 | 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
 | 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
@@ -405,9 +416,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 633324c1-d902-444c-ac69-9f66f0a190f7 | 🟣 feature | Release-notes modal new test: dialog centered and in-viewport | 2026-09-04 |
 | 01394075-6619-4f1c-8d2c-9b1cf9c62e2e | 🔵 discovery | Release-notes modal markdown and close-button test lines | 2026-09-04 |
 | 37b4ad5c-8fe9-40e3-9890-51d8a3388837 | 🔵 discovery | Release-notes modal e2e: count, href, view-all, markdown assertions | 2026-09-04 |
-| 02ef2eb6-ab7f-4812-853f-04072d43ee36 | 🔵 discovery | Release-notes modal test: 5 links and View-all assertions | 2026-09-04 |
 
-**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor, git-log, timeline, per-commit, exclusion
+**Key concepts:** page-header, responsive, mobile, icons, consistency, timeline, reusable-component, git-graph, spine, continuity
 
 ### tests/unit/
 | ID | Type | Title | Date |

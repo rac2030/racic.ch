@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
 import { getCollection } from 'astro:content';
 
 const isProd = import.meta.env.MODE === 'production';
@@ -33,8 +34,7 @@ const tags = [...tagMap.entries()]
 <Base title="Tags | Michel Racic" description="Browse all tags.">
   <section class="section">
     <div class="container">
-      <h1>Tags</h1>
-      <p style="margin-bottom: 2rem; color: var(--text-muted);">Browse content by topic.</p>
+      <PageHeader title="Tags" icon="fa-solid fa-tags" subtitle="Browse content by topic." />
       <div class="tags-page">
         {tags.map(({ tag, count }) => (
           <a href={`/tags/${tag}`} class="tag">

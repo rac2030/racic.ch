@@ -17,7 +17,7 @@ const allCategories = [...new Set(posts.map((p) => p.data.category).filter(Boole
 <Base title="Blog | Michel Racic" description="Blog posts about software engineering, IoT, and hackathons.">
   <section class="section">
     <div class="container">
-      <PageHeader title="Blog" subtitle="Posts about software engineering, IoT, hacking, and how-tos." />
+      <PageHeader title="Blog" icon="fa-solid fa-pen-nib" subtitle="Posts about software engineering, IoT, hacking, and how-tos." />
       <div class="wiki-filter-row">
         <TagFilter tags={allTags} label="Filter posts by tag..." />
         {allCategories.length > 0 && (

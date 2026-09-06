@@ -1,13 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
 import { SITE } from '../consts';
 ---
 
 <Base title="About | Michel Racic" description="About Michel Racic — Software Engineer, Automation Specialist.">
   <section class="section">
     <div class="container content-width">
-      <h1>About</h1>
-      <div class="about-content" style="margin-top: 1.5rem;">
+      <PageHeader title="About" icon="fa-solid fa-user" subtitle="Software engineer and automation specialist." />
+      <div class="about-content">
         <p>
           Lead Software Engineer working on an internal developer platform
           based on Backstage.

@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
 import { getCollection } from 'astro:content';
 
 const isProd = import.meta.env.MODE === 'production';
@@ -20,8 +21,7 @@ const letters = Object.keys(grouped).sort();
 <Base title="Bookmarks | Michel Racic" description="Curated link collections — tools, resources, and interesting finds.">
   <section class="section">
     <div class="container">
-      <h1 style="text-align: center;"><i class="fa-solid fa-bookmark"></i> Bookmarks</h1>
-      <p style="text-align: center; margin-bottom: 2rem; color: var(--text-muted);">Curated link collections and resources.</p>
+      <PageHeader title="Bookmarks" icon="fa-solid fa-bookmark" subtitle="Curated link collections and resources." />
 
       <div class="bookmarks-tree">
         {letters.map((letter) => (

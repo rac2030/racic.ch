@@ -67,7 +67,7 @@ const total = items.length;
 <Base title="Article Change Timeline">
   <section class="section">
     <div class="container">
-      <PageHeader title="Article Change Timeline" subtitle="Every commit across all blog, project, and wiki articles, newest first" />
+      <PageHeader title="Article Change Timeline" icon="fa-solid fa-clock-rotate-left" subtitle="Every commit across all blog, project, and wiki articles, newest first" />
 
       <ul id="timeline-list" class="timeline-list">
       {items.map((item, i) => (
@@ -296,6 +296,49 @@ const total = items.length;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 0.68rem;
     color: var(--accent);
+  }
+
+  @media (max-width: 640px) {
+    ul#timeline-list {
+      max-width: none;
+    }
+
+    .timeline-entry {
+      gap: 0.5rem;
+    }
+
+    .timeline-rail {
+      width: 2.5rem;
+    }
+
+    .timeline-card {
+      padding: 1rem 0.75rem 1rem;
+    }
+
+    .timeline-card h3 {
+      padding-right: 5rem;
+      font-size: 1rem;
+    }
+
+    .timeline-date {
+      right: 0.75rem;
+      top: 0.5rem;
+    }
+
+    .timeline-desc {
+      font-size: 0.8rem;
+    }
+
+    .timeline-commit {
+      font-size: 0.66rem;
+      padding: 0.45rem 0.75rem;
+      margin: 0.6rem -0.75rem -1rem;
+    }
+
+    .timeline-commit-line {
+      width: 1.25rem;
+      margin-left: -0.75rem;
+    }
   }
 </style>
 
