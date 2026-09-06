@@ -1,98 +1,118 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('About page backstage.io easter egg', () => {
-  test('backstage icon exists on about page', async ({ page }) => {
+test.describe('About page backstage brick breaker easter egg', () => {
+  test('game canvas exists on about page', async ({ page }) => {
     await page.goto('/about');
-    const icon = page.locator('#backstage-icon');
-    await expect(icon).toBeAttached();
+    const canvas = page.locator('#brick-breaker');
+    await expect(canvas).toBeAttached();
   });
 
-  test('backstage icon uses official logo', async ({ page }) => {
+  test('start game button exists at the bottom of the viewport', async ({ page }) => {
     await page.goto('/about');
-    const icon = page.locator('#backstage-icon');
-    const img = icon.locator('img');
-    await expect(img).toBeAttached();
-    const src = await img.getAttribute('src');
-    expect(src).toBe('https://backstage.io/img/logo.svg');
+    const button = page.locator('#start-game');
+    await expect(button).toBeVisible();
+    await expect(button).toHaveText('Start Game');
+
+    const box = await button.boundingBox();
+    const height = await page.evaluate(() => window.innerHeight);
+    expect(box).not.toBeNull();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(height);
   });
 
-  test('backstage icon is positioned fixed', async ({ page }) => {
+  test('game defaults to free-roaming mode', async ({ page }) => {
     await page.goto('/about');
-    const icon = page.locator('#backstage-icon');
-    const position = await icon.evaluate(function(el: HTMLElement) {
-      return window.getComputedStyle(el).position;
+    const state = await page.evaluate(() => {
+      const g = (window as any).__brickBreaker;
+      return g ? { mode: g.state.mode, phase: g.state.phase } : null;
     });
-    expect(position).toBe('fixed');
+    expect(state).not.toBeNull();
+    expect(state!.mode).toBe('free');
+    expect(state!.phase).toBe('free');
   });
 
-  test('backstage icon has pointer cursor', async ({ page }) => {
+  test('starting the game loads bricks and switches to play mode', async ({ page }) => {
     await page.goto('/about');
-    const icon = page.locator('#backstage-icon');
-    const cursor = await icon.evaluate(function(el: HTMLElement) {
-      return window.getComputedStyle(el).cursor;
+    await page.locator('#start-game').click();
+
+    const state = await page.evaluate(() => {
+      const g = (window as any).__brickBreaker;
+      return g ? { mode: g.state.mode, phase: g.state.phase, bricks: g.state.bricks.length } : null;
     });
-    expect(cursor).toBe('pointer');
+    expect(state!.mode).toBe('play');
+    expect(state!.phase).toBe('flying');
+    expect(state!.bricks).toBeGreaterThan(0);
   });
 
-  test('backstage icon bounces around screen', async ({ page }) => {
+  test('bricks settle and the ball can be launched with the keyboard', async ({ page }) => {
     await page.goto('/about');
-    const icon = page.locator('#backstage-icon');
-    
-    const pos1 = await icon.evaluate(function(el: HTMLElement) {
-      return { left: el.style.left, top: el.style.top };
+    await page.locator('#start-game').click();
+
+    await page.waitForFunction(() => {
+      const g = (window as any).__brickBreaker;
+      return g && g.state.phase === 'ready';
+    }, undefined, { timeout: 8000 });
+
+    await page.keyboard.press(' ');
+    const state = await page.evaluate(() => {
+      const g = (window as any).__brickBreaker;
+      return g ? { phase: g.state.phase, vy: g.state.ball.vy } : null;
     });
-    
-    await page.waitForTimeout(500);
-    
-    const pos2 = await icon.evaluate(function(el: HTMLElement) {
-      return { left: el.style.left, top: el.style.top };
-    });
-    
-    expect(pos1.left).not.toBe(pos2.left);
-    expect(pos1.top).not.toBe(pos2.top);
+    expect(state!.phase).toBe('active');
+    expect(state!.vy).toBeLessThan(0);
   });
 
-  test('clicking backstage icon opens backstage.io', async ({ page }) => {
+  test('arrow keys move the paddle horizontally', async ({ page }) => {
     await page.goto('/about');
-    
+    await page.locator('#start-game').click();
+
+    await page.waitForFunction(() => {
+      const g = (window as any).__brickBreaker;
+      return g && g.state.phase === 'ready';
+    }, undefined, { timeout: 8000 });
+
+    const before = await page.evaluate(() => (window as any).__brickBreaker.state.paddle.x);
+    await page.keyboard.press('ArrowRight');
+    const after = await page.evaluate(() => (window as any).__brickBreaker.state.paddle.x);
+    expect(after).toBeGreaterThan(before);
+  });
+
+  test('clicking the bouncing icon opens backstage.io in free mode', async ({ page }) => {
+    await page.goto('/about');
+
     const [newPage] = await Promise.all([
       page.waitForEvent('popup'),
-      page.evaluate(function() {
-        document.getElementById('backstage-icon')?.click();
-      })
+      page.evaluate(() => {
+        const g = (window as any).__brickBreaker;
+        const r = g.state.ball.r;
+        document.dispatchEvent(new MouseEvent('click', {
+          bubbles: true,
+          clientX: g.state.ball.x,
+          clientY: g.state.ball.y,
+        }));
+        void r;
+      }),
     ]);
-    
+
     expect(newPage.url()).toContain('backstage.io');
     await newPage.close();
   });
 
-  test('backstage icon expands on click', async ({ page }) => {
+  test('start button is hidden while the game is playing', async ({ page }) => {
     await page.goto('/about');
+    const btn = page.locator('#start-game');
+    await expect(btn).toBeVisible();
 
-    const expanded = await page.evaluate(function() {
-      const el = document.getElementById('backstage-icon');
-      if (!el) return false;
-      el.click();
-      return el.classList.contains('expanded');
-    });
-
-    expect(expanded).toBe(true);
+    await btn.click();
+    await expect(btn).toBeHidden();
   });
 
-  test('backstage icon returns to bouncing after click', async ({ page }) => {
+  test('clicking start removes the free-mode bounce from the page flow', async ({ page }) => {
     await page.goto('/about');
+    const beforeClass = await page.evaluate(() => document.body.className);
+    expect(beforeClass).not.toContain('playing-brick-breaker');
 
-    const beganExpanded = await page.evaluate(function() {
-      const el = document.getElementById('backstage-icon');
-      if (!el) return false;
-      el.click();
-      return el.classList.contains('expanded');
-    });
-    expect(beganExpanded).toBe(true);
-
-    await page.waitForFunction(function() {
-      const el = document.getElementById('backstage-icon');
-      return el ? !el.classList.contains('expanded') : true;
-    });
+    await page.locator('#start-game').click();
+    const afterClass = await page.evaluate(() => document.body.className);
+    expect(afterClass).toContain('playing-brick-breaker');
   });
 });

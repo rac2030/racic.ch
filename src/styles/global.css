@@ -1620,6 +1620,45 @@ hr {
 
 .social-links a:hover { color: #fff; }
 
+/* ===== BRICK BREAKER EASTER EGG ===== */
+#brick-breaker {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 900;
+  pointer-events: none;
+}
+
+#start-game {
+  position: fixed;
+  left: 50%;
+  bottom: 4rem;
+  transform: translateX(-50%);
+  z-index: 1000;
+  padding: 0.65rem 1.75rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  background: rgba(10, 15, 30, 0.85);
+  border: 1px solid var(--accent, #38bdf8);
+  border-radius: 999px;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+#start-game:hover {
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 0 26px rgba(56, 189, 248, 0.55);
+}
+
+body.playing-brick-breaker {
+  touch-action: none;
+}
+
 /* ===== FOOTER ===== */
 .site-footer {
   text-align: center;

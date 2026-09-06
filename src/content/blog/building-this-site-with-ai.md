@@ -303,12 +303,22 @@ A hidden page accessible only via the nearly invisible `π` symbol in the bottom
 
 A hidden rickroll page with an autoplaying YouTube embed. Only accessible via the flying poop on the 404 page or direct URL.
 
-### Backstage.io Bouncing Icon
+### Backstage.io Brick Breaker
 
-On the About page, the official [Backstage.io logo](https://backstage.io/img/logo.svg) bounces around the screen like a DVD screensaver. The icon uses `requestAnimationFrame` for smooth 60fps animation, bouncing off all four browser borders. When clicked:
-1. The icon stops bouncing and expands to 3x size
-2. After 500ms, it opens [backstage.io](https://backstage.io) in a new tab
-3. The icon resumes bouncing
+The [Backstage.io logo](https://backstage.io/img/logo.svg) easter egg on the About page was rebuilt from a plain DVD-screensaver `<div>` into a full **Atari-style Brick Breaker game** rendered on a full-viewport `<canvas>`.
+
+**Two modes** (all logic lives in a pure TypeScript module `src/lib/brick-breaker.ts`, compiled by `scripts/build-brickbreaker.js` → `public/brick-breaker.js` as a `BrickBreakerLib` IIFE, the same esbuild pattern as the search module):
+
+- **Free mode (default):** the big logo ball bounces off all four walls at `FREE_BALL_SPEED = 260 px/s`. A small paddle at the bottom (`FREE_PADDLE_W = 56px`) follows the pointer in 2D; touching/overlapping the ball bumps it (pong-style). Clicking the ball opens [backstage.io](https://backstage.io) in a new tab — keeps the original easter egg.
+- **Play mode:** a centered **"Start Game"** button (fixed at the bottom of the viewport) starts a classic Breakout game. Phases: `flying` (bricks animate in from the top, per-brick `t` accumulating until `< row*0.12 + col*0.02` seconds — the original Breakout fill pattern — then `ready`) → `active` (ball released at `PLAY_BALL_SPEED = 340 px/s`, initial `vx = 0.3×speed`, `vy = −speed`) → `won`/`lost`. The paddle (`PLAY_PADDLE_W = 110px`) moves horizontally with the mouse/pointer or `ArrowLeft`/`ArrowRight` (A/D); `Space`/`Enter`/click/tap launches the ball.
+
+**Levels:** `LEVEL_PATTERNS` is an array of 8 ASCII maps (14 columns each) including a classic color-band wall, pyramid, diamond, columns, checkerboard, two targets, chevron, and a finale layout. `parsePattern(rows, width, height, opts)` turns the ASCII grid into `Brick[]`, with `BRICK_COLORS` mapping each color character to `{ color, points }` (points scored per brick). After each level the next pattern loads automatically; `MAX_LIVES = 3`, `MAX_BOUNCE_ANGLE = π/3` clamps the reflection angle off the paddle, `PADDLE_Y_OFFSET = 48px` from the bottom.
+
+**Rendering & integration:** the canvas is a `position: fixed; inset: 0; pointer-events: none` overlay (`#brick-breaker`); input listeners live on `window`/`document` (mousemove, arrow keys, touchmove, click/touchend). While playing, `body` gets `touch-action: none` so touch-drag steering doesn't scroll the page. The render loop computes the real frame delta (via `performance.now()` timestamps, clamped to `0.1s`) instead of assuming 60fps, so brick-settle timing stays wall-clock accurate even when `requestAnimationFrame` is throttled. `render()` calls `ctx.clearRect(0, 0, w, h)` every frame before drawing (the play-mode overlay is painted once per frame, never accumulated) so the ball and paddle leave no motion trails. The ball sprite is the Backstage logo loaded once per page: `drawImage` scales it into a `2r` box while preserving its intrinsic aspect ratio (`dw = 2r`, `dh = 2r / aspect` for a wide image) so the wide Backstage wordmark never looks squashed. The Start Game button (`#start-game`) appears only when it can be used: it shows **"Start Game"** in free mode, is hidden during play (flying/ready/active), and re-appears as **"Play again"** on `won`/`lost` (the frame loop watches for `game-won`/`game-over` events). `window.__brickBreaker` exposes the game instance for e2e inspection.
+
+**Dev-mode gotcha:** the "Start Game" button is `position: fixed; bottom: 4rem` — it must clear the Astro dev-toolbar zone. At `1.5rem` the Astro dev toolbar (bottom of the viewport) intercepted the click and showed the X-ray app's "No islands detected" panel, making the button unclickable in `npm run dev`. Also, dev servers serve the compiled `public/brick-breaker.js` (not the TS source), so after changing `src/lib/brick-breaker.ts` you must re-run `npm run build:brickbreaker` to see changes in dev.
+
+**Tests:** `tests/unit/brick-breaker.test.ts` (25 unit tests; the module hits ~98% line coverage) and the rewritten `tests/e2e/about-backstage.spec.ts` (8 tests: canvas+button presence, free-mode default, start button switching to `play`/`flying` with bricks loaded, bricks settling to `ready`, keyboard launch, arrow-key paddle movement, click-ball-opens-backstage, and the `playing-brick-breaker` body class).
 
 This is a nod to the internal developer platform built on Backstage mentioned in the About page content.
 
@@ -498,7 +508,7 @@ Deploy --> Live["Site live at racic.ch"]
 
 **Unit tests** (Jest) validate utility functions, content schemas, site constants, and git log data — 151 tests that run in under a second.
 
-**E2E tests** (Playwright) spin up the built site and verify every page renders correctly, navigation works, all links resolve, the sitemap/RSS feeds are valid, the git history modal works, and backstage.io easter egg — 177 tests across 13 spec files.
+**E2E tests** (Playwright) spin up the built site and verify every page renders correctly, navigation works, all links resolve, the sitemap/RSS feeds are valid, the git history modal works, and backstage.io brick-breaker easter egg — 211 tests across 13 spec files.
 
 **Code coverage** — Jest collects coverage for all utility functions and logic in `src/lib/` and `src/utils/`. The CI pipeline enforces an 80% minimum threshold on statements, branches, functions, and lines. Coverage currently stands at 100% across all metrics. The `test:coverage` script generates an lcov report locally.
 
@@ -561,7 +571,7 @@ Here is every feature implemented in this site:
 | URL aliases | `aliases` array in frontmatter generates additional routes via `flatMap` in `getStaticPaths` |
 | Recently Updated | Homepage section with the 3 most recently changed articles across all sections (git-derived last-changed date at top right of each row) + "More changes →" link to the `/timeline` page (per-commit git-graph timeline via `src/lib/timeline.ts`, "LAST UPDATED" date at top-right, #shortHash label on the connector line feeding into the footer, build-log post excluded, browser-scrollbar lazy reveal in batches, mobile-safe at ≤640px with a narrower rail + date-badge padding) |
 | Page header | Reusable `PageHeader.astro` on every page header — icon + 3em title + muted subtitle, all left-aligned, identical styling site-wide (blog/projects/wiki/bookmarks/about/tags/tag/timeline) |
-| About page | Hand-drawn SVG world map (Zürich marker), social links (GitHub/Twitter/LinkedIn) that wrap onto multiple lines on mobile via `flex-wrap: wrap`, Backstage logo DVD-screensaver easter egg |
+| About page | Hand-drawn SVG world map (Zürich marker), social links (GitHub/Twitter/LinkedIn) that wrap onto multiple lines on mobile via `flex-wrap: wrap`, Backstage logo Brick Breaker easter egg (free-roaming bounce + 8-level Breakout game on a full-viewport `<canvas>`) |
 | Bookmarks | Separate collection with hero images, alphabetical tree layout |
 | 404 page | Flying 💩 emojis, URL-based search using SearchLib (exact + fuzzy), duck jump game with double jump and arrow key movement |
 | π easter egg | Nearly invisible symbol (bottom-right), hidden page with pi calculator |
