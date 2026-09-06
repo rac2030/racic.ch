@@ -71,11 +71,9 @@ const recent = items.slice(0, 3);
         <a href="/about" class="btn"><i class="fa-solid fa-user"></i> About</a>
       </div>
     </div>
-  </section>
 
-  <section class="section">
-    <div class="container" style="max-width: 800px;">
-      <h2 style="text-align: center; margin-bottom: 1.5rem;">Recently Updated</h2>
+    <div class="hero-recent">
+      <h2>Recently Updated</h2>
       <div class="recent-list">
         {recent.map((item) => (
           <a href={item.url} class="recent-item">

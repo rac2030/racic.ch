@@ -259,7 +259,7 @@ Blog articles show "(updated DATE)" when the `updatedDate` field is present and 
 
 ### Recently Updated
 
-The homepage displays a "Recently Updated" section showing the 3 most recently changed articles across blog, projects, and wiki, sorted by date descending, followed by a "More changes →" link to `/timeline`. Each row shows the section badge and the article's **last-changed date at the top right**, where the date is the git-derived last commit date (via `src/data/git-log.json` → `effectiveUpdatedDate` in `src/lib/utils.ts`), falling back to the frontmatter `updatedDate`/`pubDate` — the same date shown as "(updated ...)" at the top of each article page.
+The homepage renders the "Recently Updated" section **inside the hero** — the `section.hero` is a flex column that stacks the Michel Racic hero panel (`hero-content`) above the recently-updated block (`hero-recent`, `max-width: 800px`), so both sit together above the fold. The block shows the 3 most recently changed articles across blog, projects, and wiki, sorted by date descending, followed by a "More changes →" link to `/timeline`. Each row shows the section badge and the article's **last-changed date at the top right**, where the date is the git-derived last commit date (via `src/data/git-log.json` → `effectiveUpdatedDate` in `src/lib/utils.ts`), falling back to the frontmatter `updatedDate`/`pubDate` — the same date shown as "(updated ...)" at the top of each article page.
 
 ### Article Change Timeline
 

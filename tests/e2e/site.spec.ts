@@ -391,6 +391,7 @@ test.describe('Timeline page', () => {
           inTopRow: !!el.closest('.recent-item-top'),
           nearTopRight: box.right - r.right < 30 && r.top < box.top + box.height * 0.5,
           nonEmpty: (el.textContent || '').trim().length > 0,
+          inHero: !!el.closest('section.hero'),
         };
       }),
     );
@@ -398,6 +399,7 @@ test.describe('Timeline page', () => {
       expect(p.inTopRow).toBe(true);
       expect(p.nearTopRight).toBe(true);
       expect(p.nonEmpty).toBe(true);
+      expect(p.inHero).toBe(true);
     }
   });
 
