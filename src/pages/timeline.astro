@@ -1,0 +1,212 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { effectiveUpdatedDate, formatDate, stripMdExtension } from '../lib/utils';
+import gitLogJson from '../data/git-log.json';
+
+const isProd = import.meta.env.MODE === 'production';
+
+const blog = (await getCollection('blog')).filter((p) => isProd ? !p.data.draft : true);
+const projects = (await getCollection('projects')).filter((p) => isProd ? !p.data.draft : true);
+const wiki = (await getCollection('wiki')).filter((e) => isProd ? !e.data.draft : true);
+
+interface TimelineItem {
+  title: string;
+  description: string;
+  url: string;
+  section: string;
+  date: Date;
+  commitMessage: string;
+}
+
+const gitEntryFor = (section: string, slug: string) =>
+  gitLogJson?.[`${section}/${slug}`];
+
+const lastCommitFor = (section: string, slug: string) =>
+  gitEntryFor(section, slug)?.lastCommitDate;
+
+const lastCommitMessageFor = (section: string, slug: string) =>
+  gitEntryFor(section, slug)?.commits?.[0]?.message ?? '';
+
+const items: TimelineItem[] = [
+  ...blog.map((p) => {
+    const slug = stripMdExtension(p.id);
+    return {
+      title: p.data.title,
+      description: p.data.description,
+      url: `/blog/${slug}`,
+      section: 'Blog',
+      date: effectiveUpdatedDate(p.data.pubDate, p.data.updatedDate, lastCommitFor('blog', slug)),
+      commitMessage: lastCommitMessageFor('blog', slug),
+    };
+  }),
+  ...projects.map((p) => {
+    const slug = stripMdExtension(p.id);
+    return {
+      title: p.data.title,
+      description: p.data.description,
+      url: `/projects/${slug}`,
+      section: 'Projects',
+      date: effectiveUpdatedDate(p.data.pubDate, p.data.updatedDate, lastCommitFor('projects', slug)),
+      commitMessage: lastCommitMessageFor('projects', slug),
+    };
+  }),
+  ...wiki.filter((e) => e.data.pubDate).map((e) => {
+    const slug = stripMdExtension(e.id);
+    return {
+      title: e.data.title,
+      description: e.data.description,
+      url: `/wiki/${slug}`,
+      section: 'Wiki',
+      date: effectiveUpdatedDate(e.data.pubDate!, e.data.updatedDate, lastCommitFor('wiki', slug)),
+      commitMessage: lastCommitMessageFor('wiki', slug),
+    };
+  }),
+];
+
+items.sort((a, b) => b.date.valueOf() - a.date.valueOf());
+
+const sectionIcons: Record<string, string> = {
+  Blog: 'fa-solid fa-pen-nib',
+  Projects: 'fa-solid fa-microchip',
+  Wiki: 'fa-solid fa-book',
+};
+
+const initialVisible = 10;
+---
+
+<Base title="Article Change Timeline">
+  <div class="page-404">
+    <h1>Article Change Timeline</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Full chronological list of all blog, project, and wiki updates</p>
+
+    <ul id="timeline-list" class="card-grid" style="grid-template-columns: 1fr; max-width: 600px; margin: 0 auto; text-align: left; list-style: none; padding: 0;">
+      {items.map((item, i) => (
+        <li class="timeline-entry" data-index={i} {...(i >= initialVisible ? { hidden: true } : {})}>
+          <a href={item.url} class="card timeline-card">
+            <time class="timeline-date" datetime={item.date.toISOString()}>
+              <span class="timeline-date-label">Last updated</span>
+              {formatDate(item.date)}
+            </time>
+            <h3>{item.title}</h3>
+            {item.description && <p class="timeline-desc">{item.description}</p>}
+            <span class="timeline-section"><i class={sectionIcons[item.section] || 'fa-solid fa-file'}></i> {item.section}</span>
+            {item.commitMessage && (
+              <p class="timeline-commit" title={item.commitMessage}><i class="fa-solid fa-code-commit"></i> {item.commitMessage}</p>
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <a href="/" class="btn btn-primary" style="margin-top: 2rem; display: block; text-align: center;">Back to Home</a>
+  </div>
+</Base>
+
+<style>
+  ul#timeline-list li.timeline-entry[hidden] {
+    display: none;
+  }
+
+  .timeline-card {
+    position: relative;
+    padding: 1.25rem 1rem 1rem;
+  }
+
+  .timeline-date {
+    position: absolute;
+    top: 0.7rem;
+    right: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: right;
+    line-height: 1.25;
+  }
+
+  .timeline-date-label {
+    display: block;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+  }
+
+  .timeline-card h3 {
+    margin: 0 0 0.25rem;
+    padding-right: 9rem;
+  }
+
+  .timeline-desc {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .timeline-section {
+    font-size: 0.75rem;
+    color: var(--accent);
+  }
+
+  .timeline-commit {
+    margin: 0.7rem -1rem -1rem;
+    padding: 0.5rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .timeline-commit i {
+    flex-shrink: 0;
+    color: var(--text-muted);
+  }
+</style>
+
+<script>
+  (function() {
+    var list = document.getElementById('timeline-list');
+    if (!list) return;
+
+    var entries = Array.prototype.slice.call(list.querySelectorAll('.timeline-entry'));
+    var start = 10;
+    var BATCH = 8;
+    var REVEAL_AT = 600;
+    var revealed = false;
+
+    if (entries.length <= 10) return;
+
+    function reveal() {
+      var next = Math.min(start + BATCH, entries.length);
+      for (var i = start; i < next; i++) entries[i].hidden = false;
+      start = next;
+      if (start >= entries.length) teardown();
+    }
+
+    function check() {
+      var doc = document.documentElement;
+      var maxScroll = doc.scrollHeight - window.innerHeight;
+      if (window.scrollY >= maxScroll - REVEAL_AT) reveal();
+    }
+
+    function onScroll() {
+      if (revealed) return;
+      if (!window.requestAnimationFrame) { check(); return; }
+      window.requestAnimationFrame(check);
+    }
+
+    function teardown() {
+      revealed = true;
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    check();
+  })();
+</script>

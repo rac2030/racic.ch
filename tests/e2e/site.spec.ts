@@ -341,3 +341,148 @@ test.describe('Content integrity', () => {
     }
   });
 });
+
+test.describe('Timeline page', () => {
+  test('loads with heading and all article entries', async ({ page }) => {
+    await page.goto('/timeline/');
+    await expect(page.locator('main h1')).toContainText('Timeline');
+    const entries = page.locator('main a[href*="/blog/"], main a[href*="/projects/"], main a[href*="/wiki/"]');
+    const count = await entries.count();
+    expect(count).toBeGreaterThanOrEqual(3);
+  });
+
+  test('homepage "More changes" link points to timeline', async ({ page }) => {
+    await page.goto('/');
+    const moreLink = page.locator('.recent-more');
+    await expect(moreLink).toBeVisible();
+    await expect(moreLink).toHaveAttribute('href', '/timeline');
+  });
+
+  test('homepage shows at most 3 recent items', async ({ page }) => {
+    await page.goto('/');
+    const items = page.locator('.recent-item');
+    const count = await items.count();
+    expect(count).toBeLessThanOrEqual(3);
+  });
+
+  test('timeline entries link to valid pages', async ({ page }) => {
+    await page.goto('/timeline/');
+    const hrefs = await page.locator('main a[href*="/blog/"], main a[href*="/projects/"], main a[href*="/wiki/"]').evaluateAll((els) =>
+      els.map((el) => el.getAttribute('href')).filter(Boolean),
+    );
+    expect(hrefs.length).toBeGreaterThan(0);
+    const res = await page.goto(hrefs![0]);
+    expect(res?.status()).toBe(200);
+  });
+
+  test('homepage recent items show last-changed date at top-right', async ({ page }) => {
+    await page.goto('/');
+    const items = page.locator('.recent-item');
+    const count = await items.count();
+    expect(count).toBeGreaterThan(0);
+    const dates = page.locator('.recent-item-date');
+    expect(await dates.count()).toBe(count);
+    const positions = await dates.evaluateAll((els) =>
+      els.map((el) => {
+        const s = getComputedStyle(el);
+        const box = el.closest('.recent-item').getBoundingClientRect();
+        const r = el.getBoundingClientRect();
+        return {
+          inTopRow: !!el.closest('.recent-item-top'),
+          nearTopRight: box.right - r.right < 30 && r.top < box.top + box.height * 0.5,
+          nonEmpty: (el.textContent || '').trim().length > 0,
+        };
+      }),
+    );
+    for (const p of positions) {
+      expect(p.inTopRow).toBe(true);
+      expect(p.nearTopRight).toBe(true);
+      expect(p.nonEmpty).toBe(true);
+    }
+  });
+
+  test('timeline cards show git last-changed date at top-right', async ({ page }) => {
+    await page.goto('/timeline/');
+    const card = page.locator('main .timeline-entry:not([hidden]) .timeline-card').first();
+    await expect(card).toBeVisible();
+    const badge = card.locator('.timeline-date');
+    await expect(badge).toBeVisible();
+    const pos = await badge.evaluate((el) => {
+      const s = getComputedStyle(el);
+      const box = el.closest('.timeline-card').getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      return {
+        position: s.position,
+        nearTop: r.top - box.top < 20,
+        nearRight: box.right - r.right < 30,
+      };
+    });
+    expect(pos.position).toBe('absolute');
+    expect(pos.nearTop).toBe(true);
+    expect(pos.nearRight).toBe(true);
+  });
+
+  test('timeline cards mark the date as last updated and show the commit message at the bottom', async ({ page }) => {
+    await page.goto('/timeline/');
+    const card = page.locator('main .timeline-entry:not([hidden]) .timeline-card').first();
+    await expect(card.locator('.timeline-date-label')).toHaveText('Last updated');
+    const commit = card.locator('.timeline-commit');
+    await expect(commit).toBeVisible();
+    expect((await commit.textContent())!.trim().length).toBeGreaterThan(0);
+    const pos = await commit.evaluate((el) => {
+      const box = el.closest('.timeline-card').getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      return { isLastChild: el === el.closest('.timeline-card').lastElementChild, nearBottom: box.bottom - r.bottom < 2 };
+    });
+    expect(pos.isLastChild).toBe(true);
+    expect(pos.nearBottom).toBe(true);
+  });
+
+  test('timeline card date matches article page last-changed date', async ({ page }) => {
+    await page.goto('/timeline/');
+    const card = page.locator('main .timeline-entry:not([hidden]) .timeline-card').first();
+    const href = await card.getAttribute('href');
+    const cardDate = await card.locator('.timeline-date').getAttribute('datetime');
+    const res = await page.goto(href!);
+    expect(res?.status()).toBe(200);
+    const articleDates = await page.locator('.article-meta time').evaluateAll((els) =>
+      els.map((e) => e.getAttribute('datetime')).filter(Boolean),
+    );
+    expect(articleDates.length).toBeGreaterThan(0);
+    const latestOnArticle = articleDates
+      .map((d) => new Date(d!).getTime())
+      .sort((a, b) => b - a)[0];
+    expect(new Date(cardDate!).getTime()).toBe(latestOnArticle);
+  });
+
+  test('timeline scrolls with the browser scrollbar (no inner scroll container)', async ({ page }) => {
+    await page.goto('/timeline/');
+    const info = await page.evaluate(() => {
+      const list = document.getElementById('timeline-list');
+      const innerScrollables = Array.from(document.querySelectorAll('main *')).filter((el) => {
+        const s = getComputedStyle(el);
+        return (s.overflow === 'auto' || s.overflowY === 'auto' || s.overflowY === 'scroll');
+      });
+      return {
+        pageScrollHeight: document.documentElement.scrollHeight,
+        viewportHeight: window.innerHeight,
+        innerScrollableCount: innerScrollables.length,
+        hasTimelineList: !!list,
+      };
+    });
+    expect(info.hasTimelineList).toBe(true);
+    expect(info.innerScrollableCount).toBe(0);
+    expect(info.pageScrollHeight).toBeGreaterThan(info.viewportHeight);
+  });
+
+  test('timeline lazily reveals entries on scroll', async ({ page }) => {
+    await page.goto('/timeline/');
+    const initialVisible = await page.locator('.timeline-entry:not([hidden])').count();
+    const initialTotal = await page.locator('.timeline-entry').count();
+    expect(initialVisible).toBeLessThan(initialTotal);
+    await page.mouse.wheel(0, 20000);
+    await page.waitForTimeout(500);
+    const revealed = await page.locator('.timeline-entry:not([hidden])').count();
+    expect(revealed).toBeGreaterThan(initialVisible);
+  });
+});

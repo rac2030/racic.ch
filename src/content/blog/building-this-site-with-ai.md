@@ -259,7 +259,11 @@ Blog articles show "(updated DATE)" when the `updatedDate` field is present and 
 
 ### Recently Updated
 
-The homepage displays a "Recently Updated" section showing the 10 most recently updated articles across blog, projects, and wiki, sorted by date descending.
+The homepage displays a "Recently Updated" section showing the 3 most recently changed articles across blog, projects, and wiki, sorted by date descending, followed by a "More changes →" link to `/timeline`. Each row shows the section badge and the article's **last-changed date at the top right**, where the date is the git-derived last commit date (via `src/data/git-log.json` → `effectiveUpdatedDate` in `src/lib/utils.ts`), falling back to the frontmatter `updatedDate`/`pubDate` — the same date shown as "(updated ...)" at the top of each article page.
+
+### Article Change Timeline
+
+The `/timeline` page renders a full chronological list of every blog, project, and wiki entry (drafts excluded in production) sorted by the git-derived last-changed date descending. It reuses the 404 page's search-result card design: each entry is a `.card` link (matching `.page-404` styling, centered single-column `card-grid` layout with `--text-secondary`/`--text-muted`/`--accent` variables) showing the title, description, and a section icon — the **last-changed date sits absolutely positioned at the top-right corner** of each card, prefixed with a small uppercase "LAST UPDATED" label. A git commit footer (`.timeline-commit`) is pinned to the bottom of each card (flush via negative margins, separated by a top hairline) showing the **last commit message** for that file with a git icon (`fa-code-commit`) and ellipsis truncation — read from the `commits[0].message` of the same `git-log.json` entry used for the date. Scrolling uses the **browser scrollbar** (no inner scroll container): the first 10 entries render immediately and the rest are lazily revealed in batches of 8 as the visitor scrolls near viewport bottom (a `scroll`/`resize` listener with `requestAnimationFrame` checking `window.scrollY` against `scrollHeight`, `bottom` reached via a "Back to Home" `btn btn-primary` link).
 
 ### URL Aliases
 
@@ -550,7 +554,7 @@ Here is every feature implemented in this site:
 | Last updated date | Shows "(updated DATE)" when `updatedDate` differs from `pubDate`, or falls back to last git commit date |
 | Git history modal | Click "updated" text to open a modal with full commit history table (date, message, hash linked to GitHub) |
 | URL aliases | `aliases` array in frontmatter generates additional routes via `flatMap` in `getStaticPaths` |
-| Recently Updated | Homepage section with 10 most recent articles across all sections |
+| Recently Updated | Homepage section with the 3 most recently changed articles across all sections (git-derived last-changed date at top right of each row) + "More changes →" link to the `/timeline` page (404-card-styled timeline, "LAST UPDATED" date at top-right, last git commit message footer at card bottom, browser-scrollbar lazy reveal in batches) |
 | Bookmarks | Separate collection with hero images, alphabetical tree layout |
 | 404 page | Flying 💩 emojis, URL-based search using SearchLib (exact + fuzzy), duck jump game with double jump and arrow key movement |
 | π easter egg | Nearly invisible symbol (bottom-right), hidden page with pi calculator |

@@ -12,6 +12,7 @@ import {
   filterDrafts,
   extractAllTags,
   extractHeadings,
+  effectiveUpdatedDate,
 } from '../../src/lib/utils';
 
 describe('stripMdExtension', () => {
@@ -348,5 +349,35 @@ describe('extractHeadings', () => {
         level: 2,
       },
     ]);
+  });
+});
+
+describe('effectiveUpdatedDate', () => {
+  test('returns pubDate when no git lastCommit and no updatedDate', () => {
+    const pubDate = new Date('2026-01-01');
+    expect(effectiveUpdatedDate(pubDate, undefined, undefined).getTime()).toBe(pubDate.getTime());
+  });
+
+  test('uses git lastCommitDate when it differs from pubDate and no updatedDate', () => {
+    const pubDate = new Date('2026-01-01');
+    const lastCommit = '2026-08-04T10:00:00.000Z';
+    expect(effectiveUpdatedDate(pubDate, undefined, lastCommit).toISOString()).toBe(lastCommit);
+  });
+
+  test('frontmatter updatedDate takes precedence over git lastCommitDate', () => {
+    const pubDate = new Date('2026-01-01');
+    const updatedDate = new Date('2026-05-05');
+    const lastCommit = '2026-08-04T10:00:00.000Z';
+    expect(effectiveUpdatedDate(pubDate, updatedDate, lastCommit).getTime()).toBe(updatedDate.getTime());
+  });
+
+  test('falls back to pubDate when git lastCommitDate equals pubDate', () => {
+    const pubDate = new Date('2026-01-01');
+    expect(effectiveUpdatedDate(pubDate, undefined, '2026-01-01T00:00:00.000Z').getTime()).toBe(pubDate.getTime());
+  });
+
+  test('falls back to pubDate when git lastCommitDate is invalid', () => {
+    const pubDate = new Date('2026-01-01');
+    expect(effectiveUpdatedDate(pubDate, undefined, 'not-a-date').getTime()).toBe(pubDate.getTime());
   });
 });

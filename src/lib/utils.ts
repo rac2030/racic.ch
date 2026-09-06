@@ -10,6 +10,21 @@ export function formatDate(d: Date): string {
   });
 }
 
+export function effectiveUpdatedDate(
+  pubDate: Date,
+  updatedDate: Date | undefined,
+  lastCommitDate: string | undefined,
+): Date {
+  if (lastCommitDate) {
+    const lastCommit = new Date(lastCommitDate);
+    if (!isNaN(lastCommit.getTime())) {
+      if (updatedDate) return updatedDate;
+      if (lastCommit.getTime() !== pubDate.getTime()) return lastCommit;
+    }
+  }
+  return updatedDate || pubDate;
+}
+
 export function sortPostsByDate<T extends { data: { pubDate: Date } }>(
   items: T[],
 ): T[] {

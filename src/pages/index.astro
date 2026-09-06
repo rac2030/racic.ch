@@ -2,12 +2,17 @@
 import Base from '../layouts/Base.astro';
 import { SITE } from '../consts';
 import { getCollection } from 'astro:content';
+import { effectiveUpdatedDate, formatDate as fmtDate, stripMdExtension } from '../lib/utils';
+import gitLogJson from '../data/git-log.json';
 
 const isProd = import.meta.env.MODE === 'production';
 
 const blog = (await getCollection('blog')).filter((p) => isProd ? !p.data.draft : true);
 const projects = (await getCollection('projects')).filter((p) => isProd ? !p.data.draft : true);
 const wiki = (await getCollection('wiki')).filter((e) => isProd ? !e.data.draft : true);
+
+const lastCommitFor = (section: string, slug: string) =>
+  gitLogJson?.[`${section}/${slug}`]?.lastCommitDate;
 
 interface RecentItem {
   title: string;
@@ -18,34 +23,40 @@ interface RecentItem {
 }
 
 const items: RecentItem[] = [
-  ...blog.map((p) => ({
-    title: p.data.title,
-    description: p.data.description,
-    url: `/blog/${p.id.replace(/\.md$/, '')}`,
-    section: 'Blog',
-    date: p.data.updatedDate || p.data.pubDate,
-  })),
-  ...projects.map((p) => ({
-    title: p.data.title,
-    description: p.data.description,
-    url: `/projects/${p.id.replace(/\.md$/, '')}`,
-    section: 'Projects',
-    date: p.data.updatedDate || p.data.pubDate,
-  })),
-  ...wiki.filter((e) => e.data.pubDate).map((e) => ({
-    title: e.data.title,
-    description: e.data.description,
-    url: `/wiki/${e.id.replace(/\.md$/, '')}`,
-    section: 'Wiki',
-    date: e.data.updatedDate || e.data.pubDate!,
-  })),
+  ...blog.map((p) => {
+    const slug = stripMdExtension(p.id);
+    return {
+      title: p.data.title,
+      description: p.data.description,
+      url: `/blog/${slug}`,
+      section: 'Blog',
+      date: effectiveUpdatedDate(p.data.pubDate, p.data.updatedDate, lastCommitFor('blog', slug)),
+    };
+  }),
+  ...projects.map((p) => {
+    const slug = stripMdExtension(p.id);
+    return {
+      title: p.data.title,
+      description: p.data.description,
+      url: `/projects/${slug}`,
+      section: 'Projects',
+      date: effectiveUpdatedDate(p.data.pubDate, p.data.updatedDate, lastCommitFor('projects', slug)),
+    };
+  }),
+  ...wiki.filter((e) => e.data.pubDate).map((e) => {
+    const slug = stripMdExtension(e.id);
+    return {
+      title: e.data.title,
+      description: e.data.description,
+      url: `/wiki/${slug}`,
+      section: 'Wiki',
+      date: effectiveUpdatedDate(e.data.pubDate!, e.data.updatedDate, lastCommitFor('wiki', slug)),
+    };
+  }),
 ];
 
 items.sort((a, b) => b.date.valueOf() - a.date.valueOf());
-const recent = items.slice(0, 10);
-
-const formatDate = (d: Date) =>
-  d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+const recent = items.slice(0, 3);
 ---
 
 <Base>
@@ -68,14 +79,17 @@ const formatDate = (d: Date) =>
       <div class="recent-list">
         {recent.map((item) => (
           <a href={item.url} class="recent-item">
-            <span class="recent-item-section">{item.section}</span>
+            <span class="recent-item-top">
+              <span class="recent-item-section">{item.section}</span>
+              <time class="recent-item-date" datetime={item.date.toISOString()}>{fmtDate(item.date)}</time>
+            </span>
             <span class="recent-item-text">
               <span class="recent-item-title">{item.title}</span>
               {item.description && <span class="recent-item-desc">{item.description}</span>}
             </span>
-            <time class="recent-item-date" datetime={item.date.toISOString()}>{formatDate(item.date)}</time>
           </a>
         ))}
+        <a href="/timeline" class="recent-more">More changes →</a>
       </div>
     </div>
   </section>
