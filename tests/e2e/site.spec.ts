@@ -33,6 +33,22 @@ test.describe('About page', () => {
     await expect(links).toHaveCount(3);
     await expect(page.locator('.social-links a[href*="github.com"]')).toBeVisible();
   });
+
+  test('social links wrap inside the card on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 1200 });
+    await page.goto('/about/');
+    const overflow = await page.evaluate(() => {
+      const card = document.querySelector('.about-content')?.getBoundingClientRect();
+      const links = [...document.querySelectorAll('.social-links a')];
+      if (!card) return { error: 'no about-content' };
+      const maxRight = Math.max(...links.map((a) => a.getBoundingClientRect().right));
+      const docOverflow = document.documentElement.scrollWidth - window.innerWidth;
+      return { cardRight: card.right, maxLinkRight: maxRight, docOverflow, linkCount: links.length };
+    });
+    expect(overflow.linkCount).toBe(3);
+    expect(overflow.maxLinkRight).toBeLessThanOrEqual(overflow.cardRight + 1);
+    expect(overflow.docOverflow).toBeLessThanOrEqual(0);
+  });
 });
 
 test.describe('RSS feed', () => {

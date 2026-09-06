@@ -343,6 +343,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### src/pages/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 6a25a837-ed53-4a9b-a492-dc4315b7393c | 🔴 bugfix | About page social links overflow card on mobile — missing flex-wrap | 2026-09-06 |
 | c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
 | 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
 | 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
@@ -352,9 +353,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 3f630abe-bfb5-421c-afa3-728aebf06fc6 | 🔵 discovery | Search index consumed by SearchBar, search page, and 404 | 2026-09-03 |
 | e987c486-2e82-4fdc-a435-91f7c7d2500d | 🔵 discovery | Search index already includes bookmarks and static pages | 2026-09-03 |
 | 72277dc7-2a1f-43d0-a781-d27169eb51f3 | 🔵 discovery | Three UI entry points fetch the shared search index | 2026-09-03 |
-| 4d4107fa-f886-4103-ad72-fb07bd9379cc | 🔵 discovery | Three UI entry points fetch the shared search index | 2026-09-03 |
 
-**Key concepts:** page-header, responsive, mobile, icons, consistency, timeline, reusable-component, git-graph, spine, continuity
+**Key concepts:** about-page, social-links, mobile, flex-wrap, overflow, css, bugfix, page-header, responsive, icons
 
 ### src/pages/blog/
 | ID | Type | Title | Date |
@@ -390,11 +390,12 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### src/styles/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 6a25a837-ed53-4a9b-a492-dc4315b7393c | 🔴 bugfix | About page social links overflow card on mobile — missing flex-wrap | 2026-09-06 |
 | 414cc21c-619c-4508-8122-0e2f356d4cdb | 🔴 bugfix | Mobile search-bar icon outside box: absolute-left not accounting for mobile padding | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
 | 9e19285d-814b-42b2-87f2-fbf0bed01398 | 🔵 discovery | Site theme CSS variables: text, accent, panel, glow | 2026-09-04 |
 
-**Key concepts:** search-bar, mobile, icon, css, bugfix, absolute-positioning, git-log, git-metadata, last-changed-date, timeline
+**Key concepts:** about-page, social-links, mobile, flex-wrap, overflow, css, bugfix, search-bar, icon, absolute-positioning
 
 ### tests/
 | ID | Type | Title | Date |
@@ -407,6 +408,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### tests/e2e/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 6a25a837-ed53-4a9b-a492-dc4315b7393c | 🔴 bugfix | About page social links overflow card on mobile — missing flex-wrap | 2026-09-06 |
 | 414cc21c-619c-4508-8122-0e2f356d4cdb | 🔴 bugfix | Mobile search-bar icon outside box: absolute-left not accounting for mobile padding | 2026-09-06 |
 | c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
 | 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
@@ -416,9 +418,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 4c2b560e-7b79-43be-b843-0d16c3f2466e | ✅ change | Modal holodeck e2e: 10 pass, resize test skipped | 2026-09-04 |
 | c6ef3b3c-021f-4872-bede-d3a18aab9c29 | 🔵 discovery | Release-notes modal suite: markdown + dismissal tests | 2026-09-04 |
 | 633324c1-d902-444c-ac69-9f66f0a190f7 | 🟣 feature | Release-notes modal new test: dialog centered and in-viewport | 2026-09-04 |
-| 01394075-6619-4f1c-8d2c-9b1cf9c62e2e | 🔵 discovery | Release-notes modal markdown and close-button test lines | 2026-09-04 |
 
-**Key concepts:** search-bar, mobile, icon, css, bugfix, absolute-positioning, page-header, responsive, icons, consistency
+**Key concepts:** about-page, social-links, mobile, flex-wrap, overflow, css, bugfix, search-bar, icon, absolute-positioning
 
 ### tests/unit/
 | ID | Type | Title | Date |

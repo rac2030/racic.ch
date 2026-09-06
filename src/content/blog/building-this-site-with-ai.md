@@ -561,6 +561,7 @@ Here is every feature implemented in this site:
 | URL aliases | `aliases` array in frontmatter generates additional routes via `flatMap` in `getStaticPaths` |
 | Recently Updated | Homepage section with the 3 most recently changed articles across all sections (git-derived last-changed date at top right of each row) + "More changes →" link to the `/timeline` page (per-commit git-graph timeline via `src/lib/timeline.ts`, "LAST UPDATED" date at top-right, #shortHash label on the connector line feeding into the footer, build-log post excluded, browser-scrollbar lazy reveal in batches, mobile-safe at ≤640px with a narrower rail + date-badge padding) |
 | Page header | Reusable `PageHeader.astro` on every page header — icon + 3em title + muted subtitle, all left-aligned, identical styling site-wide (blog/projects/wiki/bookmarks/about/tags/tag/timeline) |
+| About page | Hand-drawn SVG world map (Zürich marker), social links (GitHub/Twitter/LinkedIn) that wrap onto multiple lines on mobile via `flex-wrap: wrap`, Backstage logo DVD-screensaver easter egg |
 | Bookmarks | Separate collection with hero images, alphabetical tree layout |
 | 404 page | Flying 💩 emojis, URL-based search using SearchLib (exact + fuzzy), duck jump game with double jump and arrow key movement |
 | π easter egg | Nearly invisible symbol (bottom-right), hidden page with pi calculator |
@@ -609,6 +610,8 @@ The about page originally had a hand-drawn SVG world map with simple continent o
 - **flekschas/simple-world-map** was 72KB raw for 314 country paths — still too large to inline.
 
 The solution was to **extend the existing hand-drawn SVG** with country borders (dashed lines for internal borders) and highlight Switzerland with a red border and subtle red fill (`rgba(239,68,68,0.15)`). The result is a lightweight, recognizable map that serves its decorative purpose.
+
+The **social links** (GitHub / Twitter / LinkedIn, `.social-links`) below the map were a single flex row with no wrapping. Inside the `.about-content` panel (2rem padding), the three links need ~314px but a 375px viewport gives only ~235px, so the LinkedIn link overflowed the card to the right. Fixed with `flex-wrap: wrap` on `.social-links` so links flow onto multiple lines on small screens — verified no horizontal document overflow at 360–768px (e2e regression test asserts the LinkedIn link stays within the card and `document.documentElement.scrollWidth <= innerWidth` at 375px).
 
 ### Content Migration: Sensirion SDP3x
 
