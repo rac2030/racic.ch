@@ -288,6 +288,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### src/components/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
 | e81637d4-3a6d-4ee3-93bc-208765999466 | 🔴 bugfix | Release-modal not centered / drag-resize broken: full-height clamp + delayed centering | 2026-09-04 |
 | 0115f3e8-ddf0-437a-83b3-50974f9f3ed9 | 🔄 refactor | Release-notes modal script converted to bundled marked import | 2026-09-04 |
 | 1ad536ab-8527-4993-aa80-78b595c1b160 | 🟣 feature | Release-notes modal markup: dialog with header/body/footer | 2026-09-04 |
@@ -297,13 +298,13 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 6eafa57c-a226-476d-bae4-a170b0e49407 | 🟣 feature | Release-notes modal: styled release-date/notes and states | 2026-09-04 |
 | de9cf6cd-f643-4cd3-890f-83b1806be364 | 🟣 feature | Footer release-notes modal wiring and API fetch confirmed | 2026-09-04 |
 | bb8a1f5a-22df-43ea-8a6e-e1270806880b | 🟣 feature | Footer release-notes modal styles defined | 2026-09-04 |
-| cc8d444d-0f3a-4460-a863-c8b1b6820641 | 🟣 feature | Footer: version link href retained but renders hidden modal markup | 2026-09-04 |
 
-**Key concepts:** how-it-works, gotcha, ui-interactions, e2e-testing, refactor, markdown, feature, ui-design, pattern, marked
+**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor, how-it-works, gotcha, ui-interactions, e2e-testing
 
 ### src/content/blog/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
 | 5404b785-8713-4605-826d-c4ab0767af09 | ✅ change | Build log updated to document release-notes modal behavior | 2026-09-04 |
 | 341e0480-d0e6-4c10-8f4c-28614721a638 | ✅ change | Build log semantic-versioning table row stale for modal | 2026-09-04 |
@@ -313,9 +314,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 5ea6e6fb-e13c-4c65-852e-b79a676c5d84 | 🔵 discovery | Build log references CI/CD at several points | 2026-09-04 |
 | 01be707b-6c72-48a1-a0f3-ceb34f78f2c4 | 🔵 discovery | Build and Deployment section documents CI/CD with stale numbers | 2026-09-04 |
 | c8ac2097-9971-4263-8a63-b2384abf0cc8 | 🔵 discovery | Build log table of contents shows full build narrative | 2026-09-04 |
-| 953ffeaa-4f41-4bcd-87c9-e12acb725eac | 🔵 discovery | Build log feature table tracks search, search page, and navigation | 2026-09-04 |
 
-**Key concepts:** git-log, git-metadata, last-changed-date, timeline, recently-updated, card-design, lazy-reveal, build-log, documentation, what-changed
+**Key concepts:** git-log, git-graph, timeline, per-commit, exclusion, utility-module, lazy-reveal, e2e-testing, coverag, git-metadata
 
 ### src/layouts/
 | ID | Type | Title | Date |
@@ -327,6 +327,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### src/lib/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
 | c2d8d07a-84c6-47fb-82c0-d7f5bd588c9b | 🔵 discovery | Service worker: passport-style lazy caching with version diff | 2026-09-04 |
 | 6ade7a1e-7584-46ad-93e8-edcca988ae25 | 🔵 discovery | Service worker fetch handler intercepts all GETs with cache/respondWith | 2026-09-04 |
@@ -336,13 +337,14 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 9b4d6d4d-6346-4c5c-9cbb-1c06133c31a7 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
 | ff24f42b-d4c9-4350-a232-5a47c5ae41be | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
 | 82bdb07c-518b-4323-8116-e0dbdfe729e0 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
-| 751aaead-6ee2-483e-a837-cf525956e571 | ✅ change | Bookmarks priority work refined to section-based weighting | 2026-09-03 |
 
-**Key concepts:** git-log, git-metadata, last-changed-date, timeline, recently-updated, card-design, lazy-reveal, build-log, how-it-works, service-worker
+**Key concepts:** git-log, git-graph, timeline, per-commit, exclusion, utility-module, lazy-reveal, e2e-testing, coverag, git-metadata
 
 ### src/pages/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
+| 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
 | 5b974182-bac6-48c3-aca8-75e8b918ed1b | 🔵 discovery | Search index already includes bookmarks with author field | 2026-09-03 |
 | fb972c4c-e0fd-4e69-bf55-81c68dabe692 | ✅ change | Search index entries gained author field from frontmatter | 2026-09-03 |
@@ -351,9 +353,29 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 72277dc7-2a1f-43d0-a781-d27169eb51f3 | 🔵 discovery | Three UI entry points fetch the shared search index | 2026-09-03 |
 | 4d4107fa-f886-4103-ad72-fb07bd9379cc | 🔵 discovery | Three UI entry points fetch the shared search index | 2026-09-03 |
 | 21249530-b236-4df8-a593-dee4aba94330 | 🔵 discovery | Search page: client-side UI shell with URL state sync | 2026-09-03 |
-| 2aee516a-d9b8-46f9-8f73-3893a84555a8 | 🔵 discovery | Search page: client-side UI shell with URL state sync | 2026-09-03 |
 
-**Key concepts:** git-log, git-metadata, last-changed-date, timeline, recently-updated, card-design, lazy-reveal, build-log, what-changed, search-index
+**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor, git-log, timeline, per-commit, exclusion
+
+### src/pages/blog/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
+
+**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor
+
+### src/pages/projects/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
+
+**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor
+
+### src/pages/wiki/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
+
+**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor
 
 ### src/styles/
 | ID | Type | Title | Date |
@@ -374,6 +396,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### tests/e2e/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
+| 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
 | 98d44aa5-97cf-40a5-b441-73b7709cfea2 | 🔴 bugfix | Resize-via-handle test now passes; all 11 modal tests green | 2026-09-04 |
 | 4c2b560e-7b79-43be-b843-0d16c3f2466e | ✅ change | Modal holodeck e2e: 10 pass, resize test skipped | 2026-09-04 |
@@ -382,14 +406,13 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 01394075-6619-4f1c-8d2c-9b1cf9c62e2e | 🔵 discovery | Release-notes modal markdown and close-button test lines | 2026-09-04 |
 | 37b4ad5c-8fe9-40e3-9890-51d8a3388837 | 🔵 discovery | Release-notes modal e2e: count, href, view-all, markdown assertions | 2026-09-04 |
 | 02ef2eb6-ab7f-4812-853f-04072d43ee36 | 🔵 discovery | Release-notes modal test: 5 links and View-all assertions | 2026-09-04 |
-| 73adb9ab-9184-4ae7-af6d-4b6f6ba1ebc6 | 🔵 discovery | site.spec.ts broad cross-feature e2e coverage | 2026-09-04 |
-| 3c2e58cf-63c2-4145-888c-68829647ed13 | 🟣 feature | Footer release-notes modal renders bodies as markdown via bundled marked | 2026-09-04 |
 
-**Key concepts:** git-log, git-metadata, last-changed-date, timeline, recently-updated, card-design, lazy-reveal, build-log, bugfix, e2e-testing
+**Key concepts:** page-header, reusable-component, git-graph, spine, continuity, refactor, git-log, timeline, per-commit, exclusion
 
 ### tests/unit/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
 | 9b4d6d4d-6346-4c5c-9cbb-1c06133c31a7 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
 | 82bdb07c-518b-4323-8116-e0dbdfe729e0 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
@@ -397,7 +420,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 0a02a746-c81a-4516-b472-10670a57f769 | 🔵 discovery | Search unit tests cover all module behaviors | 2026-09-03 |
 | 712f8f53-28ba-46e7-98e7-5c8d3822d83d | 🔵 discovery | Search module has unit and e2e test coverage | 2026-09-03 |
 
-**Key concepts:** git-log, git-metadata, last-changed-date, timeline, recently-updated, card-design, lazy-reveal, build-log, search-index, bookmarks
+**Key concepts:** git-log, git-graph, timeline, per-commit, exclusion, utility-module, lazy-reveal, e2e-testing, coverag, git-metadata
 
 💡 *Use `mem-find` to search full details. Use `mem-create` to save important decisions.*
 <!-- /open-mem-context -->

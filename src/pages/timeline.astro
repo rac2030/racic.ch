@@ -1,7 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
 import { getCollection } from 'astro:content';
-import { effectiveUpdatedDate, formatDate, stripMdExtension } from '../lib/utils';
+import { formatDate, stripMdExtension } from '../lib/utils';
+import {
+  buildTimelineEvents,
+  shortCommitHash,
+  type TimelineSourceItem,
+} from '../lib/timeline';
 import gitLogJson from '../data/git-log.json';
 
 const isProd = import.meta.env.MODE === 'production';
@@ -10,61 +16,43 @@ const blog = (await getCollection('blog')).filter((p) => isProd ? !p.data.draft 
 const projects = (await getCollection('projects')).filter((p) => isProd ? !p.data.draft : true);
 const wiki = (await getCollection('wiki')).filter((e) => isProd ? !e.data.draft : true);
 
-interface TimelineItem {
-  title: string;
-  description: string;
-  url: string;
-  section: string;
-  date: Date;
-  commitMessage: string;
-}
+const sections = {
+  Blog: '/blog/',
+  Projects: '/projects/',
+  Wiki: '/wiki/',
+};
 
-const gitEntryFor = (section: string, slug: string) =>
-  gitLogJson?.[`${section}/${slug}`];
-
-const lastCommitFor = (section: string, slug: string) =>
-  gitEntryFor(section, slug)?.lastCommitDate;
-
-const lastCommitMessageFor = (section: string, slug: string) =>
-  gitEntryFor(section, slug)?.commits?.[0]?.message ?? '';
-
-const items: TimelineItem[] = [
-  ...blog.map((p) => {
-    const slug = stripMdExtension(p.id);
-    return {
-      title: p.data.title,
-      description: p.data.description,
-      url: `/blog/${slug}`,
-      section: 'Blog',
-      date: effectiveUpdatedDate(p.data.pubDate, p.data.updatedDate, lastCommitFor('blog', slug)),
-      commitMessage: lastCommitMessageFor('blog', slug),
-    };
-  }),
-  ...projects.map((p) => {
-    const slug = stripMdExtension(p.id);
-    return {
-      title: p.data.title,
-      description: p.data.description,
-      url: `/projects/${slug}`,
-      section: 'Projects',
-      date: effectiveUpdatedDate(p.data.pubDate, p.data.updatedDate, lastCommitFor('projects', slug)),
-      commitMessage: lastCommitMessageFor('projects', slug),
-    };
-  }),
-  ...wiki.filter((e) => e.data.pubDate).map((e) => {
-    const slug = stripMdExtension(e.id);
-    return {
-      title: e.data.title,
-      description: e.data.description,
-      url: `/wiki/${slug}`,
-      section: 'Wiki',
-      date: effectiveUpdatedDate(e.data.pubDate!, e.data.updatedDate, lastCommitFor('wiki', slug)),
-      commitMessage: lastCommitMessageFor('wiki', slug),
-    };
-  }),
+const sources: TimelineSourceItem[] = [
+  ...blog.map((p) => ({
+    section: 'Blog' as const,
+    id: p.id,
+    title: p.data.title,
+    description: p.data.description,
+    url: `${sections.Blog}${stripMdExtension(p.id)}`,
+    pubDate: p.data.pubDate,
+    updatedDate: p.data.updatedDate,
+  })),
+  ...projects.map((p) => ({
+    section: 'Projects' as const,
+    id: p.id,
+    title: p.data.title,
+    description: p.data.description,
+    url: `${sections.Projects}${stripMdExtension(p.id)}`,
+    pubDate: p.data.pubDate,
+    updatedDate: p.data.updatedDate,
+  })),
+  ...wiki.filter((e) => e.data.pubDate).map((e) => ({
+    section: 'Wiki' as const,
+    id: e.id,
+    title: e.data.title,
+    description: e.data.description,
+    url: `${sections.Wiki}${stripMdExtension(e.id)}`,
+    pubDate: e.data.pubDate!,
+    updatedDate: e.data.updatedDate,
+  })),
 ];
 
-items.sort((a, b) => b.date.valueOf() - a.date.valueOf());
+const items = buildTimelineEvents(sources, gitLogJson);
 
 const sectionIcons: Record<string, string> = {
   Blog: 'fa-solid fa-pen-nib',
@@ -73,39 +61,148 @@ const sectionIcons: Record<string, string> = {
 };
 
 const initialVisible = 10;
+const total = items.length;
 ---
 
 <Base title="Article Change Timeline">
-  <div class="page-404">
-    <h1>Article Change Timeline</h1>
-    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Full chronological list of all blog, project, and wiki updates</p>
+  <section class="section">
+    <div class="container">
+      <PageHeader title="Article Change Timeline" subtitle="Every commit across all blog, project, and wiki articles, newest first" />
 
-    <ul id="timeline-list" class="card-grid" style="grid-template-columns: 1fr; max-width: 600px; margin: 0 auto; text-align: left; list-style: none; padding: 0;">
+      <ul id="timeline-list" class="timeline-list">
       {items.map((item, i) => (
-        <li class="timeline-entry" data-index={i} {...(i >= initialVisible ? { hidden: true } : {})}>
-          <a href={item.url} class="card timeline-card">
-            <time class="timeline-date" datetime={item.date.toISOString()}>
-              <span class="timeline-date-label">Last updated</span>
-              {formatDate(item.date)}
-            </time>
-            <h3>{item.title}</h3>
-            {item.description && <p class="timeline-desc">{item.description}</p>}
-            <span class="timeline-section"><i class={sectionIcons[item.section] || 'fa-solid fa-file'}></i> {item.section}</span>
-            {item.commitMessage && (
-              <p class="timeline-commit" title={item.commitMessage}><i class="fa-solid fa-code-commit"></i> {item.commitMessage}</p>
+        <li
+          class={`timeline-entry${i === 0 ? ' first' : ''}${i === total - 1 ? ' last' : ''}`}
+          data-index={i}
+          {...(i >= initialVisible ? { hidden: true } : {})}
+        >
+          <div class={`timeline-rail${item.commitMessage ? ' timeline-rail--commit' : ''}`}>
+            {item.hasGitHistory ? (
+              <a class="rail-dot" href={item.commitUrl} target="_blank" rel="noopener noreferrer" title={item.commitHash}></a>
+            ) : (
+              <span class="rail-dot rail-dot--empty"></span>
             )}
-          </a>
+          </div>
+          <div class="timeline-card-wrap">
+            <div class="card timeline-card">
+              <time class="timeline-date" datetime={item.date.toISOString()}>
+                <span class="timeline-date-label">Last updated</span>
+                {formatDate(item.date)}
+              </time>
+              <h3><a href={item.url} class="timeline-card-title">{item.title}</a></h3>
+              {item.description && <p class="timeline-desc">{item.description}</p>}
+              <span class="timeline-section"><i class={sectionIcons[item.section] || 'fa-solid fa-file'}></i> {item.section}</span>
+              {item.commitMessage && (
+                <a href={item.commitUrl} target="_blank" rel="noopener noreferrer" class="timeline-commit" title={item.commitMessage}>
+                  <span class="timeline-commit-line" aria-hidden="true"></span>
+                  <span class="timeline-commit-hash">#{shortCommitHash(item.commitHash)}</span>
+                  <span class="timeline-commit-msg">{item.commitMessage}</span>
+                </a>
+              )}
+            </div>
+          </div>
         </li>
       ))}
-    </ul>
+      </ul>
 
-    <a href="/" class="btn btn-primary" style="margin-top: 2rem; display: block; text-align: center;">Back to Home</a>
-  </div>
+      <a href="/" class="btn btn-primary" style="margin-top: 2rem; display: block; text-align: center;">Back to Home</a>
+    </div>
+  </section>
 </Base>
 
 <style>
   ul#timeline-list li.timeline-entry[hidden] {
     display: none;
+  }
+
+  ul#timeline-list {
+    position: relative;
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 680px;
+    text-align: left;
+  }
+
+  ul#timeline-list::before {
+    content: '';
+    position: absolute;
+    left: 0.85rem;
+    margin-left: -1px;
+    top: 1.4rem;
+    bottom: 1.4rem;
+    width: 2px;
+    background: linear-gradient(180deg, #bae6fd 0%, #38bdf8 45%, #0ea5e9 70%, #38bdf8 100%);
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);
+  }
+
+  .timeline-entry {
+    display: flex;
+    gap: 0.75rem;
+    position: relative;
+  }
+
+  .timeline-rail {
+    position: relative;
+    width: 4.5rem;
+    flex-shrink: 0;
+  }
+
+  .timeline-rail::after {
+    content: '';
+    position: absolute;
+    left: 0.85rem;
+    top: 1.4rem;
+    transform: translateY(-50%);
+    width: calc(100% - 0.85rem + 0.75rem);
+    height: 2px;
+    background: #38bdf8;
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.7);
+  }
+
+  .timeline-rail--commit {
+    --node-y: 1.4rem;
+    --node-dot-inset: calc(var(--node-y) - 0.6rem);
+    --node-line-inset: calc(var(--node-y) - 0.1rem);
+  }
+
+  .timeline-entry .timeline-rail--commit::after {
+    top: auto;
+    bottom: var(--node-line-inset);
+  }
+
+  .timeline-entry .timeline-rail--commit .rail-dot {
+    top: auto;
+    bottom: var(--node-dot-inset);
+  }
+
+
+  .rail-dot {
+    position: absolute;
+    left: 0.85rem;
+    top: 1.4rem;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid #0a121e;
+    box-shadow: 0 0 8px var(--panel-glow);
+    z-index: 1;
+  }
+
+  .rail-dot:hover {
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  .rail-dot--empty {
+    background: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  .timeline-card-wrap {
+    flex: 1;
+    min-width: 0;
   }
 
   .timeline-card {
@@ -134,6 +231,17 @@ const initialVisible = 10;
   .timeline-card h3 {
     margin: 0 0 0.25rem;
     padding-right: 9rem;
+    font-size: 1.05rem;
+  }
+
+  .timeline-card-title {
+    color: var(--text-primary);
+    text-decoration: none;
+    border-bottom: none;
+  }
+
+  .timeline-card-title:hover {
+    color: var(--accent);
   }
 
   .timeline-desc {
@@ -148,22 +256,46 @@ const initialVisible = 10;
   }
 
   .timeline-commit {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     margin: 0.7rem -1rem -1rem;
     padding: 0.5rem 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     font-size: 0.72rem;
     color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
+    text-decoration: none;
     white-space: nowrap;
+    overflow: hidden;
+    transition: background 0.15s;
+  }
+
+  .timeline-commit:hover {
+    background: rgba(52, 140, 178, 0.08);
+    color: var(--text-primary);
+  }
+
+  .timeline-commit-line {
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 2px;
+    margin-left: -1rem;
+    background: #38bdf8;
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.7);
+  }
+
+  .timeline-commit-msg {
+    flex: 1;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .timeline-commit i {
+  .timeline-commit-hash {
     flex-shrink: 0;
-    color: var(--text-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.68rem;
+    color: var(--accent);
   }
 </style>
 

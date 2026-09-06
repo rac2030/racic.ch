@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
 import TagFilter from '../../components/TagFilter.astro';
 import { getCollection } from 'astro:content';
 
@@ -36,8 +37,7 @@ for (let i = 0; i < graphNodes.length; i++) {
 <Base title="Wiki | Michel Racic" description="Technical wiki — quick references, how-tos, and useful notes.">
   <section class="section">
     <div class="container">
-      <h1 style="text-align: center;"><i class="fa-solid fa-book"></i> Wiki</h1>
-      <p style="text-align: center; margin-bottom: 1.5rem; color: var(--text-muted);">Quick references, how-tos, and useful technical notes.</p>
+      <PageHeader title="Wiki" icon="fa-solid fa-book" subtitle="Quick references, how-tos, and useful technical notes." />
 
       <div class="wiki-graph-wrap">
         <canvas id="wiki-graph" width="1100" height="500"></canvas>

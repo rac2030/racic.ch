@@ -443,7 +443,7 @@ test.describe('Timeline page', () => {
   test('timeline card date matches article page last-changed date', async ({ page }) => {
     await page.goto('/timeline/');
     const card = page.locator('main .timeline-entry:not([hidden]) .timeline-card').first();
-    const href = await card.getAttribute('href');
+    const href = await card.locator('.timeline-card-title').getAttribute('href');
     const cardDate = await card.locator('.timeline-date').getAttribute('datetime');
     const res = await page.goto(href!);
     expect(res?.status()).toBe(200);
@@ -455,6 +455,97 @@ test.describe('Timeline page', () => {
       .map((d) => new Date(d!).getTime())
       .sort((a, b) => b - a)[0];
     expect(new Date(cardDate!).getTime()).toBe(latestOnArticle);
+  });
+
+  test('timeline renders a git-graph rail with one commit node per card', async ({ page }) => {
+    await page.goto('/timeline/');
+    const entries = page.locator('.timeline-entry:not([hidden])');
+    const total = await entries.count();
+    expect(total).toBeGreaterThan(3);
+    const rails = page.locator('main .timeline-entry:not([hidden]) .timeline-rail');
+    const dots = page.locator('main .timeline-entry:not([hidden]) .rail-dot');
+    expect(await rails.count()).toBe(total);
+    expect(await dots.count()).toBe(total);
+
+    const nodeInfo = await dots.first().evaluate((el) => {
+      const list = document.getElementById('timeline-list');
+      const rail = el.closest('.timeline-rail');
+      const spine = getComputedStyle(list, '::before');
+      const railSpine = getComputedStyle(rail, '::before');
+      const outline = getComputedStyle(rail, '::after');
+      const listR = list.getBoundingClientRect();
+      const dotR = el.getBoundingClientRect();
+      const dotCenter = dotR.x + dotR.width / 2;
+      const spineCenter = listR.x + parseFloat(spine.left) + parseFloat(spine.marginLeft) + parseFloat(spine.width) / 2;
+      const listBottom = listR.y + listR.height;
+      return {
+        centeredOnLine: Math.abs(dotCenter - spineCenter) < 3,
+        hasConnectLine: outline.content !== 'none' && parseFloat(outline.width) > 40,
+        hasSpine: spine.content !== 'none' && parseFloat(spine.width) >= 2,
+        continuousSingleSpine: railSpine.content === 'none',
+        spineCoversList: parseFloat(spine.top) <= 40 && listBottom - parseFloat(spine.bottom) >= listR.y + listR.height - 40,
+        isCommitLink: el.tagName === 'A' && (el.getAttribute('href') || '').includes('github.com/'),
+      };
+    });
+    expect(nodeInfo.centeredOnLine).toBe(true);
+    expect(nodeInfo.hasConnectLine).toBe(true);
+    expect(nodeInfo.hasSpine).toBe(true);
+    expect(nodeInfo.continuousSingleSpine).toBe(true);
+    expect(nodeInfo.spineCoversList).toBe(true);
+    expect(nodeInfo.isCommitLink).toBe(true);
+
+    const h1Size = await page.evaluate(() => {
+      const h1 = document.querySelector('main h1');
+      return {
+        text: h1.textContent.trim(),
+        size: parseFloat(getComputedStyle(h1).fontSize),
+        page404Size: getComputedStyle(h1).fontSize,
+      };
+    });
+    expect(h1Size.text).toBe('Article Change Timeline');
+    expect(h1Size.size).toBe(60);
+
+    const hash = await page.locator('main .timeline-entry:not([hidden]) .timeline-commit-hash').first().textContent();
+    expect(hash).toMatch(/^#[0-9a-f]{7}$/);
+
+    const align = await page.evaluate(() => {
+      const row = document.querySelector('.timeline-entry .timeline-rail--commit')!.closest('.timeline-entry');
+      const rail = row!.querySelector('.timeline-rail')!;
+      const railR = rail.getBoundingClientRect();
+      const dot = row!.querySelector('.rail-dot')!.getBoundingClientRect();
+      const foot = row!.querySelector('.timeline-commit')!.getBoundingClientRect();
+      const line = row!.querySelector('.timeline-commit-line')!.getBoundingClientRect();
+      const card = row!.querySelector('.timeline-card')!.getBoundingClientRect();
+      const after = getComputedStyle(rail, '::after');
+      const connector = railR.y + parseFloat(after.top) + parseFloat(after.height) / 2;
+      const dotRow = dot.y + dot.height / 2;
+      const footRow = foot.y + foot.height / 2;
+      const lineRow = line.y + line.height / 2;
+      return {
+        drift: Math.abs(dotRow - footRow),
+        connectorToDot: Math.abs(connector - dotRow),
+        connectorToLine: Math.abs(connector - lineRow),
+        lineAtCardEdge: Math.abs(card.x - line.x),
+        lineW: line.width,
+        lineH: line.height,
+        order: [...row!.querySelector('.timeline-commit')!.children].map((c) => (c as HTMLElement).className.split(' ')[0]),
+      };
+    });
+    expect(align.drift).toBeLessThanOrEqual(4);
+    expect(align.connectorToDot).toBeLessThanOrEqual(4);
+    expect(align.connectorToLine).toBeLessThanOrEqual(4);
+    expect(align.lineAtCardEdge).toBeLessThanOrEqual(2);
+    expect(align.lineW).toBeGreaterThan(15);
+    expect(align.lineH).toBeLessThanOrEqual(3);
+    expect(align.order).toEqual(['timeline-commit-line', 'timeline-commit-hash', 'timeline-commit-msg']);
+  });
+
+  test('timeline excludes the continuously-updated build log post', async ({ page }) => {
+    await page.goto('/timeline/');
+    await page.waitForTimeout(100);
+    expect(await page.locator('main a[href="/blog/building-this-site-with-ai"]').count()).toBe(0);
+    const body = await page.locator('main').textContent();
+    expect(body).not.toContain('Building this Site with AI');
   });
 
   test('timeline scrolls with the browser scrollbar (no inner scroll container)', async ({ page }) => {
