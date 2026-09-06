@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2a1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d1f0d;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c9a84c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7db34a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8c84a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b8963a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="leaf" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5a9a3a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3d7a2a;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#c9a84c;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#c9a84c;stop-opacity:0" />
+    </radialGradient>
+    <radialGradient id="glowGreen" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#5a9a3a;stop-opacity:0.12" />
+      <stop offset="100%" style="stop-color:#5a9a3a;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="320" fill="url(#bg)"/>
+
+  <!-- Ambient glow -->
+  <circle cx="920" cy="160" r="180" fill="url(#glow)"/>
+  <circle cx="1000" cy="120" r="120" fill="url(#glowGreen)"/>
+
+  <!-- Decorative leaf patterns (background, very subtle) -->
+  <g opacity="0.04" fill="none" stroke="#5a9a3a" stroke-width="1.5">
+    <path d="M850,40 Q900,80 870,140 Q840,80 850,40Z"/>
+    <path d="M920,20 Q970,60 940,130 Q910,60 920,20Z"/>
+    <path d="M990,50 Q1040,90 1010,150 Q980,90 990,50Z"/>
+    <path d="M860,200 Q910,240 880,300 Q850,240 860,200Z"/>
+    <path d="M1020,180 Q1070,220 1040,280 Q1010,220 1020,180Z"/>
+  </g>
+
+  <!-- Lotus flower (right side) -->
+  <g transform="translate(960,160)">
+    <!-- Outer petals -->
+    <g opacity="0.7">
+      <ellipse cx="0" cy="-50" rx="18" ry="45" fill="url(#gold)" transform="rotate(0)"/>
+      <ellipse cx="0" cy="-50" rx="18" ry="45" fill="url(#gold)" transform="rotate(45)"/>
+      <ellipse cx="0" cy="-50" rx="18" ry="45" fill="url(#gold)" transform="rotate(90)"/>
+      <ellipse cx="0" cy="-50" rx="18" ry="45" fill="url(#gold)" transform="rotate(135)"/>
+      <ellipse cx="0" cy="-50" rx="18" ry="45" fill="url(#gold)" transform="rotate(180)"/>
+      <ellipse cx="0" cy="-50" rx="18" ry="45" fill="url(#gold)" transform="rotate(225)"/>
+      <ellipse cx="0" cy="-50" rx="18" ry="45" fill="url(#gold)" transform="rotate(270)"/>
+      <ellipse cx="0" cy="-50" rx="18" ry="45" fill="url(#gold)" transform="rotate(315)"/>
+    </g>
+    <!-- Inner petals -->
+    <g opacity="0.85">
+      <ellipse cx="0" cy="-30" rx="12" ry="28" fill="url(#gold)" transform="rotate(22.5)" opacity="0.9"/>
+      <ellipse cx="0" cy="-30" rx="12" ry="28" fill="url(#gold)" transform="rotate(67.5)" opacity="0.9"/>
+      <ellipse cx="0" cy="-30" rx="12" ry="28" fill="url(#gold)" transform="rotate(112.5)" opacity="0.9"/>
+      <ellipse cx="0" cy="-30" rx="12" ry="28" fill="url(#gold)" transform="rotate(157.5)" opacity="0.9"/>
+      <ellipse cx="0" cy="-30" rx="12" ry="28" fill="url(#gold)" transform="rotate(202.5)" opacity="0.9"/>
+      <ellipse cx="0" cy="-30" rx="12" ry="28" fill="url(#gold)" transform="rotate(247.5)" opacity="0.9"/>
+      <ellipse cx="0" cy="-30" rx="12" ry="28" fill="url(#gold)" transform="rotate(292.5)" opacity="0.9"/>
+      <ellipse cx="0" cy="-30" rx="12" ry="28" fill="url(#gold)" transform="rotate(337.5)" opacity="0.9"/>
+    </g>
+    <!-- Center -->
+    <circle cx="0" cy="0" r="14" fill="url(#gold)" opacity="0.95"/>
+    <circle cx="0" cy="0" r="8" fill="#1a2a1a" opacity="0.5"/>
+    <circle cx="0" cy="0" r="4" fill="url(#gold)" opacity="0.7"/>
+  </g>
+
+  <!-- Floating leaves -->
+  <g opacity="0.12" fill="url(#leaf)">
+    <path d="M1100,60 Q1130,40 1140,70 Q1120,80 1100,60Z"/>
+    <path d="M1080,260 Q1110,240 1120,270 Q1100,280 1080,260Z"/>
+    <path d="M820,100 Q840,80 850,110 Q830,120 820,100Z"/>
+  </g>
+
+  <!-- Decorative mandala ring (subtle) -->
+  <g transform="translate(960,160)" opacity="0.06" fill="none" stroke="url(#accent)" stroke-width="1">
+    <circle cx="0" cy="0" r="100"/>
+    <circle cx="0" cy="0" r="110"/>
+    <circle cx="0" cy="0" r="120"/>
+    <g stroke-width="0.8">
+      <line x1="0" y1="-100" x2="0" y2="-120"/>
+      <line x1="70" y1="-70" x2="84" y2="-84"/>
+      <line x1="100" y1="0" x2="120" y2="0"/>
+      <line x1="70" y1="70" x2="84" y2="84"/>
+      <line x1="0" y1="100" x2="0" y2="120"/>
+      <line x1="-70" y1="70" x2="-84" y2="84"/>
+      <line x1="-100" y1="0" x2="-120" y2="0"/>
+      <line x1="-70" y1="-70" x2="-84" y2="-84"/>
+    </g>
+  </g>
+
+  <!-- Title text -->
+  <text x="80" y="142" font-family="'Source Sans Pro', 'Segoe UI', sans-serif" font-size="38" font-weight="900" fill="white" letter-spacing="-0.5">Anti-septic Shower Scrub</text>
+  <text x="80" y="178" font-family="'Source Sans Pro', 'Segoe UI', sans-serif" font-size="14" fill="rgba(255,255,255,0.5)" letter-spacing="3">HOMEMADE · AYURVEDA · NATURAL SKINCARE</text>
+
+  <!-- Subtle accent line -->
+  <rect x="80" y="192" width="60" height="2" rx="1" fill="url(#accent)" opacity="0.5"/>
+</svg>
