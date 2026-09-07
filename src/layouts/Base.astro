@@ -133,13 +133,26 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
             });
         }
 
+        var BANNER_PENDING_KEY = 'racic-ch-banner-pending';
+
+        function showUpdateBanner() {
+          updateBanner.style.display = 'block';
+          try { sessionStorage.setItem(BANNER_PENDING_KEY, '1'); } catch (e) {}
+        }
+
+        try {
+          if (sessionStorage.getItem(BANNER_PENDING_KEY) === '1') {
+            updateBanner.style.display = 'block';
+          }
+        } catch (e) {}
+
         function handleSwMessage(e) {
           if (!e.data || e.data.type !== 'NEW_VERSION') return;
           var changedUrl = e.data.url || '';
           if (changedUrl && normalizePath(changedUrl) === normalizePath(location.href)) {
             autoReplaceOnce(e.data.version);
           } else {
-            updateBanner.style.display = 'block';
+            showUpdateBanner();
           }
         }
 
@@ -155,9 +168,12 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
         });
 
         updateBanner.addEventListener('click', function() {
+          try { sessionStorage.removeItem(BANNER_PENDING_KEY); } catch (e) {}
           if (swReg && swReg.waiting) {
             userInitiatedUpdate = true;
             swReg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          } else {
+            location.reload();
           }
         });
       }

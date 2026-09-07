@@ -314,6 +314,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### src/content/blog/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| ae3a9a39-cbb5-4d72-b6a8-8954f8cbab59 | 🔴 bugfix | SW update banner was never visible — fixed with sessionStorage persistence + click reload fallback | 2026-09-07 |
 | e956ebf4-be42-4fb6-b10c-a9918984a131 | 🟣 feature | SW no-store bypass fixes stale release notes + live page auto-replacement | 2026-09-07 |
 | 9ff33d41-502d-413c-a230-4b6318edb2fc | 🟣 feature | Backstage Brick Breaker easter egg shipped on About page | 2026-09-06 |
 | 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
@@ -323,17 +324,17 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | ecbc347d-1e98-40b6-a27f-273008075f66 | 🔵 discovery | Build log lessons: migration, Zod defaults, Astro quirks, cache | 2026-09-04 |
 | 2fdd3c4d-dd20-42cc-88a5-7afbb509be69 | ✅ change | Build log footer-version description now stale for modal | 2026-09-04 |
 | dd7f2b0c-70dc-4be5-a211-a3aed0e495f1 | 🔵 discovery | Build log documents SW, semantic-release, migration details | 2026-09-04 |
-| 5ea6e6fb-e13c-4c65-852e-b79a676c5d84 | 🔵 discovery | Build log references CI/CD at several points | 2026-09-04 |
 
-**Key concepts:** service-worker, no-store, release-notes, cache, live-update, freshness, banner, brick-breaker, easter-egg, canvas
+**Key concepts:** service-worker, sessionStorage, update-banner, visibility, auto-replace, e2e-testing, tdd, no-store, release-notes, cache
 
 ### src/layouts/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| ae3a9a39-cbb5-4d72-b6a8-8954f8cbab59 | 🔴 bugfix | SW update banner was never visible — fixed with sessionStorage persistence + click reload fallback | 2026-09-07 |
 | e956ebf4-be42-4fb6-b10c-a9918984a131 | 🟣 feature | SW no-store bypass fixes stale release notes + live page auto-replacement | 2026-09-07 |
 | c5c9556c-5b05-4d11-a743-fa5003f55e1e | 🔵 discovery | Post and GitHistory layouts use inline JS modals | 2026-09-04 |
 
-**Key concepts:** service-worker, no-store, release-notes, cache, live-update, freshness, banner, how-it-works, ui-interactions, gotcha
+**Key concepts:** service-worker, sessionStorage, update-banner, visibility, auto-replace, e2e-testing, tdd, no-store, release-notes, cache
 
 ### src/lib/
 | ID | Type | Title | Date |
@@ -420,6 +421,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### tests/e2e/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| ae3a9a39-cbb5-4d72-b6a8-8954f8cbab59 | 🔴 bugfix | SW update banner was never visible — fixed with sessionStorage persistence + click reload fallback | 2026-09-07 |
 | e956ebf4-be42-4fb6-b10c-a9918984a131 | 🟣 feature | SW no-store bypass fixes stale release notes + live page auto-replacement | 2026-09-07 |
 | 9ff33d41-502d-413c-a230-4b6318edb2fc | 🟣 feature | Backstage Brick Breaker easter egg shipped on About page | 2026-09-06 |
 | 6a25a837-ed53-4a9b-a492-dc4315b7393c | 🔴 bugfix | About page social links overflow card on mobile — missing flex-wrap | 2026-09-06 |
@@ -429,9 +431,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
 | 98d44aa5-97cf-40a5-b441-73b7709cfea2 | 🔴 bugfix | Resize-via-handle test now passes; all 11 modal tests green | 2026-09-04 |
-| 4c2b560e-7b79-43be-b843-0d16c3f2466e | ✅ change | Modal holodeck e2e: 10 pass, resize test skipped | 2026-09-04 |
 
-**Key concepts:** service-worker, no-store, release-notes, cache, live-update, freshness, banner, brick-breaker, easter-egg, canvas
+**Key concepts:** service-worker, sessionStorage, update-banner, visibility, auto-replace, e2e-testing, tdd, no-store, release-notes, cache
 
 ### tests/unit/
 | ID | Type | Title | Date |

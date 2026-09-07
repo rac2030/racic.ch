@@ -173,11 +173,40 @@ test.describe('Live content auto-replacement', () => {
   test('NEW_VERSION for a different resource only shows the banner, no reload', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    const bannerDisp = await page.evaluate(() => {
+    const banner = page.locator('#sw-update-banner');
+    await page.evaluate(() => {
       const w = window as any;
       w.__swOnMessage({ data: { type: 'NEW_VERSION', url: 'https://racic.ch/search-index.json', version: 3 } });
-      return document.getElementById('sw-update-banner')!.style.display;
     });
-    expect(bannerDisp).toBe('block');
+    await expect(banner).toBeVisible();
+  });
+
+  test('update banner is visibly rendered when an update is detected for another resource', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    const banner = page.locator('#sw-update-banner');
+    await page.evaluate(() => {
+      const w = window as any;
+      w.__swOnMessage({ data: { type: 'NEW_VERSION', url: 'https://racic.ch/css/global.css', version: 7 } });
+    });
+    const box = await banner.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.width).toBeGreaterThan(0);
+    expect(box!.height).toBeGreaterThan(0);
+  });
+
+  test('update banner stays visible after a reload until dismissed', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    const banner = page.locator('#sw-update-banner');
+    await page.evaluate(() => {
+      const w = window as any;
+      w.__swOnMessage({ data: { type: 'NEW_VERSION', url: 'https://racic.ch/search-index.json', version: 3 } });
+    });
+    await expect(banner).toBeVisible();
+    await page.reload();
+    await expect(banner).toBeVisible();
+    const pending = await page.evaluate(() => sessionStorage.getItem('racic-ch-banner-pending'));
+    expect(pending).toBe('1');
   });
 });
