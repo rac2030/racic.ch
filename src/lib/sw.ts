@@ -26,6 +26,27 @@ export function notifyClients(type: string, data?: Record<string, unknown>): voi
   });
 }
 
+// Normalize a URL/path to a canonical site path without origin,
+// 'index.html', or trailing slash (root becomes '/').
+export function normalizePath(url: string): string {
+  try {
+    const u = new URL(url, 'https://racic.ch');
+    let path = u.pathname.replace(/\/index\.html$/, '') || '/';
+    if (path.length > 1) path = path.replace(/\/+$/, '');
+    return path;
+  } catch {
+    const p = (url || '').replace(/\/index\.html$/, '');
+    return p.length > 1 ? p.replace(/\/+$/, '') : (p || '/');
+  }
+}
+
+// Requests that must never be served from cache (fresh API data).
+export function shouldBypassCache(request?: {
+  cache?: string;
+}): boolean {
+  return !!request && request.cache === 'no-store';
+}
+
 self.addEventListener('install', function(event) {
   self.skipWaiting();
 });
@@ -50,6 +71,13 @@ self.addEventListener('message', function(event) {
 self.addEventListener('fetch', function(event) {
   if (event.request.method !== 'GET') return;
 
+  // Fresh-only requests (API calls like release notes) bypass the cache
+  // entirely so the page always gets the newest content from the network.
+  if (shouldBypassCache(event.request)) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then(function(cached) {
       var fetchPromise = fetch(event.request).then(function(networkResponse) {
@@ -65,7 +93,7 @@ self.addEventListener('fetch', function(event) {
                 if (oldBody !== newBody) {
                   var v = parseInt(getVersion()) + 1;
                   setVersion(String(v));
-                  notifyClients('NEW_VERSION', { version: v });
+                  notifyClients('NEW_VERSION', { version: v, url: event.request.url });
                 }
               });
             });

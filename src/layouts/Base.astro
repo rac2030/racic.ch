@@ -103,11 +103,48 @@ const canonicalURL = new URL(Astro.url.pathname, SITE.url);
           }
         });
 
-        navigator.serviceWorker.addEventListener('message', function(e) {
-          if (e.data && e.data.type === 'NEW_VERSION') {
+        function normalizePath(url) {
+          try {
+            var u = new URL(url, location.origin);
+            var p = u.pathname.replace(/\/index\.html$/, '') || '/';
+            if (p.length > 1) p = p.replace(/\/+$/, '');
+            return p;
+          } catch (e) {
+            return '';
+          }
+        }
+
+        function autoReplaceOnce(version) {
+          var key = 'racic-ch-reload-' + version;
+          try {
+            if (sessionStorage.getItem(key) === '1') return;
+            sessionStorage.setItem(key, '1');
+          } catch (e) {}
+
+          fetch(location.href, { cache: 'no-store' })
+            .then(function(r) { return r.text(); })
+            .then(function(html) {
+              document.open();
+              document.write(html);
+              document.close();
+            })
+            .catch(function() {
+              try { sessionStorage.removeItem(key); } catch (e) {}
+            });
+        }
+
+        function handleSwMessage(e) {
+          if (!e.data || e.data.type !== 'NEW_VERSION') return;
+          var changedUrl = e.data.url || '';
+          if (changedUrl && normalizePath(changedUrl) === normalizePath(location.href)) {
+            autoReplaceOnce(e.data.version);
+          } else {
             updateBanner.style.display = 'block';
           }
-        });
+        }
+
+        window.__swOnMessage = handleSwMessage;
+        navigator.serviceWorker.addEventListener('message', handleSwMessage);
 
         var userInitiatedUpdate = false;
 

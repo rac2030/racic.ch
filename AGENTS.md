@@ -298,6 +298,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### src/components/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| e956ebf4-be42-4fb6-b10c-a9918984a131 | 🟣 feature | SW no-store bypass fixes stale release notes + live page auto-replacement | 2026-09-07 |
 | 414cc21c-619c-4508-8122-0e2f356d4cdb | 🔴 bugfix | Mobile search-bar icon outside box: absolute-left not accounting for mobile padding | 2026-09-06 |
 | c7399a9a-ba24-4634-bd9c-ca9e5889441f | 🔄 refactor | Unified page headers with icons + timeline mobile fix | 2026-09-06 |
 | 29eb0e1c-4541-48ab-bfe6-19189476d387 | 🔄 refactor | Continuous single spine on timeline + reusable PageHeader component | 2026-09-06 |
@@ -307,13 +308,13 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 9ddd3147-f65e-451e-bb6a-24cca776662f | 🟣 feature | Release-notes modal: link, code, blockquote, footer styles | 2026-09-04 |
 | ba4b17c6-4cdf-4996-9ed1-fbe1c1e46c07 | 🟣 feature | Release-notes modal CSS: dialog, header, title, markdown styles | 2026-09-04 |
 | 3c2e58cf-63c2-4145-888c-68829647ed13 | 🟣 feature | Footer release-notes modal renders bodies as markdown via bundled marked | 2026-09-04 |
-| 6eafa57c-a226-476d-bae4-a170b0e49407 | 🟣 feature | Release-notes modal: styled release-date/notes and states | 2026-09-04 |
 
-**Key concepts:** search-bar, mobile, icon, css, bugfix, absolute-positioning, page-header, responsive, icons, consistency
+**Key concepts:** service-worker, no-store, release-notes, cache, live-update, freshness, banner, search-bar, mobile, icon
 
 ### src/content/blog/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| e956ebf4-be42-4fb6-b10c-a9918984a131 | 🟣 feature | SW no-store bypass fixes stale release notes + live page auto-replacement | 2026-09-07 |
 | 9ff33d41-502d-413c-a230-4b6318edb2fc | 🟣 feature | Backstage Brick Breaker easter egg shipped on About page | 2026-09-06 |
 | 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
@@ -323,20 +324,21 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 2fdd3c4d-dd20-42cc-88a5-7afbb509be69 | ✅ change | Build log footer-version description now stale for modal | 2026-09-04 |
 | dd7f2b0c-70dc-4be5-a211-a3aed0e495f1 | 🔵 discovery | Build log documents SW, semantic-release, migration details | 2026-09-04 |
 | 5ea6e6fb-e13c-4c65-852e-b79a676c5d84 | 🔵 discovery | Build log references CI/CD at several points | 2026-09-04 |
-| 01be707b-6c72-48a1-a0f3-ceb34f78f2c4 | 🔵 discovery | Build and Deployment section documents CI/CD with stale numbers | 2026-09-04 |
 
-**Key concepts:** brick-breaker, easter-egg, canvas, about-page, build-brickbreaker, esbuild-iife, tdd, e2e-testing, git-log, git-graph
+**Key concepts:** service-worker, no-store, release-notes, cache, live-update, freshness, banner, brick-breaker, easter-egg, canvas
 
 ### src/layouts/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| e956ebf4-be42-4fb6-b10c-a9918984a131 | 🟣 feature | SW no-store bypass fixes stale release notes + live page auto-replacement | 2026-09-07 |
 | c5c9556c-5b05-4d11-a743-fa5003f55e1e | 🔵 discovery | Post and GitHistory layouts use inline JS modals | 2026-09-04 |
 
-**Key concepts:** how-it-works, ui-interactions, gotcha
+**Key concepts:** service-worker, no-store, release-notes, cache, live-update, freshness, banner, how-it-works, ui-interactions, gotcha
 
 ### src/lib/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| e956ebf4-be42-4fb6-b10c-a9918984a131 | 🟣 feature | SW no-store bypass fixes stale release notes + live page auto-replacement | 2026-09-07 |
 | 9ff33d41-502d-413c-a230-4b6318edb2fc | 🟣 feature | Backstage Brick Breaker easter egg shipped on About page | 2026-09-06 |
 | 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
@@ -346,9 +348,8 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 917c9910-1505-4e8e-83f2-9b395c36d15e | 🔵 discovery | Search module: dual-mode fuzzy search with browser IIFE bundle | 2026-09-04 |
 | caf53d8c-68ff-4edd-9af5-7959730e2815 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
 | 9b4d6d4d-6346-4c5c-9cbb-1c06133c31a7 | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
-| ff24f42b-d4c9-4350-a232-5a47c5ae41be | ✅ change | Bookmarks added to search index with section-based weighting | 2026-09-03 |
 
-**Key concepts:** brick-breaker, easter-egg, canvas, about-page, build-brickbreaker, esbuild-iife, tdd, e2e-testing, git-log, git-graph
+**Key concepts:** service-worker, no-store, release-notes, cache, live-update, freshness, banner, brick-breaker, easter-egg, canvas
 
 ### src/pages/
 | ID | Type | Title | Date |
@@ -419,6 +420,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 ### tests/e2e/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| e956ebf4-be42-4fb6-b10c-a9918984a131 | 🟣 feature | SW no-store bypass fixes stale release notes + live page auto-replacement | 2026-09-07 |
 | 9ff33d41-502d-413c-a230-4b6318edb2fc | 🟣 feature | Backstage Brick Breaker easter egg shipped on About page | 2026-09-06 |
 | 6a25a837-ed53-4a9b-a492-dc4315b7393c | 🔴 bugfix | About page social links overflow card on mobile — missing flex-wrap | 2026-09-06 |
 | 414cc21c-619c-4508-8122-0e2f356d4cdb | 🔴 bugfix | Mobile search-bar icon outside box: absolute-left not accounting for mobile padding | 2026-09-06 |
@@ -428,13 +430,13 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
 | 98d44aa5-97cf-40a5-b441-73b7709cfea2 | 🔴 bugfix | Resize-via-handle test now passes; all 11 modal tests green | 2026-09-04 |
 | 4c2b560e-7b79-43be-b843-0d16c3f2466e | ✅ change | Modal holodeck e2e: 10 pass, resize test skipped | 2026-09-04 |
-| c6ef3b3c-021f-4872-bede-d3a18aab9c29 | 🔵 discovery | Release-notes modal suite: markdown + dismissal tests | 2026-09-04 |
 
-**Key concepts:** brick-breaker, easter-egg, canvas, about-page, build-brickbreaker, esbuild-iife, tdd, e2e-testing, social-links, mobile
+**Key concepts:** service-worker, no-store, release-notes, cache, live-update, freshness, banner, brick-breaker, easter-egg, canvas
 
 ### tests/unit/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| e956ebf4-be42-4fb6-b10c-a9918984a131 | 🟣 feature | SW no-store bypass fixes stale release notes + live page auto-replacement | 2026-09-07 |
 | 9ff33d41-502d-413c-a230-4b6318edb2fc | 🟣 feature | Backstage Brick Breaker easter egg shipped on About page | 2026-09-06 |
 | 34293504-8099-4fc1-b537-8f692655abe5 | 🟣 feature | Timeline is a per-commit git-graph with build-log exclusion and timeline.ts utility | 2026-09-06 |
 | 1dfb9683-66cd-4185-8158-d77fb6624114 | 🟣 feature | Recently Updated + timeline use git-derived last-changed date at top-right | 2026-09-06 |
@@ -444,7 +446,7 @@ npm run release         # Run semantic-release locally (dry-run: --dry-run --no-
 | 0a02a746-c81a-4516-b472-10670a57f769 | 🔵 discovery | Search unit tests cover all module behaviors | 2026-09-03 |
 | 712f8f53-28ba-46e7-98e7-5c8d3822d83d | 🔵 discovery | Search module has unit and e2e test coverage | 2026-09-03 |
 
-**Key concepts:** brick-breaker, easter-egg, canvas, about-page, build-brickbreaker, esbuild-iife, tdd, e2e-testing, git-log, git-graph
+**Key concepts:** service-worker, no-store, release-notes, cache, live-update, freshness, banner, brick-breaker, easter-egg, canvas
 
 💡 *Use `mem-find` to search full details. Use `mem-create` to save important decisions.*
 <!-- /open-mem-context -->

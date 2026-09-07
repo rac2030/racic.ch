@@ -96,6 +96,21 @@ describe('Service Worker — exported functions', () => {
     const { CACHE_NAME } = await import('../../src/lib/sw');
     expect(CACHE_NAME).toMatch(/^racic-ch-/);
   });
+
+  test('normalizePath strips origin, index.html and trailing slash', async () => {
+    const { normalizePath } = await import('../../src/lib/sw');
+    expect(await normalizePath('https://racic.ch/blog/foo/')).toBe('/blog/foo');
+    expect(await normalizePath('https://racic.ch/projects/bar/index.html')).toBe('/projects/bar');
+    expect(await normalizePath('https://racic.ch/')).toBe('/');
+    expect(await normalizePath('/blog/foo')).toBe('/blog/foo');
+  });
+
+  test('shouldBypassCache is true only for no-store requests', async () => {
+    const { shouldBypassCache } = await import('../../src/lib/sw');
+    expect(shouldBypassCache({ cache: 'no-store' })).toBe(true);
+    expect(shouldBypassCache({})).toBe(false);
+    expect(shouldBypassCache(undefined)).toBe(false);
+  });
 });
 
 describe('Service Worker — event listeners', () => {
@@ -182,5 +197,59 @@ describe('Service Worker — event listeners', () => {
     };
     call![1](mockEvent as any);
     expect(mockEvent.respondWith).toHaveBeenCalled();
+  });
+
+  test('fetch handler serves no-store requests straight from the network, ignoring cache', async () => {
+    refs.mockCaches.match.mockResolvedValue(new Response('cached'));
+    globalThis.fetch = jest.fn().mockResolvedValue(new Response('fresh'));
+    await import('../../src/lib/sw');
+    const call = refs.mockSelf.addEventListener.mock.calls.find((c: any[]) => c[0] === 'fetch');
+    let respondPromise: Promise<Response> | null = null;
+    const mockEvent = {
+      request: { method: 'GET', cache: 'no-store' },
+      respondWith: jest.fn((p: Promise<Response>) => { respondPromise = p; }),
+    };
+    call![1](mockEvent as any);
+    expect(respondPromise).not.toBeNull();
+    const responded = await respondPromise!;
+    expect(await responded.text()).toBe('fresh');
+    expect(refs.mockCaches.match).not.toHaveBeenCalled();
+    expect(globalThis.fetch).toHaveBeenCalledWith({ method: 'GET', cache: 'no-store' });
+  });
+
+  test('no-store requests are not written into the cache', async () => {
+    globalThis.fetch = jest.fn().mockResolvedValue(new Response('fresh'));
+    await import('../../src/lib/sw');
+    const call = refs.mockSelf.addEventListener.mock.calls.find((c: any[]) => c[0] === 'fetch');
+    let respondPromise: Promise<Response> | null = null;
+    const mockEvent = {
+      request: { method: 'GET', cache: 'no-store' },
+      respondWith: jest.fn((p: Promise<Response>) => { respondPromise = p; }),
+    };
+    call![1](mockEvent as any);
+    await respondPromise!;
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(refs.mockCaches.open).not.toHaveBeenCalled();
+  });
+
+  test('NEW_VERSION message reports the changed request url', async () => {
+    const mockClient = { postMessage: jest.fn() };
+    refs.mockClients.matchAll.mockResolvedValue([mockClient]);
+    refs.mockCaches.match.mockResolvedValue(new Response('old body'));
+    globalThis.fetch = jest.fn().mockResolvedValue(new Response('new body'));
+    await import('../../src/lib/sw');
+    const call = refs.mockSelf.addEventListener.mock.calls.find((c: any[]) => c[0] === 'fetch');
+    const url = 'https://racic.ch/about/';
+    let respondPromise: Promise<Response> | null = null;
+    const mockEvent = {
+      request: { method: 'GET', url },
+      respondWith: jest.fn((p: Promise<Response>) => { respondPromise = p; }),
+    };
+    call![1](mockEvent as any);
+    await respondPromise!;
+    await new Promise(resolve => setTimeout(resolve, 30));
+    const sent = mockClient.postMessage.mock.calls.find((c: any[]) => c[0].type === 'NEW_VERSION');
+    expect(sent).toBeDefined();
+    expect(sent![0]).toMatchObject({ type: 'NEW_VERSION', url, version: 1 });
   });
 });

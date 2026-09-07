@@ -40,6 +40,20 @@ test.describe('Service worker registration', () => {
     expect(body).toContain('postMessage');
     expect(body).toContain('NEW_VERSION');
   });
+
+  test('sw.js reports the changed url in NEW_VERSION messages', async ({ page }) => {
+    const response = await page.goto('/sw.js');
+    const body = await response?.text();
+    expect(body).toContain('NEW_VERSION');
+    expect(body).toMatch(/url:/);
+  });
+
+  test('sw.js bypasses the cache for no-store requests', async ({ page }) => {
+    const response = await page.goto('/sw.js');
+    const body = await response?.text();
+    expect(body).toContain('no-store');
+    expect(body).toMatch(/shouldBypassCache|request\.cache === ['"]no-store['"]/);
+  });
 });
 
 test.describe('Update banner', () => {
@@ -122,5 +136,48 @@ test.describe('Lazy cache behavior', () => {
     const body = await response?.text();
     expect(body).toContain('CACHE_NAME');
     expect(body).toContain('racic-ch-');
+  });
+});
+
+test.describe('Live content auto-replacement', () => {
+  test.use({ serviceWorkers: 'block' });
+
+  test('NEW_VERSION for the current page swaps in the fresh content once', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    await page.route('**/', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<!doctype html><html><body><main id="main">AUTO-REPLACED</main></body></html>',
+      });
+    });
+
+    const hook = await page.evaluate(() => typeof (window as any).__swOnMessage === 'function');
+    expect(hook).toBe(true);
+
+    await page.evaluate(() =>
+      (window as any).__swOnMessage({ data: { type: 'NEW_VERSION', url: location.href, version: 99 } })
+    );
+    await page.waitForTimeout(700);
+
+    const replaced = await page.evaluate(() =>
+      document.documentElement.outerHTML.includes('AUTO-REPLACED')
+    );
+    const guard = await page.evaluate(() => sessionStorage.getItem('racic-ch-reload-99'));
+    expect(replaced).toBe(true);
+    expect(guard).toBe('1');
+  });
+
+  test('NEW_VERSION for a different resource only shows the banner, no reload', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    const bannerDisp = await page.evaluate(() => {
+      const w = window as any;
+      w.__swOnMessage({ data: { type: 'NEW_VERSION', url: 'https://racic.ch/search-index.json', version: 3 } });
+      return document.getElementById('sw-update-banner')!.style.display;
+    });
+    expect(bannerDisp).toBe('block');
   });
 });

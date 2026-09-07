@@ -537,7 +537,7 @@ import { marked } from 'marked';
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden';
     fitDialog();
-    if (!body.dataset.loaded) loadReleases();
+    loadReleases();
   }
 
   function closeModal() {
@@ -589,13 +589,12 @@ import { marked } from 'marked';
       });
       body.innerHTML = html;
     }
-    body.dataset.loaded = '1';
     fitDialog();
   }
 
   function loadReleases() {
     body.innerHTML = '<p class="release-loading">Loading release notes&hellip;</p>';
-    fetch('https://api.github.com/repos/rac2030/racic.ch/releases?per_page=5')
+    fetch('https://api.github.com/repos/rac2030/racic.ch/releases?per_page=5', { cache: 'no-store' })
       .then(function(res) { return res.json(); })
       .then(function(data) { renderReleases(data); })
       .catch(function() {
@@ -608,6 +607,14 @@ import { marked } from 'marked';
     e.preventDefault();
     openModal();
   });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'NEW_VERSION' && modal.style.display === 'block') {
+        loadReleases();
+      }
+    });
+  }
 
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
   if (backdrop) backdrop.addEventListener('click', closeModal);

@@ -292,6 +292,39 @@ test.describe('Release notes modal - loading state', () => {
   });
 });
 
+test.describe('Release notes modal - freshness on reopen', () => {
+  test.use({ serviceWorkers: 'block' });
+
+  const RELEASES_PATTERN = /^https:\/\/api\.github\.com\/repos\/rac2030\/racic\.ch\/releases(?:\?.*)?$/;
+
+  const make = (tag: string, body: string) => [{
+    tag_name: tag, name: tag, published_at: '2026-09-05T12:00:00Z',
+    html_url: `https://github.com/rac2030/racic.ch/releases/tag/${tag}`, body,
+  }];
+
+  test('reopening the modal fetches the latest releases instead of stale cached data', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    let current = make('v1.0.0', '**OLD NOTES**');
+    await page.route(RELEASES_PATTERN, (route) => {
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(current) });
+    });
+
+    await page.goto('/');
+    await page.locator('#footer-version').click();
+    await expect(page.locator('.release-title', { hasText: 'v1.0.0' })).toBeVisible();
+    await expect(page.locator('.release-notes')).toContainText('OLD NOTES');
+
+    await page.locator('#release-modal-close').click();
+    await expect(page.locator('#release-modal')).toBeHidden();
+
+    current = make('v2.0.0', '**FRESH NOTES**');
+    await page.locator('#footer-version').click();
+    await expect(page.locator('.release-title', { hasText: 'v2.0.0' })).toBeVisible();
+    await expect(page.locator('.release-notes')).toContainText('FRESH NOTES');
+    await expect(page.locator('.release-title', { hasText: 'v1.0.0' })).toHaveCount(0);
+  });
+});
+
 test.describe('Responsive behavior', () => {
   test('mobile menu button hidden on desktop', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
