@@ -41,7 +41,11 @@
 
   "customizations": {
     "vscode": {
-      "extensions": ["opencode.opencode"]
+      "extensions": [
+        "opencode.opencode",
+        "sst-dev.opencode",
+        "github.vscode-github-actions"
+      ]
     }
   }
 }
