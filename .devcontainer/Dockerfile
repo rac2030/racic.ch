@@ -20,7 +20,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         make \
         g++ \
         ripgrep \
+        ffmpeg \
+        python3-venv \
+        python3-pip \
+        espeak-ng \
     && rm -rf /var/lib/apt/lists/*
+
+# Media & TTS support for the youtube-short skill (.agents/skills/youtube-short):
+# - ffmpeg: narration processing (silencetrim/atempo), per-segment encodes, concat + mux
+# - python3-venv + python3-pip: build the local Voicebox TTS backend from source at runtime
+# - espeak-ng: the skill's last-resort fallback voice (Piper is fetched separately if needed)
+# Kept OUT of the image on purpose: the Voicebox repo clone, its venv deps (~2GB torch),
+# and the ~1.2GB Qwen model cache are installed lazily at runtime into /tmp/voicebox and
+# ~/.cache/huggingface — see the "Running the Voicebox server" section of the skill.
 
 # opencode, pinned to the host's version. npm global install puts the `opencode`
 # binary in /usr/local/bin so it stays on PATH for every user.
