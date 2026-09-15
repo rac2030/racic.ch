@@ -555,6 +555,7 @@ Here is every feature implemented in this site:
 | Category system | Optional `category` field, filter buttons on listings, clickable badges on articles |
 | Draft mode | `draft: true` hides from production; visible in dev with yellow watermark |
 | Tag filtering | Autocomplete input, tag cloud, active pills, URL persistence, AND multi-select |
+| Interactive wiki graph | Custom canvas force-directed graph on `/wiki/` — wiki circles colored by category + connected bookmark diamonds (teal), tag/category/`bookmark` edges; reacts live to tag + category filters (bubbling `tag-filter-change`/`category-filter-change` events) via `src/lib/wiki-graph.ts` (build-time `buildWikiGraph`, `isNodeVisible`, `filterGraph`; 100% Jest coverage); bookmarks appear only when connected to a visible wiki | 
 | Full-text search | Shared `SearchLib` module, exact + fuzzy matching, highlighted excerpts, section-priority ranking (Blog > Projects > Wiki > Page > Bookmarks), used by search bar and 404 page |
 | Dedicated search page | Google-like `/search` page with real-time results, hero images, `?q=` param, holocard results panel |
 | SearchBar → search page | Enter key navigates to `/search?q=...` for full-page results (mobile header search icon kept inside its pill via `calc(1rem + 0.65rem)` offset) |
@@ -1017,6 +1018,30 @@ A new skill was created at `.agents/skills/youtube-short/SKILL.md`. It codifies 
 The skill also documents voice alternatives (`lessac-high`, `amy-medium`, `ryan-medium`) and instructs the AI to ask the user before switching.
 
 The point of packaging this as a skill is that the next time someone says "make a Short about the search feature," the AI doesn't have to rediscover the pipeline — it follows the skill, extracts the features, picks the voice, and builds the video.
+
+## Phase 18: The Interactive Wiki Knowledge Graph
+
+The `/wiki/` page's force-directed graph became filter-reactive and learned about bookmarks. The graph is a custom `<canvas>` app — no graph library — with a hand-rolled physics simulation (repulsion + spring + cluster-centering forces, 5-second settle timer) all living in the inline script of `src/pages/wiki/index.astro`.
+
+### Graph Building (`src/lib/wiki-graph.ts`)
+
+The pure, build-time module (Jest-tested to **100% coverage**) owns node/edge construction and filter math:
+
+- `buildWikiGraph(wikiEntries, bookmarkEntries)` → `{ nodes, edges }`. Wiki entries become circle nodes keyed by id (0..n-1 in collection order); a `tag` edge connects any two wiki nodes sharing ≥1 tag, else a dimmer `category` edge connects nodes with the same non-`uncategorized` category. **Bookmarks are only added if they share ≥1 tag with a wiki node** — the real data yields exactly 3 of 9: `arduino` + `cnc` connect to the DIY-tagged `antiseptic-shower-scrub` (wellness), and `computer-vision` connects to the Java-tagged `ant` (development). Each connected bookmark becomes a `bookmark`-edge to every wiki it shares a tag with.
+- `isNodeVisible(node, filter)` / `filterGraph(nodes, edges, filter)` — wiki node visible iff it passes the AND-tags and (if set) category filter; **bookmark node visible iff it passes the tag filter AND is an endpoint of a `bookmark` edge whose other endpoint is a visible wiki node** — so a category filter that hides a bookmark's only connected wiki article removes the bookmark too. Edges survive only when both endpoints are visible.
+
+### Filter Reactivity
+
+The graph previously read `?tags=`/`?category=` once at load and rendered everything. Now it subscribes to the same events the card grid uses:
+
+- `TagFilter.astro` dispatches `tag-filter-change` and the wiki page's category buttons dispatch `category-filter-change`, both **`new CustomEvent(..., { bubbles: true })`** — the listeners sit on `document`, and a non-bubbling `CustomEvent` never reaches them (classic gotcha; the default is `bubbles: false`).
+- `updateGraphVisibility()` recomputes `visibleNodes`/`visibleEdges` from the shared `allNodes`/`allEdges`, restarts the physics sim, and republishes state. Interactions (zoom/pan/drag/tooltip/double-click) loop over `visibleNodes` only. Click targets the wiki/card grid, so the two stay in sync; double-clicking a node navigates to its article (`/wiki/<slug>/` or `/bookmarks/<slug>/`).
+- URL params sanitize on load: `?tags=` is filtered against **wiki-only** tags (unknown values ignored → showing everything), matching `TagFilter`'s own behavior, and `?category=` sets the initial category.
+- A test hook, `window.__wikiGraph`, exposes `totalWikiNodes`, `totalBookmarkNodes`, `totalNodes`, `visibleNodes`, `visibleSlugs`, `visibleWikiSlugs`, `visibleBookmarkSlugs`, `selectedTags`, `selectedCategory` — the surface the 9 Playwright specs in `tests/e2e/wiki-graph.spec.ts` assert against.
+
+### The Bug the Tests Caught
+
+The e2e test "bookmarks hidden when their connected articles are filtered out" failed: filtering `?category=development` left `arduino`/`cnc` visible even though their only wiki link, `antiseptic-shower-scrub` (wellness), was hidden. The inline `connected` check reused `nodeIdSet` but **never verified the bookmark was an endpoint of the edge** — for edge `{ant → computer-vision}` it computed `other = e.source` (ant, visible) for *every* node whose id wasn't the source, wrongly "connecting" arduino and cnc through an edge they weren't on. The fix adds the endpoint guard `if (e.source !== n.id && e.target !== n.id) return false;`. The lib's `filterGraph` always had this check — only the inline replica had dropped it, which is exactly why there's both a unit layer and an e2e layer. (Full suite: **241 unit tests + 228 e2e tests green.**)
 
 ## The Sources
 

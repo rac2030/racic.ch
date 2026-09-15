@@ -58,6 +58,10 @@ const sortedTags = [...new Set(tags)].sort();
     });
     renderActive();
     updateURL();
+    filterEl.dispatchEvent(new CustomEvent('tag-filter-change', {
+      bubbles: true,
+      detail: { tags: selectedTags.slice() }
+    }));
   }
 
   function renderActive() {

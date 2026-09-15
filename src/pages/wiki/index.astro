@@ -3,35 +3,36 @@ import Base from '../../layouts/Base.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import TagFilter from '../../components/TagFilter.astro';
 import { getCollection } from 'astro:content';
+import { buildWikiGraph } from '../../lib/wiki-graph';
 
 const isProd = import.meta.env.MODE === 'production';
 const entries = (await getCollection('wiki'))
   .filter((e) => isProd ? !e.data.draft : true)
   .sort((a, b) => (a.data.title).localeCompare(b.data.title));
 
+const bookmarkEntries = (await getCollection('bookmarks'))
+  .filter((e) => isProd ? !e.data.draft : true)
+  .sort((a, b) => (a.data.title).localeCompare(b.data.title));
+
 const allTags = [...new Set(entries.flatMap((e) => e.data.tags))].sort();
 const allCategories = [...new Set(entries.map((e) => e.data.category).filter(Boolean))].sort();
 
-const graphNodes = entries.map((e, i) => ({
-  id: i,
-  title: e.data.title,
-  slug: e.id.replace(/\.md$/, ''),
-  tags: e.data.tags,
-  category: e.data.category || 'uncategorized',
-}));
+const wikiGraph = buildWikiGraph(
+  entries.map((e) => ({
+    slug: e.id.replace(/\.md$/, ''),
+    title: e.data.title,
+    tags: e.data.tags,
+    category: e.data.category || 'uncategorized',
+  })),
+  bookmarkEntries.map((e) => ({
+    slug: e.id.replace(/\.md$/, ''),
+    title: e.data.title,
+    tags: e.data.tags,
+  }))
+);
 
-const graphEdges: { source: number; target: number; type: string }[] = [];
-for (let i = 0; i < graphNodes.length; i++) {
-  for (let j = i + 1; j < graphNodes.length; j++) {
-    const a = graphNodes[i], b = graphNodes[j];
-    const sharedTags = a.tags.filter((t) => b.tags.includes(t));
-    if (sharedTags.length > 0) {
-      graphEdges.push({ source: i, target: j, type: 'tag' });
-    } else if (a.category === b.category && a.category !== 'uncategorized') {
-      graphEdges.push({ source: i, target: j, type: 'category' });
-    }
-  }
-}
+const graphNodes = wikiGraph.nodes;
+const graphEdges = wikiGraph.edges;
 ---
 
 <Base title="Wiki | Michel Racic" description="Technical wiki — quick references, how-tos, and useful notes.">
@@ -90,8 +91,11 @@ for (let i = 0; i < graphNodes.length; i++) {
   if (!canvas) return;
   var ctx = canvas.getContext('2d');
   var tooltip = document.getElementById('wg-tooltip');
-  var nodes = graphNodes;
-  var edges = graphEdges;
+
+  var allNodes = graphNodes;
+  var allEdges = graphEdges;
+  var nodeById = {};
+  allNodes.forEach(function(n) { nodeById[n.id] = n; });
 
   var dpr = window.devicePixelRatio || 1;
   var W, H;
@@ -108,7 +112,6 @@ for (let i = 0; i < graphNodes.length; i++) {
   resize();
   window.addEventListener('resize', resize);
 
-  // Color palette for categories
   var catColors = {
     bookmarks: '#348cb2',
     development: '#7dd3fc',
@@ -116,10 +119,11 @@ for (let i = 0; i < graphNodes.length; i++) {
     security: '#f97316',
     uncategorized: '#6b7280'
   };
+  var bookmarkColor = '#348cb2';
 
-  // Group nodes by category and compute cluster centers
   var categories = {};
-  nodes.forEach(function(n) {
+  allNodes.forEach(function(n) {
+    if (n.type !== 'wiki') return;
     if (!categories[n.category]) categories[n.category] = [];
     categories[n.category].push(n);
   });
@@ -135,58 +139,150 @@ for (let i = 0; i < graphNodes.length; i++) {
     };
   });
 
-  // Init positions within cluster
-  nodes.forEach(function(n) {
-    var cc = clusterCenters[n.category];
-    var catNodes = categories[n.category];
-    var idx = catNodes.indexOf(n);
-    var localAngle = (2 * Math.PI * idx) / catNodes.length;
-    var localR = 40 + catNodes.length * 5;
-    n.x = cc.x + localR * Math.cos(localAngle);
-    n.y = cc.y + localR * Math.sin(localAngle);
+  allNodes.forEach(function(n) {
+    n.x = 0;
+    n.y = 0;
     n.vx = 0;
     n.vy = 0;
     n.radius = 8 + Math.min(n.tags.length * 2, 12);
+    n.initialized = false;
   });
 
-  // Force simulation
+  function initNodePosition(n) {
+    if (n.initialized) return;
+    n.initialized = true;
+    if (n.type === 'bookmark') {
+      n.x = cx + (Math.random() - 0.5) * 100;
+      n.y = cy + (Math.random() - 0.5) * 100;
+      return;
+    }
+    var cc = clusterCenters[n.category] || { x: cx, y: cy };
+    var catNodes = categories[n.category] || [n];
+    var idx = catNodes.indexOf(n);
+    var localAngle = (2 * Math.PI * idx) / Math.max(catNodes.length, 1);
+    var localR = 40 + catNodes.length * 5;
+    n.x = cc.x + localR * Math.cos(localAngle);
+    n.y = cc.y + localR * Math.sin(localAngle);
+  }
+  allNodes.forEach(initNodePosition);
+
+  var selectedTags = [];
+  var selectedCategory = null;
+  var validTagSet = {};
+  allNodes.forEach(function(n) {
+    if (n.type !== 'wiki') return;
+    n.tags.forEach(function(t) { validTagSet[t] = true; });
+  });
+  var params = new URLSearchParams(window.location.search);
+  var tagParam = params.get('tags');
+  if (tagParam) {
+    selectedTags = tagParam.split(',').filter(function(t) { return !!validTagSet[t]; });
+  }
+  var catParam = params.get('category');
+  if (catParam && catParam !== 'all') selectedCategory = catParam;
+
+  function passesTags(n) {
+    if (selectedTags.length === 0) return true;
+    return selectedTags.every(function(t) { return n.tags.indexOf(t) !== -1; });
+  }
+
+  function passesCategory(n) {
+    if (!selectedCategory || n.type !== 'wiki') return true;
+    return n.category === selectedCategory;
+  }
+
+  var visibleNodes = [];
+  var visibleEdges = [];
+
+  function updateGraphVisibility() {
+    var nodeIdSet = {};
+    allNodes.forEach(function(n) {
+      if (n.type === 'wiki') {
+        if (passesTags(n) && passesCategory(n)) nodeIdSet[n.id] = true;
+      }
+    });
+    allNodes.forEach(function(n) {
+      if (n.type !== 'bookmark') return;
+      if (!passesTags(n)) return;
+      var connected = allEdges.some(function(e) {
+        if (e.type !== 'bookmark') return false;
+        if (e.source !== n.id && e.target !== n.id) return false;
+        var other = e.source === n.id ? e.target : e.source;
+        return nodeIdSet[other] === true;
+      });
+      if (connected) nodeIdSet[n.id] = true;
+    });
+
+    visibleNodes = allNodes.filter(function(n) { return nodeIdSet[n.id] === true; });
+    visibleNodes.forEach(initNodePosition);
+
+    var edgeIdSet = {};
+    visibleNodes.forEach(function(n) { edgeIdSet[n.id] = true; });
+    visibleEdges = allEdges.filter(function(e) {
+      return edgeIdSet[e.source] === true && edgeIdSet[e.target] === true;
+    });
+
+    restartSimulation();
+    publishState();
+  }
+
+  function publishState() {
+    window.__wikiGraph = {
+      totalWikiNodes: allNodes.filter(function(n) { return n.type === 'wiki'; }).length,
+      totalBookmarkNodes: allNodes.filter(function(n) { return n.type === 'bookmark'; }).length,
+      totalNodes: allNodes.length,
+      visibleNodes: visibleNodes.length,
+      visibleSlugs: visibleNodes.map(function(n) { return n.slug; }).sort(),
+      visibleWikiSlugs: visibleNodes.filter(function(n) { return n.type === 'wiki'; }).map(function(n) { return n.slug; }).sort(),
+      visibleBookmarkSlugs: visibleNodes.filter(function(n) { return n.type === 'bookmark'; }).map(function(n) { return n.slug; }).sort(),
+      selectedTags: selectedTags.slice(),
+      selectedCategory: selectedCategory
+    };
+  }
+
   var running = true;
+  var stopTimer = setTimeout(function() { running = false; }, 5000);
+  function restartSimulation() {
+    running = true;
+    clearTimeout(stopTimer);
+    stopTimer = setTimeout(function() { running = false; }, 5000);
+  }
+
   function simulate() {
     if (!running) return;
-    // Repulsion
-    for (var i = 0; i < nodes.length; i++) {
-      for (var j = i + 1; j < nodes.length; j++) {
-        var dx = nodes[j].x - nodes[i].x;
-        var dy = nodes[j].y - nodes[i].y;
+    var i, j;
+    for (i = 0; i < visibleNodes.length; i++) {
+      for (j = i + 1; j < visibleNodes.length; j++) {
+        var a = visibleNodes[i], b = visibleNodes[j];
+        var dx = b.x - a.x, dy = b.y - a.y;
         var dist = Math.sqrt(dx * dx + dy * dy) || 1;
         var force = 1500 / (dist * dist);
-        var fx = (dx / dist) * force;
-        var fy = (dy / dist) * force;
-        nodes[i].vx -= fx;
-        nodes[i].vy -= fy;
-        nodes[j].vx += fx;
-        nodes[j].vy += fy;
+        var fx = (dx / dist) * force, fy = (dy / dist) * force;
+        a.vx -= fx; a.vy -= fy;
+        b.vx += fx; b.vy += fy;
       }
     }
-    // Attraction along edges
-    edges.forEach(function(e) {
-      var a = nodes[e.source], b = nodes[e.target];
-      var dx = b.x - a.x;
-      var dy = b.y - a.y;
+    visibleEdges.forEach(function(e) {
+      var a = nodeById[e.source], b = nodeById[e.target];
+      if (!a || !b) return;
+      var dx = b.x - a.x, dy = b.y - a.y;
       var dist = Math.sqrt(dx * dx + dy * dy) || 1;
       var force = (dist - 80) * 0.015;
-      var fx = (dx / dist) * force;
-      var fy = (dy / dist) * force;
-      a.vx += fx;
-      a.vy += fy;
-      b.vx -= fx;
-      b.vy -= fy;
+      var fx = (dx / dist) * force, fy = (dy / dist) * force;
+      a.vx += fx; a.vy += fy;
+      b.vx -= fx; b.vy -= fy;
     });
-    // Cluster gravity - pull nodes toward their category center
-    nodes.forEach(function(n) {
-      var cc = clusterCenters[n.category];
-      n.vx += (cc.x - n.x) * 0.008;
-      n.vy += (cc.y - n.y) * 0.008;
+    visibleNodes.forEach(function(n) {
+      var cc;
+      if (n.type === 'bookmark') {
+        cc = { x: cx, y: cy };
+      } else {
+        cc = clusterCenters[n.category];
+      }
+      if (cc) {
+        n.vx += (cc.x - n.x) * 0.008;
+        n.vy += (cc.y - n.y) * 0.008;
+      }
       n.vx *= 0.82;
       n.vy *= 0.82;
       n.x += n.vx;
@@ -194,12 +290,24 @@ for (let i = 0; i < graphNodes.length; i++) {
     });
   }
 
-  // View transform
   var viewX = 0, viewY = 0, viewScale = 1;
   var dragging = false, dragNode = null, panStartX, panStartY, panViewX, panViewY;
 
   function screenToWorld(sx, sy) {
     return { x: (sx - viewX) / viewScale, y: (sy - viewY) / viewScale };
+  }
+
+  function drawNodeShape(n) {
+    ctx.beginPath();
+    if (n.type === 'bookmark') {
+      ctx.moveTo(n.x, n.y - n.radius);
+      ctx.lineTo(n.x + n.radius, n.y);
+      ctx.lineTo(n.x, n.y + n.radius);
+      ctx.lineTo(n.x - n.radius, n.y);
+      ctx.closePath();
+    } else {
+      ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+    }
   }
 
   function draw() {
@@ -208,11 +316,12 @@ for (let i = 0; i < graphNodes.length; i++) {
     ctx.translate(viewX, viewY);
     ctx.scale(viewScale, viewScale);
 
-    // Draw cluster backgrounds
+    var nodeIdSet = {};
+    visibleNodes.forEach(function(n) { nodeIdSet[n.id] = true; });
+
     catKeys.forEach(function(cat) {
-      var catNodes = categories[cat];
+      var catNodes = categories[cat].filter(function(n) { return nodeIdSet[n.id]; });
       if (catNodes.length < 1) return;
-      // Find bounding box
       var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
       catNodes.forEach(function(n) {
         minX = Math.min(minX, n.x - n.radius - 20);
@@ -230,7 +339,6 @@ for (let i = 0; i < graphNodes.length; i++) {
       ctx.setLineDash([4, 4]);
       ctx.stroke();
       ctx.setLineDash([]);
-      // Category label
       ctx.fillStyle = color;
       ctx.font = 'bold 11px Source Sans Pro, sans-serif';
       ctx.textAlign = 'left';
@@ -238,22 +346,24 @@ for (let i = 0; i < graphNodes.length; i++) {
       ctx.fillText(cat, minX + 8, minY + 6);
     });
 
-    // Draw edges
-    edges.forEach(function(e) {
-      var a = nodes[e.source], b = nodes[e.target];
+    visibleEdges.forEach(function(e) {
+      var a = nodeById[e.source], b = nodeById[e.target];
+      if (!a || !b) return;
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
-      ctx.strokeStyle = e.type === 'tag' ? 'rgba(125,211,252,0.25)' : 'rgba(167,139,250,0.15)';
+      ctx.strokeStyle = e.type === 'tag' ? 'rgba(125,211,252,0.25)' :
+        (e.type === 'category' ? 'rgba(167,139,250,0.15)' : 'rgba(52,140,178,0.6)');
       ctx.lineWidth = 1;
+      if (e.type === 'bookmark') ctx.setLineDash([6, 3]);
       ctx.stroke();
+      ctx.setLineDash([]);
     });
 
-    // Draw nodes
-    nodes.forEach(function(n) {
-      var color = catColors[n.category] || catColors['uncategorized'];
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+    visibleNodes.forEach(function(n) {
+      var color = n.type === 'bookmark' ? bookmarkColor :
+        (catColors[n.category] || catColors['uncategorized']);
+      drawNodeShape(n);
       ctx.fillStyle = color;
       ctx.globalAlpha = 0.85;
       ctx.fill();
@@ -262,7 +372,6 @@ for (let i = 0; i < graphNodes.length; i++) {
       ctx.lineWidth = 1;
       ctx.stroke();
 
-      // Label
       if (viewScale > 0.5) {
         ctx.fillStyle = '#f0f4f8';
         ctx.font = (viewScale > 0.8 ? '12' : '10') + 'px Source Sans Pro, sans-serif';
@@ -276,21 +385,17 @@ for (let i = 0; i < graphNodes.length; i++) {
     requestAnimationFrame(function() { simulate(); draw(); });
   }
 
+  updateGraphVisibility();
   draw();
 
-  // Stop simulation after it settles
-  setTimeout(function() { running = false; }, 5000);
-
-  // Mouse interactions
   canvas.addEventListener('mousedown', function(e) {
     var rect = canvas.getBoundingClientRect();
     var sx = e.clientX - rect.left, sy = e.clientY - rect.top;
     var w = screenToWorld(sx, sy);
-    // Check if clicking a node
-    for (var i = nodes.length - 1; i >= 0; i--) {
-      var dx = w.x - nodes[i].x, dy = w.y - nodes[i].y;
-      if (dx * dx + dy * dy < nodes[i].radius * nodes[i].radius) {
-        dragNode = nodes[i];
+    for (var i = visibleNodes.length - 1; i >= 0; i--) {
+      var dx = w.x - visibleNodes[i].x, dy = w.y - visibleNodes[i].y;
+      if (dx * dx + dy * dy < visibleNodes[i].radius * visibleNodes[i].radius) {
+        dragNode = visibleNodes[i];
         return;
       }
     }
@@ -322,13 +427,12 @@ for (let i = 0; i < graphNodes.length; i++) {
       return;
     }
 
-    // Tooltip
     var w = screenToWorld(sx, sy);
     var hovered = null;
-    for (var i = nodes.length - 1; i >= 0; i--) {
-      var dx = w.x - nodes[i].x, dy = w.y - nodes[i].y;
-      if (dx * dx + dy * dy < nodes[i].radius * nodes[i].radius) {
-        hovered = nodes[i];
+    for (var i = visibleNodes.length - 1; i >= 0; i--) {
+      var dx = w.x - visibleNodes[i].x, dy = w.y - visibleNodes[i].y;
+      if (dx * dx + dy * dy < visibleNodes[i].radius * visibleNodes[i].radius) {
+        hovered = visibleNodes[i];
         break;
       }
     }
@@ -337,8 +441,9 @@ for (let i = 0; i < graphNodes.length; i++) {
       tooltip.style.display = 'block';
       tooltip.style.left = (sx + 12) + 'px';
       tooltip.style.top = (sy - 10) + 'px';
+      var kind = hovered.type === 'bookmark' ? 'Bookmark' : (hovered.category || 'Wiki');
       tooltip.innerHTML = '<strong>' + hovered.title + '</strong><br>' +
-        (hovered.category ? '<span style="color:var(--accent)">' + hovered.category + '</span>' : '') +
+        '<span style="color:var(--accent)">' + kind + '</span>' +
         (hovered.tags.length ? '<br>' + hovered.tags.join(', ') : '');
     } else {
       canvas.style.cursor = dragging ? 'grabbing' : 'grab';
@@ -378,16 +483,17 @@ for (let i = 0; i < graphNodes.length; i++) {
     var rect = canvas.getBoundingClientRect();
     var sx = e.clientX - rect.left, sy = e.clientY - rect.top;
     var w = screenToWorld(sx, sy);
-    for (var i = nodes.length - 1; i >= 0; i--) {
-      var dx = w.x - nodes[i].x, dy = w.y - nodes[i].y;
-      if (dx * dx + dy * dy < nodes[i].radius * nodes[i].radius) {
-        window.location.href = '/wiki/' + nodes[i].slug + '/';
+    for (var i = visibleNodes.length - 1; i >= 0; i--) {
+      var dx = w.x - visibleNodes[i].x, dy = w.y - visibleNodes[i].y;
+      if (dx * dx + dy * dy < visibleNodes[i].radius * visibleNodes[i].radius) {
+        var n = visibleNodes[i];
+        var base = n.type === 'bookmark' ? '/bookmarks/' : '/wiki/';
+        window.location.href = base + n.slug + '/';
         return;
       }
     }
   });
 
-  // Controls
   document.getElementById('wg-zoom-in').addEventListener('click', function() {
     viewScale = Math.min(5, viewScale * 1.3);
   });
@@ -400,10 +506,19 @@ for (let i = 0; i < graphNodes.length; i++) {
     viewY = 0;
   });
 
-  // Category filter for wiki cards
+  document.addEventListener('tag-filter-change', function(e) {
+    if (e.detail && e.detail.tags) selectedTags = e.detail.tags;
+    else selectedTags = [];
+    updateGraphVisibility();
+  });
+
+  document.addEventListener('category-filter-change', function(e) {
+    selectedCategory = (e.detail && e.detail.category) || null;
+    updateGraphVisibility();
+  });
+
   var catBtns = document.querySelectorAll('.category-btn');
-  var params = new URLSearchParams(window.location.search);
-  var initialCat = params.get('category');
+  var initialCat = catParam;
 
   function filterWikiCards(cat) {
     document.querySelectorAll('.wiki-card').forEach(function(card) {
@@ -413,11 +528,20 @@ for (let i = 0; i < graphNodes.length; i++) {
     });
   }
 
+  function notifyCategoryFilter(cat) {
+    document.getElementById('wiki-category-filter').dispatchEvent(new CustomEvent('category-filter-change', {
+      bubbles: true,
+      detail: { category: cat === 'all' ? null : cat }
+    }));
+  }
+
   catBtns.forEach(function(btn) {
     btn.addEventListener('click', function() {
       catBtns.forEach(function(b) { b.classList.remove('active'); });
       btn.classList.add('active');
-      filterWikiCards(btn.getAttribute('data-category'));
+      var cat = btn.getAttribute('data-category');
+      filterWikiCards(cat);
+      notifyCategoryFilter(cat);
     });
   });
 
