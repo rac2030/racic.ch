@@ -532,13 +532,20 @@ hr {
 /* ===== CATEGORY FILTER ===== */
 .wiki-filter-row {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
   gap: 1rem;
-  align-items: flex-start;
+}
+
+.wiki-filter-row .category-filter {
+  order: 1;
+  width: 100%;
 }
 
 .wiki-filter-row .tag-filter {
-  flex: 1;
+  order: 2;
+  flex: none;
+  width: 100%;
   min-width: 250px;
 }
 
