@@ -42,3 +42,10 @@ public/brick-breaker.js
 # **/AGENTS.md
 .open-mem/
 *.log
+
+# video story generated assets (story.json + script.md are tracked)
+stories/*/narration/
+stories/*/narration_final/
+stories/*/segments/
+stories/*/output/
+stories/*/durations.json

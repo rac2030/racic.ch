@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "id": "wiki-graph-voicebox",
+  "title": "The Knowledge Graph — a Short with a New Voice",
+  "description": "60s vertical Short showcasing the filter-reactive interactive wiki knowledge graph, narrated by Voicebox (Qwen CustomVoice, Ryan, 0.6B).",
+  "feature": { "label": "Interactive Wiki Graph", "page": "/wiki/" },
+  "created": "2026-09-15",
+  "status": "published",
+  "humanFeedback": "I liked the new sound.",
+  "voice": {
+    "engine": "qwen_custom_voice",
+    "presetVoiceId": "Ryan",
+    "modelSize": "0.6B",
+    "profileName": "Narrator",
+    "language": "en"
+  },
+  "pacing": { "speed": 1.15, "silenceDb": -35, "silenceStart": 0.08 },
+  "capture": {
+    "baseUrl": "http://127.0.0.1:4322",
+    "videoSize": [1080, 1920],
+    "canvasId": "wiki-graph",
+    "frameCss": "header.site-header, footer.site-footer { display: none !important; }\n.page-header { display: none !important; }\n.wiki-grid { display: none !important; }\n.wiki-graph-wrap { transform: scale(1.28); transform-origin: top center; }\nbody { background: #05070c; }"
+  },
+  "assembly": { "fps": 25, "tailSeconds": 0.35 },
+  "segments": [
+    {
+      "id": "s1",
+      "text": "I built a knowledge graph. On my portfolio website. Because regular links were just too boring.",
+      "scene": {
+        "url": "/wiki/",
+        "actions": [{ "type": "waitMs", "ms": 5600, "label": "let the graph settle" }]
+      }
+    },
+    {
+      "id": "s2",
+      "text": "Every wiki article becomes a node in this floating constellation. Same category, same color. Shared tags get wired up into the net.",
+      "scene": {
+        "url": "/wiki/",
+        "actions": [
+          { "type": "waitMs", "ms": 5600, "label": "settle" },
+          { "type": "graphFish", "title": "Apache Ant", "kind": "wiki", "ms": 1400, "label": "fish Apache Ant node" },
+          { "type": "waitMs", "ms": 200 },
+          { "type": "graphFish", "title": "GIT", "kind": "wiki", "ms": 1400, "label": "fish GIT node" },
+          { "type": "mouseMove", "to": "corner", "steps": 6, "label": "cursor to corner" }
+        ]
+      }
+    },
+    {
+      "id": "s3",
+      "text": "But here's the genuinely cool part — it respects your filters. I click the security category and boom, everything else vanishes.",
+      "scene": {
+        "url": "/wiki/",
+        "actions": [
+          { "type": "waitMs", "ms": 900, "label": "page settle" },
+          { "type": "click", "selector": ".category-btn[data-category=\"security\"]", "label": "click security filter" },
+          { "type": "waitMs", "ms": 1500, "label": "constellation collapses" },
+          { "type": "pan", "from": "corner", "dx": -140, "dy": 60, "steps": 80, "stepMs": 16, "label": "pan the graph" },
+          { "type": "waitMs", "ms": 300 }
+        ]
+      }
+    },
+    {
+      "id": "s4",
+      "text": "And watch the teal diamonds. Those are bookmark collections. They only stay while one of their connected articles is still visible.",
+      "scene": {
+        "url": "/wiki/?category=development",
+        "actions": [
+          { "type": "waitMs", "ms": 5600, "label": "settle" },
+          { "type": "graphFish", "title": "ComputerVision", "kind": "bookmark", "ms": 1500, "label": "fish the bookmark diamond" },
+          { "type": "waitMs", "ms": 150 },
+          { "type": "graphFish", "title": "Apache Ant", "kind": "wiki", "ms": 1100, "label": "fish Apache Ant" }
+        ]
+      }
+    },
+    {
+      "id": "s5",
+      "text": "Double click any node and you jump straight to the article. Pure canvas. No graph library — just physics, vibes, and hope.",
+      "scene": {
+        "url": "/wiki/",
+        "actions": [
+          { "type": "waitMs", "ms": 5600, "label": "settle" },
+          { "type": "graphFish", "title": "Apache Ant", "kind": "wiki", "ms": 1500, "label": "approach Apache Ant" },
+          { "type": "graphDoubleClick", "title": "Apache Ant", "kind": "wiki", "label": "double-click to navigate" },
+          { "type": "assertUrl", "pattern": "/wiki/ant/", "timeout": 4000 },
+          { "type": "waitMs", "ms": 700 }
+        ]
+      }
+    },
+    {
+      "id": "s6",
+      "text": "The whole thing settles after five seconds. Because simulating gravity forever? That would melt my laptop.",
+      "scene": {
+        "url": "/wiki/",
+        "actions": [{ "type": "waitMs", "ms": 6000, "label": "let the physics settle" }]
+      }
+    },
+    {
+      "id": "s7",
+      "text": "Fun fact: the tests caught a real bug. Bookmarks lingered after their articles were filtered out. The test was right. I was very wrong.",
+      "scene": {
+        "url": "/wiki/?category=development",
+        "actions": [
+          { "type": "waitMs", "ms": 5400, "label": "settle" },
+          {
+            "type": "evaluate",
+            "label": "draw the !! BUG !! ring + tag",
+            "js": "const t=(globalThis.RESOLVE_ME&&RESOLVE_ME('ComputerVision','bookmark'))||{x:0,y:0};const ring=document.createElement('div');ring.id='bug-ring';ring.style.cssText='position:fixed; left:'+(t.x-70)+'px; top:'+(t.y-70)+'px; width:140px; height:140px; border-radius:50%; border:6px solid #ef4444; box-shadow:0 0 40px 12px rgba(239,68,68,.7), inset 0 0 30px rgba(239,68,68,.6); z-index:9999; pointer-events:none;';document.body.appendChild(ring);const tag=document.createElement('div');tag.id='bug-tag';tag.textContent='!! BUG !!';tag.style.cssText='position:fixed; left:50%; top:80px; transform:translateX(-50%); background:#ef4444; color:#fff; font:800 34px sans-serif; padding:12px 26px; border-radius:14px; z-index:9999; border:3px solid #fff; box-shadow:0 0 30px rgba(239,68,68,.9);';document.body.appendChild(tag);"
+          },
+          { "type": "waitMs", "ms": 700 },
+          { "type": "graphFish", "title": "ComputerVision", "kind": "bookmark", "ms": 800, "label": "fish around the ringed diamond" },
+          { "type": "evaluateRemove", "selectors": ["#bug-ring", "#bug-tag"], "label": "remove the bug overlay" },
+          { "type": "waitMs", "ms": 500 }
+        ]
+      }
+    },
+    {
+      "id": "s8",
+      "text": "Anyway, that's my knowledge graph. One of five features I built when literally nobody asked me to.",
+      "scene": {
+        "url": "/wiki/",
+        "actions": [
+          { "type": "waitMs", "ms": 1400, "label": "page settle" },
+          { "type": "pan", "from": "corner", "dx": -160, "dy": 30, "steps": 90, "stepMs": 16, "label": "panning outro" },
+          { "type": "waitMs", "ms": 2200 }
+        ]
+      }
+    }
+  ]
+}

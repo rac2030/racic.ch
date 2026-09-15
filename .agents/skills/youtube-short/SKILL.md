@@ -7,6 +7,27 @@ description: "Generate a YouTube Short with a funny walkthrough of a project fea
 
 You are producing a **YouTube Short** (vertical, 1080x1920, 60s max) that showcases a specific feature of this project, narrated from **your perspective as the AI assistant that built it**.
 
+## Pipeline scripts & story manifests
+
+Every Short lives as a **story** under `stories/<story-id>/` in this repo:
+
+- `story.json` — machine-readable manifest: narration segments, voice, pacing, capture scenes, assembly (the single source of truth)
+- `script.md` — the approved, human-readable narration (feeds the Short *and* any longer walkthrough video)
+- `narration/`, `narration_final/`, `segments/`, `output/` — generated assets (git-ignored; a rebuild regenerates them)
+
+The repeatable pipeline lives in `.agents/skills/youtube-short/scripts/` and is wired as npm scripts:
+
+| Command | What it does |
+|---|---|
+| `npm run new:story -- <id> "Title" "Description"` | Scaffold a story folder (manifest + script) |
+| `npm run short:narration -- <id>` | Synthesize + pace all narration segments (Voicebox) |
+| `npm run short:capture -- <id> [--only s1,s3]` | Record one `.webm` per segment (Playwright) |
+| `npm run short:assemble -- <id>` | Trim/concat/mux into `output/final_short.mp4` |
+| `npm run short:verify -- <id>` | QA: duration/resolution/audio/luma |
+| `npm run short:build -- <id> [--force]` | Run the whole chain (`narration → capture → assemble → verify`) |
+
+`<id>` may be the bare id, `stories/<id>`, or a full path. Steps are idempotent (existing assets are reused). `--force` regenerates the narration. `build-short` auto-starts the dist site server and the Voicebox backend when they're installed but down.
+
 ## Workflow
 
 ### Step 1: Extract Features from the Build Log
@@ -24,7 +45,6 @@ Here are the features I detected in the build log:
 5. Content Resizer — draggable article width, persisted in localStorage
 6. Easter Eggs — 404 duck game, pi calculator, rickroll page, Yoda hologram
 ...
-
 Which feature should I make a Short about?
 ```
 
@@ -32,57 +52,56 @@ Which feature should I make a Short about?
 
 Ask the user to pick a feature (by number or name). Wait for their response before proceeding.
 
+Then scaffold the story so all artifacts stay reproducible:
+
+```bash
+npm run new:story -- <slug> "<Short Title>" "<Short description>"
+```
+
 ### Step 3: Script the Short
 
-Write a **funny, self-deprecating narration** from the AI's perspective. Rules:
+Write a **funny, self-deprecating narration** from the AI's perspective and fill it into `stories/<slug>/story.json` (`segments[].text`) plus `script.md`. Rules:
 
 - **Voice:** Voicebox TTS `qwen_custom_voice` engine, preset speaker `Ryan` (default, English), model size `0.6B` — the human-endorsed narration voice; keep it unless explicitly asked to change (see Voice Choice)
 - **Tone:** Enthusiastic but self-aware. You built this feature — own the bugs and the wins.
 - **Length:** 8-12 lines of narration, each 3-5 seconds when spoken. Total: 40-55 seconds.
 - **Structure:**
   1. **Hook** (3s): A punchy one-liner that makes people stop scrolling. E.g., "I built a search engine. Inside a portfolio site. Nobody asked for this."
-  2. **Setup** (5-8s): What the feature does, from your POV. "So there I was, generating a table of contents with a Tron-style animated border, because apparently regular headings weren't cool enough."
-  3. **Deep dive** (15-25s): Walk through 2-3 specific behaviors. Show the interaction. "Watch this — I hover near the right edge and BAM, the whole thing slides out like a sci-fi door."
-  4. **Punchline** (5-8s): A funny observation about the implementation. "The border pulses every 3 seconds. I spent 40 minutes on that animation. The human spent 4 seconds looking at it."
-  5. **Outro** (3s): CTA or self-roast. "Anyway, that's my table of contents. It has more features than most people's entire websites."
+  2. **Setup** (5-8s): What the feature does, from your POV.
+  3. **Deep dive** (15-25s): Walk through 2-3 specific behaviors. Show the interaction.
+  4. **Punchline** (5-8s): A funny observation about the implementation.
+  5. **Outro** (3s): CTA or self-roast.
+
+For each segment, also describe the **scene**: the page (`scene.url`), and the interactions (`scene.actions`) using the action DSL:
+
+| Action | Meaning |
+|---|---|
+| `waitMs { ms }` | idle pause |
+| `waitFor { selector }` | wait for an element |
+| `click / hover / type / press { selector, key... }` | standard DOM interaction |
+| `graphFish { title, kind: wiki\|bookmark, ms }` | hover-circling a canvas node by its drawn label |
+| `graphDoubleClick { title, kind }` | navigate by double-clicking a canvas node |
+| `assertUrl { pattern }` | verify navigation target |
+| `pan { from: "corner", dx, dy, steps, stepMs }` | drag-pan the canvas from the bottom-left corner |
+| `mouseMove { to: "corner" }` | park the cursor off-node |
+| `evaluate { js }` / `evaluateRemove { selectors }` | inject / remove an overlay (e.g. the "!! BUG !!" ring) |
 
 ### Step 4: Generate Narration Audio
 
-Use **Voicebox** (local-first open-source voice studio, REST API at `http://127.0.0.1:17493`) as the primary TTS. If the server is unreachable, fall back to Piper/espeak-ng (see end of this step).
-
-**1. Verify the server is up:**
 ```bash
-curl -s http://127.0.0.1:17493/health
-```
-If it is not running, start it (see "Running the Voicebox server" below). If it cannot be started, use the fallback path.
-
-**2. Ensure a preset-voice profile exists** — Qwen CustomVoice needs a profile with `voice_type: "preset"`:
-```bash
-# List the preset speakers for the qwen_custom_voice engine:
-curl -s http://127.0.0.1:17493/profiles/presets/qwen_custom_voice
-
-# Create the profile (skip if a profile with this name already exists):
-curl -s -X POST http://127.0.0.1:17493/profiles \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Narrator", "language": "en", "voice_type": "preset", "preset_engine": "qwen_custom_voice", "preset_voice_id": "Ryan"}'
+npm run short:narration -- <slug>
 ```
 
-**3. Synthesize each narration segment** (8-12 short files, one per narration line). Either the `voicebox-cli` npm wrapper or the raw REST API:
-```bash
-# Option A — voicebox-cli (talks to the same local API by default)
-npx voicebox-cli speak "Narration text here" \
-  --profile Narrator \
-  --output /tmp/shorts/narration/segment_01.wav
+This uses **Voicebox** (local-first open-source voice studio, REST API at `http://127.0.0.1:17493`). If the server is unreachable, start it (see "Running the Voicebox server" below); if it cannot be started, fall back to Piper/espeak-ng (see end of this step).
 
-# Option B — raw REST API (async; poll the generation id until completed)
-curl -X POST http://127.0.0.1:17493/generate \
-  -H "Content-Type: application/json" \
-  -d '{"profile_id": "<profile-id>", "text": "Narration text here", "language": "en", "model_size": "0.6B"}'
-```
+Under the hood the script:
+1. Resolves (or creates) the `Narrator` preset profile — Qwen CustomVoice needs `voice_type: "preset"` with `preset_engine: "qwen_custom_voice"` and `preset_voice_id: "Ryan"`.
+2. Synthesizes each segment (`engine: "qwen_custom_voice"`, `model_size: "0.6B"`) — **`engine` must be passed explicitly** or the API rejects the profile. First use downloads the ~1.2GB model to `~/.cache/huggingface`.
+3. Applies the story's `pacing`: silence trim + `atempo` so the total fits 60s.
 
-On CPU-only boxes prefer `"model_size": "0.6B"` (1.2GB model, much faster). `1.7B` (~3.5GB) sounds richer but needs a GPU to be practical. First use of an engine downloads its model from Hugging Face (a few GB) — budget time for that.
+On CPU-only boxes prefer `"model_size": "0.6B"` (much faster). `1.7B` (~3.5GB) sounds richer but needs a GPU to be practical.
 
-**Pacing (fits the 60s budget):** spoken narration frequently overshoots the budget. If the raw segments total more than ~58s, don't rewrite the script — trim each segment's leading/trailing silence with `silenceremove` and lightly speed it with `atempo=1.05..1.15` before assembly (keep ≤ ~1.2× for intelligibility). In practice, 8 segments narrated by `Ryan` at default pace came in at 71.7s raw; silence-trim + `atempo=1.15` landed at 56.6s. Keep the processed WAVs in `/tmp/shorts/narration_final/`.
+**Pacing (fits the 60s budget):** spoken narration frequently overshoots the budget. If the raw segments total more than ~58s, don't rewrite the script — the script trims each segment's leading/trailing silence with `silenceremove` and lightly speeds it with `atempo` from `story.json > pacing.speed` (keep ≤ ~1.2× for intelligibility). In practice, 8 segments narrated by `Ryan` at default pace came in at 71.7s raw; silence-trim + `atempo=1.15` landed at 56.6s.
 
 **Fallback (only if the Voicebox server cannot be started):**
 ```bash
@@ -96,7 +115,7 @@ echo "Narration text here" | $PIPER_BIN --model $PIPER_MODEL \
 espeak-ng -v en-us -s 150 -p 50 "Narration text here" -w /tmp/shorts/narration/segment_01.wav
 ```
 
-> **Note:** `/tmp/opencode` is often root-owned/unwritable inside devcontainers. Default all intermediate and output paths to `/tmp/shorts`.
+> **Note:** `/tmp/opencode` is often root-owned/unwritable inside devcontainers. Default all intermediate and output paths to `/tmp/shorts` for one-off work; story builds always write inside `stories/<id>/`.
 
 #### Running the Voicebox server (Linux, from source)
 
@@ -112,85 +131,57 @@ venv/bin/pip install -r requirements.txt   # fastapi, qwen-tts, kokoro, librosa,
 cd /tmp/voicebox && venv/bin/uvicorn backend.main:app --port 17493
 ```
 
-Qwen CustomVoice uses preset speakers, so no reference audio or voice cloning is required.
+Qwen CustomVoice uses preset speakers, so no reference audio or voice cloning is required. The DevContainer image ships `git`, `curl`, `ffmpeg`, `python3-venv`, `python3-pip`, and `espeak-ng` so this works inside the container.
 
 ### Step 5: Capture Screen Recordings
 
-Use Playwright to record the feature in action. The recording script should:
-
-1. Navigate to the relevant page
-2. Trigger the interaction (hover, click, type, scroll)
-3. Record the relevant viewport region as `.webm`
-4. Log a `subjectOnScreen` timestamp for sync
-
-```javascript
-// Example capture script structure
-const { chromium } = require('playwright');
-
-(async () => {
-  const browser = await chromium.launch();
-  // NOTE: Playwright >=1.5x REMOVED page.screencast(). Use context.recordVideo.
-  // Recorded webm files can stop short of the in-page wall-clock, so record a
-  // generous buffer (pad with node-side Date.now, NOT performance.now) and trim later.
-  const context = await browser.newContext({
-    viewport: { width: 1080, height: 1920 },
-    recordVideo: { dir: '/tmp/shorts/capture', size: { width: 1080, height: 1920 } },
-  });
-  const page = await context.newPage();
-  await page.goto('http://localhost:4321/the-feature-page');
-
-  // Wait for content, then trigger interaction
-  await page.waitForSelector('.target-element');
-  await page.hover('.target-element'); // or .click(), .type(), etc.
-
-  await page.waitForTimeout(...);       // pad generously past what you need
-  await context.close();                // finalizes the .webm at page.video().path()
-})();
+```bash
+npm run short:capture -- <slug>           # all segments
+npm run short:capture -- <slug> --only s1,s3   # re-record selected segments
 ```
 
-> **Gotcha:** when muxing the final video, do **not** use `-shortest` together with an
-> infinite `apad` in a `filter_complex` graph — the muxer hangs forever waiting for
-> audio EOF. Read the video's duration with ffprobe and pass it to `-t` instead.
+The `capture.mjs` driver visits each `scene.url`, applies the story's `frameCss`, drives the `scene.actions`, and records one 1080×1920 VP8 `.webm` per segment into `stories/<slug>/segments/`. Record time derives from the paced narration durations (+ tail + safety), so shots line up with the audio. Output: `segments/captured.json`.
+
+Key mechanics baked into the driver:
+- **No `page.screencast()`** in Playwright ≥1.5x — it uses `context.recordVideo` (`dir` + `size`), producing one webm per page.
+- **Wall-clock padding:** recorded webms can stop short of the in-page clock, so lengths are driven by node-side `Date.now()` with a generous overshoot, trimmed later. Never `performance.now()`.
+- **Canvas node targeting:** an injected wrapper around `canvas.getContext('2d')` snapshots circles/diamonds/texts per `restore()` and exposes `RESOLVE_ME(title, kind)`, letting `graphFish`/`graphDoubleClick` hit exact pixels (used when `capture.canvasId` is set, e.g. `wiki-graph`).
+- The dist site must be reachable at `http://127.0.0.1:4322` (build-short starts it if `dist/` exists); the DevContainer's `npm run build` produces it.
 
 ### Step 6: Assemble with FFmpeg
 
-Combine narration + screen recording + subtitles:
-
 ```bash
-# Trim recording to narration length, add audio. Get the exact trim window with
-# ffprobe, then pass it via -t — NOT -shortest: combined with an infinite apad
-# filter graph, -shortest hangs the muxer forever.
-ffmpeg -i recording.webm -i narration.wav \
-  -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:-1:-1:color=black" \
-  -af "adelay=150|150" \
-  -t <video-duration-from-ffprobe> \
-  -c:v libx264 -c:a aac output_segment.mp4
-
-# Concatenate all segments (video only, then mux audio over it so the tail can pad)
-ffmpeg -f concat -safe 0 -i segments.txt -c copy final_silent.mp4
-
-# Mux: read VDUR, pad narration past the video end, cut with -t VDUR (not -shortest)
-ffprobe -v error -show_entries format=duration -of csv=p=0 final_silent.mp4   # -> VDUR
-ffmpeg -i final_silent.mp4 -i audio_all.wav \
-  -filter_complex "[1:a]apad[a]" -map 0:v -map "[a]" \
-  -c:v copy -c:a aac -t <VDUR> final_short.mp4
+npm run short:assemble -- <slug>
 ```
+
+Trims each webm to its narration window (+ tail), concatenates the video segments, concatenates the paced WAVs, and muxes audio+video into `stories/<slug>/output/final_short.mp4`.
+
+> **Gotcha (muxing):** do **not** use `-shortest` together with an infinite `apad` in a `filter_complex` graph — the muxer hangs forever waiting for audio EOF. The script reads the video duration with ffprobe and passes it to `-t` instead.
 
 ### Step 7: Verify
 
-- Run `ffprobe` on the output to confirm duration 60s max and resolution 1080x1920
-- Extract a frame from the middle and describe what's on screen
-- Confirm narration audio is present and not silent
+```bash
+npm run short:verify -- <slug>
+```
+
+Programmatic QA on the finished file: duration ≤ 60s, resolution 1080×1920, audio stream present and **not silent** (`volumedetect` mean > −40 dB), and a frame-luminance smoke test (no blank frames on dark backgrounds). It cannot watch the video — if in doubt, extract frames and describe them to the user.
 
 ## Output
 
-Save the final video to `/tmp/shorts/final_short.mp4`.
+Final deliverable: `stories/<slug>/output/final_short.mp4`.
 
 Report back to the user with:
-- The narration script (so they can review/edit)
+- The narration script (from `stories/<slug>/script.md`) so they can review/edit
 - The video file path
 - Duration and resolution
 - Any known issues (e.g., "the rickroll embed shows an error headlessly")
+
+## Reusing a story for a longer walkthrough
+
+`stories/<slug>/story.json` and `script.md` are the input for **longer (landscape) walkthrough videos**:
+- Merge `segments[].text` back into a single script (or extend it) for the landscape narration.
+- Reuse the `scene.actions` as the starting point for a 16:9 recording pass (change `capture.videoSize` to `[1920, 1080]` in a copy of the story).
+- The same Voicebox profile and pacing rules apply; a walkthrough under 60s is not required, so `pacing.speed` can drop to `1.0`.
 
 ## Voice Choice
 

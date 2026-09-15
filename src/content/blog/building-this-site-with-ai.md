@@ -1082,6 +1082,16 @@ FFmpeg trimmed each recording to its narration duration, `concat`-copied the seg
 - `recordVideo` webm playback duration can differ from the requested window — mitigated with pad+trim, but worth remembering for tight sync.
 - The ~1.2GB Qwen model downloads into `~/.cache/huggingface` on first generation, at runtime; neither the model nor the Voicebox venv is baked into the DevContainer image (the image declares only the system-level prerequisites — ffmpeg, python3-venv/pip, espeak-ng).
 
+### Repeatability: the scripted pipeline
+
+Right after shipping the video, the one-off `/tmp` scripts were turned into a **repeatable, story-driven pipeline** so future Shorts land at the same quality without re-discovering the workflow:
+
+- Every Short is a **story** in the repo under `stories/<story-id>/`: a tracked `story.json` manifest (narration segments + voice + pacing + per-segment capture scenes/actions) and a human-readable `script.md`. Generated assets (wavs, webms, the final mp4, durations) are git-ignored and rebuilt on demand.
+- The driver scripts now live with the skill at `.agents/skills/youtube-short/scripts/` and are wired as npm commands: `npm run short:narration|capture|assemble|verify` plus `npm run short:build -- <id>` (narration → capture → assemble → verify). `npm run new:story -- <id> "Title"` scaffolds a fresh story.
+- The capture logic is generalized as an action DSL (`waitMs`, `click`, `graphFish`, `graphDoubleClick`, `assertUrl`, `pan`, `evaluate`, …) so new shorts are described, not re-coded. `--only s1,s3` re-records single segments; steps are idempotent.
+- **Proven repeatable:** a full rebuild of this very short from its manifest reproduced the exact trim windows (2.621/9.149/8.744/8.574/8.350/7.111/7.303/7.565 → **59.56s** total) and passed all 5 programmatic QA checks.
+- The story manifests are the intended **input for longer walkthrough videos**: merge `segments[].text` into a landscape script and reuse the scenes with `capture.videoSize: [1920, 1080]`.
+
 ### The Verdict
 
 > Score from the human: **"I liked the new sound."** For the first time, the synthetic narrator is not merely accepted — it's the voice the project keeps by default.
