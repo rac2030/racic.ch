@@ -19,17 +19,21 @@
   if (!resizer) return;
 
   var body = resizer.querySelector('.resizer-body');
+  var card = resizer.closest('.content-card') || body;
   var leftHandle = document.getElementById('resizer-left');
   var rightHandle = document.getElementById('resizer-right');
 
   function getMax() {
-    return window.innerWidth - 80;
+    return Math.min(window.innerWidth - 80, 1200);
+  }
+
+  function viewportSafe(w) {
+    return Math.min(w, Math.max(window.innerWidth - 16, MIN));
   }
 
   var saved = parseInt(localStorage.getItem(KEY), 10);
-  var max = getMax();
-  var width = (saved && saved >= MIN) ? Math.min(saved, max) : Math.min(DEFAULT, max);
-  body.style.width = width + 'px';
+  var width = (saved && saved >= MIN) ? Math.min(saved, getMax()) : Math.min(DEFAULT, getMax());
+  card.style.width = viewportSafe(width) + 'px';
 
   function onDrag(handle, startX, startWidth) {
     var isLeft = handle === 'left';
@@ -37,14 +41,14 @@
       var dx = e.clientX - startX;
       var newWidth = isLeft ? startWidth - dx : startWidth + dx;
       newWidth = Math.max(MIN, Math.min(getMax(), newWidth));
-      body.style.width = newWidth + 'px';
+      card.style.width = viewportSafe(newWidth) + 'px';
     }
     function onUp() {
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('mouseup', onUp);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
-      localStorage.setItem(KEY, body.style.width.replace('px', ''));
+      localStorage.setItem(KEY, card.style.width.replace('px', ''));
     }
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
@@ -54,12 +58,12 @@
 
   leftHandle.addEventListener('mousedown', function(e) {
     e.preventDefault();
-    onDrag('left', e.clientX, parseInt(body.style.width, 10));
+    onDrag('left', e.clientX, parseInt(card.style.width, 10));
   });
 
   rightHandle.addEventListener('mousedown', function(e) {
     e.preventDefault();
-    onDrag('right', e.clientX, parseInt(body.style.width, 10));
+    onDrag('right', e.clientX, parseInt(card.style.width, 10));
   });
 })();
 </script>

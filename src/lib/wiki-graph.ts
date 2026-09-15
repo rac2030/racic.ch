@@ -124,7 +124,8 @@ export function filterGraph(
         edges.some(
           (e) =>
             e.type === 'bookmark' &&
-            (e.source === n.id || e.target === n.id)
+            ((e.source === n.id && visibleWikiIds.has(e.target)) ||
+              (e.target === n.id && visibleWikiIds.has(e.source)))
         )
       )
       .map((n) => n.id)

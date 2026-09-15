@@ -46,7 +46,8 @@ const tagLinks = entry.data.tags.map((t) => `<a href="/tags/${t}" class="tag">${
 
 <Post title={entry.data.title} description={entry.data.description} image={entry.data.heroImage}>
   <article>
-    <div class="article-header">
+    <div class="content-card">
+      <div class="article-header">
       <a href={editUrl} class="article-edit" target="_blank" rel="noopener noreferrer" title="Edit on GitHub"><i class="fa-solid fa-pen"></i></a>
       <div class="container content-width">
         {entry.data.heroImage && <img src={entry.data.heroImage} alt={entry.data.title} style="margin-bottom: 1.5rem;" />}
@@ -71,5 +72,6 @@ const tagLinks = entry.data.tags.map((t) => `<a href="/tags/${t}" class="tag">${
         <Comments />
       </div>
     </ContentResizer>
+    </div>
   </article>
 </Post>

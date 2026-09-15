@@ -50,7 +50,9 @@ const effectiveUpdatedDate = project.data.updatedDate || (lastCommit && lastComm
 >
   <article>
     {project.data.draft && <div class="draft-watermark">DRAFT — not published in production</div>}
-    <div class="article-header">
+    <TableOfContents headings={tocHeadings} />
+    <div class="content-card">
+      <div class="article-header">
       <a href={editUrl} class="article-edit" target="_blank" rel="noopener noreferrer" title="Edit on GitHub"><i class="fa-solid fa-pen"></i></a>
       <div class="container content-width">
         {project.data.heroImage && <img src={project.data.heroImage} alt={project.data.title} style="margin-bottom: 1.5rem;" />}
@@ -68,7 +70,6 @@ const effectiveUpdatedDate = project.data.updatedDate || (lastCommit && lastComm
         </div>
       </div>
     </div>
-    <TableOfContents headings={tocHeadings} />
     <ContentResizer>
       <HeadingAnchors />
       <div class="container article-content">
@@ -79,6 +80,7 @@ const effectiveUpdatedDate = project.data.updatedDate || (lastCommit && lastComm
         <Comments />
       </div>
     </ContentResizer>
+    </div>
     {gitLog && <GitHistory commits={gitLog.commits} />}
   </article>
 </Post>

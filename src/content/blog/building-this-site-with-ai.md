@@ -550,7 +550,7 @@ Here is every feature implemented in this site:
 | Feature | Description |
 |---------|-------------|
 | Aerial theme | Scrolling sky background, overlay pattern, Source Sans Pro font, `#348cb2` blue |
-| Hologram panels | Frosted glass content areas with `backdrop-filter: blur(12px)` |
+| Hologram panels | Frosted glass content areas with `backdrop-filter: blur(12px)`; unified `.content-card` backing — every main content region (article page including title, list/static pages, home, search) sits on one centered card that hugs the actual content (handles-tunable width, ends above the footer) instead of a full-page slab |
 | 4 content collections | Blog, projects, wiki, bookmarks — each with Zod schema validation |
 | Category system | Optional `category` field, filter buttons on listings, clickable badges on articles |
 | Draft mode | `draft: true` hides from production; visible in dev with yellow watermark |
@@ -561,7 +561,7 @@ Here is every feature implemented in this site:
 | SearchBar → search page | Enter key navigates to `/search?q=...` for full-page results (mobile header search icon kept inside its pill via `calc(1rem + 0.65rem)` offset) |
 | Table of Contents | Floating right-edge panel with Tron-style animated border, scroll spy, holodeck hologram style |
 | Heading anchors | Hover-reveal `#` links on h2/h3/h4 for easy URL copying |
-| Content resizer | Drag handles on article pages, localStorage persistence, full window width |
+| Content resizer | Drag handles resize the whole `.content-card` on article pages (title + body stay one box), localStorage persistence, max width 1200px and `max-width: 100%` of the window so mobile never overflows |
 | Copy button | One-click code block copying with "Copied!" feedback |
 | Language badge | Shows Shiki language on code blocks (top-left corner) |
 | Mermaid diagrams | Dynamic loading, custom lightbox with zoom/pan/fullscreen, hover effects |
@@ -1041,7 +1041,7 @@ The graph previously read `?tags=`/`?category=` once at load and rendered everyt
 
 ### The Bug the Tests Caught
 
-The e2e test "bookmarks hidden when their connected articles are filtered out" failed: filtering `?category=development` left `arduino`/`cnc` visible even though their only wiki link, `antiseptic-shower-scrub` (wellness), was hidden. The inline `connected` check reused `nodeIdSet` but **never verified the bookmark was an endpoint of the edge** — for edge `{ant → computer-vision}` it computed `other = e.source` (ant, visible) for *every* node whose id wasn't the source, wrongly "connecting" arduino and cnc through an edge they weren't on. The fix adds the endpoint guard `if (e.source !== n.id && e.target !== n.id) return false;`. The lib's `filterGraph` always had this check — only the inline replica had dropped it, which is exactly why there's both a unit layer and an e2e layer. (Full suite: **241 unit tests + 228 e2e tests green.**)
+The e2e test "bookmarks hidden when their connected articles are filtered out" failed: filtering `?category=development` left `arduino`/`cnc` visible even though their only wiki link, `antiseptic-shower-scrub` (wellness), was hidden. The inline `connected` check reused `nodeIdSet` but **never verified the bookmark was an endpoint of the edge** — for edge `{ant → computer-vision}` it computed `other = e.source` (ant, visible) for *every* node whose id wasn't the source, wrongly "connecting" arduino and cnc through an edge they weren't on. The fix adds the endpoint guard `if (e.source !== n.id && e.target !== n.id) return false;`. The lib's `filterGraph` always had this check — only the inline replica had dropped it, which is exactly why there's both a unit layer and an e2e layer. (Full suite: **241 unit tests + 235 e2e tests green.**)
 
 ## Phase 19: A New Voice — The Wiki Graph Short with Voicebox TTS
 
@@ -1095,6 +1095,35 @@ Right after shipping the video, the one-off `/tmp` scripts were turned into a **
 ### The Verdict
 
 > Score from the human: **"I liked the new sound."** For the first time, the synthetic narrator is not merely accepted — it's the voice the project keeps by default.
+
+## Phase 20: One Card Where the Content Is
+
+The site's backing was never consistent. Measured by computed geometry (Playwright `page.evaluate` — the builder can't view screenshots), the article `hosting-hugo-site-firebase` showed the `.article-content` panel (`rgba(10,18,30,0.6)`, 1000px wide) starting at `top: 855` — **below** `.article-header` (height 798, transparent), so the title floated on the raw animated sky — and running the full document height (**56,944px** of a 57,880px doc). List pages had no contiguous backing at all: loose `.card`/`.wiki-card` panels (`rgba(10,15,25,0.55)`) hovered individually over the background. The fix: one reusable **`.content-card`** per page that hugs the actual content.
+
+### The `.content-card` class
+
+Defined in `src/styles/global.css` at the ARTICLE section: `background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-lg); box-shadow: 0 0 30px var(--panel-glow) + inset 0 1px 0 rgba(255,255,255,0.08); backdrop-filter: blur(12px); padding: 2rem; margin-inline: auto; box-sizing: border-box;`. It's the same glass look `.article-content` used to own, now reusable.
+
+**Article pages** (`blog/wiki/projects/bookmarks/[...slug].astro` + `[...alias].astro`): the card wraps `.article-header` + `<ContentResizer>` — so the **title and body sit on one card**. Inside the card, `.article-content` is neutralized (transparent background, no border/radius/shadow/blur, `padding: 1.5rem 0 0`) so there's exactly ONE glass box per article, not a nested panel.
+
+**List/static pages**: the `.container` gains the `content-card` class (`padding: 2rem` override; `.container.content-width` variants like about keep their 780px max-width). Applied to blog, projects, wiki, bookmarks, tags index + tag page, timeline, about, π, 💩. Home (`/`) and the search page already presented their content inside carded regions (`.hero-content`, `.recent-list`, `.search-page-*`) and were left as-is.
+
+### ContentResizer now sizes the card
+
+`content-resizer`'s inline JS targets `resizer.closest('.content-card')` instead of `.resizer-body` (which is now `width: 100%`), so dragging the handles resizes the whole coherent card. `getMax()` became `Math.min(window.innerWidth - 80, 1200)` and widths are viewport-guarded, so a phone never overflows.
+
+### Two regressions the e2e suite caught
+
+1. **`backdrop-filter` traps `position: fixed` descendants** — it creates a containing block, so the fixed TOC panel and the GitHistory commit-history modal resolved *against the card*, not the viewport. Fix: render both **outside** `.content-card` (TOC sits before the card, GitHistory after it; both attach by element ID and window/document listeners, so DOM position doesn't matter).
+2. **Drag-handle aiming** — `.resizer-right` spans the article's full height, so its geometric center can be tens of thousands of px below the viewport and Playwright's `mouse.move` misses it. The e2e aims at `hb.y + min(hb.height / 2, 60)` (the visible top region) instead of the true center.
+
+### The wiki-graph unit tests caught a latent drift
+
+`filterGraph` kept a bookmark node whenever it had a `bookmark` edge, even if **every connected wiki node was filtered out** — leaving an isolated node with no visible context (the failing tests: "category filter keeps … plus related bookmarks" and "bookmark hidden when every connected wiki node is filtered out"). Fixed in `src/lib/wiki-graph.ts`: a bookmark is visible only if it passes the tag filter **and** has a `bookmark` edge whose other endpoint is a visible wiki node. This aligns the lib with what Phase 18's inline replica already did — the two layers had diverged.
+
+### Verification
+
+7 new Playwright specs in `tests/e2e/content-card.spec.ts`: exactly one backed card contains the article title AND body; `.article-content` has no doubled panel; list/static pages each put their content column on a backed card; the card hugs the content (centered, narrower than the viewport, ends above the footer); no horizontal overflow at 375px; dragging the right handle grows the card. Full suite green: **241 unit tests + 235 e2e tests**, coverage above the 80% gate.
 
 ## The Sources
 
