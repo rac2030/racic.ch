@@ -41,3 +41,4 @@ public/brick-breaker.js
 # Uncomment to exclude from version control (recommended for large projects):
 # **/AGENTS.md
 .open-mem/
+*.log
