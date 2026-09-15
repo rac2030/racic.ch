@@ -37,7 +37,7 @@ test.describe('Table of Contents (mobile menu)', () => {
     expect(await isTocOnScreen(page)).toBe(false);
     await page.click('#toc-toggle');
     await expect(page.locator('#table-of-contents')).toHaveClass(/open/);
-    expect(await isTocOnScreen(page)).toBe(true);
+    await expect.poll(() => isTocOnScreen(page)).toBe(true);
     expect(await page.locator('#toc-toggle').getAttribute('aria-expanded')).toBe('true');
   });
 
