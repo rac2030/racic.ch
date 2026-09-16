@@ -373,7 +373,7 @@ test.describe('Content integrity', () => {
       els.map((el) => el.getAttribute('href')).filter(Boolean),
     );
     for (const href of hrefs) {
-      const res = await page.goto(href!);
+      const res = await page.request.get(href!);
       expect(res?.status()).toBe(200);
     }
   });
@@ -385,7 +385,7 @@ test.describe('Content integrity', () => {
       els.map((el) => el.getAttribute('href')).filter(Boolean),
     );
     for (const href of hrefs) {
-      const res = await page.goto(href!);
+      const res = await page.request.get(href!);
       expect(res?.status()).toBe(200);
     }
   });
