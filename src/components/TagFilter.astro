@@ -2,10 +2,19 @@
 interface Props {
   tags: string[];
   label?: string;
+  counts?: Record<string, number>;
 }
 
-const { tags, label = 'Filter by tag' } = Astro.props;
+const { tags, label = 'Filter by tag', counts } = Astro.props;
 const sortedTags = [...new Set(tags)].sort();
+const bins = sortedTags.map((t) => counts?.[t] || 0);
+const maxN = bins.length ? Math.max(...bins) : 0;
+const minN = bins.length ? Math.min(...bins) : 0;
+const span = Math.max(maxN - minN, 1);
+const tagSize = (n: number) => {
+  if (!bins.length || maxN === 0) return '0.85rem';
+  return `${(0.8 + ((n - minN) / span) * 0.8).toFixed(2)}rem`;
+};
 ---
 
 <div class="tag-filter" id="tag-filter" data-tags={JSON.stringify(sortedTags)}>
@@ -23,7 +32,7 @@ const sortedTags = [...new Set(tags)].sort();
   <div class="tag-filter-cloud" id="tag-filter-cloud">
     <div class="tag-filter-cloud-inner">
       {sortedTags.map((tag) => (
-        <button class="tag-cloud-tag" data-tag={tag}>{tag}</button>
+        <button class="tag-cloud-tag" data-tag={tag} style={`font-size: ${tagSize(counts?.[tag] || 0)}`}>{tag}</button>
       ))}
     </div>
   </div>

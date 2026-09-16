@@ -40,6 +40,30 @@ test.describe('Tag filter on blog listing', () => {
     const text = await tag.textContent();
     expect(text?.length).toBeGreaterThan(0);
   });
+
+  test('tag cloud sizes text by tag frequency', async ({ page }) => {
+    await page.goto('/blog/');
+    await page.click('#tag-filter-cloud-btn');
+    await expect(page.locator('.tag-filter-cloud')).toBeVisible();
+    const data = await page.evaluate(() => {
+      const cloudTags = Array.from(document.querySelectorAll('.tag-cloud-tag')).map((b) => ({
+        tag: b.getAttribute('data-tag') || '',
+        size: parseFloat(getComputedStyle(b).fontSize),
+      }));
+      const counts: Record<string, number> = {};
+      document.querySelectorAll('.card[data-tags]').forEach((card) => {
+        for (const t of JSON.parse(card.getAttribute('data-tags') || '[]')) counts[t] = (counts[t] || 0) + 1;
+      });
+      return { cloudTags, counts };
+    });
+    const sizes = data.cloudTags.map((c) => c.size);
+    expect(new Set(sizes).size).toBeGreaterThan(1);
+    const weighted = data.cloudTags.find(
+      (c) => c.tag === Object.entries(data.counts).sort((a, b) => b[1] - a[1])[0][0],
+    );
+    const lightest = data.cloudTags.reduce((a, b) => (a.size <= b.size ? a : b));
+    expect(weighted?.size).toBeGreaterThanOrEqual(lightest.size);
+  });
 });
 
 test.describe('Category filter on projects listing', () => {

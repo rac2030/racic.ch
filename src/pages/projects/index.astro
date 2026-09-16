@@ -11,6 +11,7 @@ const projects = (await getCollection('projects'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const allTags = [...new Set(projects.flatMap((p) => p.data.tags))].sort();
+const tagCounts = Object.fromEntries(allTags.map((t) => [t, projects.filter((p) => p.data.tags.includes(t)).length]));
 const allCategories = [...new Set(projects.map((p) => p.data.category).filter(Boolean))].sort();
 ---
 
@@ -19,7 +20,7 @@ const allCategories = [...new Set(projects.map((p) => p.data.category).filter(Bo
     <div class="container content-card">
       <PageHeader title="Projects" icon="fa-solid fa-microchip" subtitle="Hardware and software projects — IoT, LoRaWAN, electronics, and more." />
       <div class="wiki-filter-row">
-        <TagFilter tags={allTags} label="Filter projects by tag..." />
+        <TagFilter tags={allTags} counts={tagCounts} label="Filter projects by tag..." />
         {allCategories.length > 0 && (
           <div class="category-filter">
             <span class="category-filter-label">Category:</span>

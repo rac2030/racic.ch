@@ -15,6 +15,7 @@ const bookmarkEntries = (await getCollection('bookmarks'))
   .sort((a, b) => (a.data.title).localeCompare(b.data.title));
 
 const allTags = [...new Set(entries.flatMap((e) => e.data.tags))].sort();
+const tagCounts = Object.fromEntries(allTags.map((t) => [t, entries.filter((e) => e.data.tags.includes(t)).length]));
 const allCategories = [...new Set(entries.map((e) => e.data.category).filter(Boolean))].sort();
 
 const wikiGraph = buildWikiGraph(
@@ -51,7 +52,7 @@ const graphEdges = wikiGraph.edges;
       </div>
 
       <div class="wiki-filter-row">
-        <TagFilter tags={allTags} label="Filter wiki by tag..." />
+        <TagFilter tags={allTags} counts={tagCounts} label="Filter wiki by tag..." />
         <div class="category-filter" id="wiki-category-filter">
           <span class="category-filter-label">Category:</span>
           <div class="category-filter-btns">
