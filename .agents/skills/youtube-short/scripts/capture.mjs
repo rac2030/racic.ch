@@ -127,11 +127,11 @@ async function corner(page, canvasId) {
   const box = await page.evaluate((id) => {
     const c = document.getElementById(id);
     const b = c.getBoundingClientRect();
-    return { left: b.left, top: b.top, w: b.width, h: b.height };
+    return { left: b.left, top: b.top, w: b.width, h: b.height, vw: window.innerWidth, vh: window.innerHeight };
   }, canvasId);
   return {
-    x: Math.min(Math.max(box.left + 60, 10), 1070),
-    y: Math.min(Math.max(box.top + box.h - 60, 10), 1910),
+    x: Math.min(Math.max(box.left + 60, 10), Math.max(box.vw - 10, 10)),
+    y: Math.min(Math.max(box.top + box.h - 60, 10), Math.max(box.vh - 10, 10)),
   };
 }
 
@@ -241,8 +241,9 @@ async function main() {
       viewport: { width, height },
       recordVideo: { dir: pics.seg, size: { width, height } },
     });
-    if (canvasId) {
-      await ctx.addInitScript(buildTracker(canvasId));
+    const effId = seg.scene.canvasId || canvasId;
+    if (effId) {
+      await ctx.addInitScript(buildTracker(effId));
       await ctx.addInitScript(resolveMe());
     }
     if (cap.extraInitJs) await ctx.addInitScript((code) => (0, eval)(code), cap.extraInitJs);
@@ -259,15 +260,15 @@ async function main() {
         document.head.appendChild(st);
       }, cap.frameCss);
     }
-    if (canvasId) {
+    if (effId) {
       await page.evaluate((id) => {
         const c = document.getElementById(id);
         if (c) window.scrollTo(0, Math.max(0, c.getBoundingClientRect().top - 120));
-      }, canvasId);
+      }, effId);
     }
     await page.waitForTimeout(300);
 
-    await runActions(page, seg.scene.actions, canvasId);
+    await runActions(page, seg.scene.actions, effId);
 
     const elapsed = (Date.now() - t0) / 1000;
     const pad = Math.max(1, needed - elapsed);

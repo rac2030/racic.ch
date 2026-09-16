@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { resolveStory, waitForHttp, startDetached } from './pipeline-util.mjs';
+import { resolveStory, loadStory, waitForHttp, startDetached } from './pipeline-util.mjs';
 
 const SCRIPTS = path.dirname(fileURLToPath(import.meta.url));
 const BASE_URL = process.env.SHORT_BASE_URL || 'http://127.0.0.1:4322';
@@ -56,9 +56,9 @@ async function main() {
   if (!storyArg) throw new Error('usage: node build-short.mjs <story> [--steps=narration,capture,assemble,verify] [--force]');
 
   const dir = resolveStory(storyArg);
-  console.log(`\nBuilding short for story at ${dir}\n`);
-
-  await ensureBase();
+  const story = loadStory(dir);
+  const finalName = story.kind === 'walkthrough' ? 'walkthrough.mp4' : 'final_short.mp4';
+  console.log(`\nBuilding ${story.kind === 'walkthrough' ? 'walkthrough' : 'short'} for story at ${dir}\n`);
   if (steps.includes('narration')) await ensureVoicebox();
 
   const order = ['narration', 'capture', 'assemble', 'verify'];
@@ -74,7 +74,7 @@ async function main() {
   }
 
   console.log('\nBuild complete. Output:');
-  console.log('  ' + path.join(dir, 'output', 'final_short.mp4'));
+  console.log('  ' + path.join(dir, 'output', finalName));
 }
 
 main().catch((e) => {

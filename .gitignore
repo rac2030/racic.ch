@@ -49,3 +49,4 @@ stories/*/narration_final/
 stories/*/segments/
 stories/*/output/
 stories/*/durations.json
+video-output/

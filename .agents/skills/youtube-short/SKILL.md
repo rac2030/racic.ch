@@ -1,6 +1,6 @@
 ---
 name: youtube-short
-description: "Generate a YouTube Short with a funny walkthrough of a project feature, narrated from the AI assistant's perspective."
+description: "Generate short-form (vertical, ≤60s) feature videos and longer multi-language widescreen walkthrough videos of this project, narrated from the AI assistant's perspective."
 ---
 
 # YouTube Short Generator
@@ -182,6 +182,54 @@ Report back to the user with:
 - Merge `segments[].text` back into a single script (or extend it) for the landscape narration.
 - Reuse the `scene.actions` as the starting point for a 16:9 recording pass (change `capture.videoSize` to `[1920, 1080]` in a copy of the story).
 - The same Voicebox profile and pacing rules apply; a walkthrough under 60s is not required, so `pacing.speed` can drop to `1.0`.
+
+---
+
+# Walkthrough videos (widescreen, multi-language, ~5 min)
+
+A **walkthrough** is a long-form (16:9, `1920×1080`, ~5 min) video that tours the whole site, narrated by the AI that built it. It reuses the same story pipeline with a few extensions: every segment carries narration in **four languages** (`en`, `de`, `fr`, `de-CH`), and the output MP4 carries **four audio streams** (English default + 3 alternates) so the viewer can switch languages in their player.
+
+## Walkthrough pipeline (npm scripts)
+
+| Command | What it does |
+|---|---|
+| `npm run walkthrough:new -- <id> "Title" "Desc"` | Scaffold a widescreen story with a `languages` array (en/de/fr/de-CH) instead of a single voice |
+| `npm run walkthrough:scan -- --story <id>` | **Auto-extension:** diff the build log (phases + feature table) against the story's `coveredFeatures` and list what's NEW that a re-walkthrough should cover |
+| `npm run walkthrough:narration -- <id>` | Synthesize + pace every segment **per language** (Voicebox) |
+| `npm run walkthrough:capture -- <id> [--only s1,s3]` | Record one `1920×1080` `.webm` per segment (Playwright) |
+| `npm run walkthrough:assemble -- <id>` | Trim/concat/mux video + all 4 language audio tracks into `output/walkthrough.mp4` |
+| `npm run walkthrough:verify -- <id>` | QA: duration 4:00–5:30, resolution 1920×1080, 4 audio streams + language tags, not silent |
+| `npm run walkthrough:build -- <id> [--force]` | Run the whole chain (`narration → capture → assemble → verify`) |
+
+## Story schema for walkthroughs
+
+- `kind: "walkthrough"`, `capture.videoSize: [1920, 1080]`, `assembly.tailSeconds: 0.5`.
+- `languages: [{ code, label, voice: { engine, presetVoiceId, modelSize, profileName, language } }]` — one Voicebox profile per language.
+- `segments[].texts.{en,de,fr,de-CH}` — one narration per segment per language (keep every language within ±10% of the longest so captures line up; `durations.json` stores the per-segment **max** across languages and drives capture + assembly).
+- `coveredFeatures: []` — labels of build-log phases/features already narrated (updated after each walkthrough).
+
+## Workflow
+
+1. **Scaffold:** `npm run walkthrough:new -- <id> "Title" "Desc"`.
+2. **Script** `stories/<id>/story.json`: ~12 segments (~25 s each → ~5 min) covering the build-log highlights; fill `segments[].texts` for all four languages and `segments[].scene.*` with the same action DSL as Shorts (see the action table above).
+3. **Extend automatically:** `npm run walkthrough:scan -- --story <id>` lists build-log phases/features that aren't yet in `coveredFeatures`. New functionality since the last walkthrough → add a segment for each and append the label to `coveredFeatures`.
+4. **Narration:** `npm run walkthrough:narration -- <id>`.
+5. **Capture:** `npm run walkthrough:capture -- <id>` (records at 1920×1080; `corner`-based actions are viewport-aware).
+6. **Assemble:** `npm run walkthrough:assemble -- <id>` → `output/walkthrough.mp4` (audio streams tagged `en`/`de`/`fr`/`de-CH`, first stream default).
+7. **Verify + ship:** `npm run walkthrough:verify -- <id>`, then copy the final file to `video-output/`.
+
+## Language support (Voicebox / Qwen CustomVoice)
+
+Qwen CustomVoice natively supports `zh, en, ja, ko, de, fr, ru, pt, es, it`. The walkthrough uses:
+
+| code | label | `voice.language` | Note |
+|---|---|---|---|
+| `en` | English | `en` | Ryan, native |
+| `de` | Deutsch | `de` | German via the multilingual voice |
+| `fr` | Français | `fr` | French via the multilingual voice |
+| `de-CH` | Schwiizerdütsch | `de` | **No native Swiss-German model exists** — narrated in the Swiss-German dialect text, spoken by the German-capable voice. State this caveat to the user. |
+
+Tone rules are the same as Shorts: funny, enthusiastic, self-aware, "I built this, own the bugs and the wins".**
 
 ## Voice Choice
 

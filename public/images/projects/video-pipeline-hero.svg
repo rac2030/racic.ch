@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a121e"/>
+      <stop offset="50%" stop-color="#0d1f30"/>
+      <stop offset="100%" stop-color="#0a121e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#348cb2" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#348cb2" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#348cb2" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="screenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#348cb2" stop-opacity="0.9"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#348cb2" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Grid pattern -->
+  <g opacity="0.06" stroke="#348cb2" stroke-width="0.5">
+    <line x1="0" y1="0" x2="0" y2="630"/><line x1="60" y1="0" x2="60" y2="630"/>
+    <line x1="120" y1="0" x2="120" y2="630"/><line x1="180" y1="0" x2="180" y2="630"/>
+    <line x1="240" y1="0" x2="240" y2="630"/><line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="360" y1="0" x2="360" y2="630"/><line x1="420" y1="0" x2="420" y2="630"/>
+    <line x1="480" y1="0" x2="480" y2="630"/><line x1="540" y1="0" x2="540" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/><line x1="660" y1="0" x2="660" y2="630"/>
+    <line x1="720" y1="0" x2="720" y2="630"/><line x1="780" y1="0" x2="780" y2="630"/>
+    <line x1="840" y1="0" x2="840" y2="630"/><line x1="900" y1="0" x2="900" y2="630"/>
+    <line x1="960" y1="0" x2="960" y2="630"/><line x1="1020" y1="0" x2="1020" y2="630"/>
+    <line x1="1080" y1="0" x2="1080" y2="630"/><line x1="1140" y1="0" x2="1140" y2="630"/>
+    <line x1="1200" y1="0" x2="1200" y2="630"/>
+    <line x1="0" y1="0" x2="1200" y2="0"/><line x1="0" y1="60" x2="1200" y2="60"/>
+    <line x1="0" y1="120" x2="1200" y2="120"/><line x1="0" y1="180" x2="1200" y2="180"/>
+    <line x1="0" y1="240" x2="1200" y2="240"/><line x1="0" y1="300" x2="1200" y2="300"/>
+    <line x1="0" y1="360" x2="1200" y2="360"/><line x1="0" y1="420" x2="1200" y2="420"/>
+    <line x1="0" y1="480" x2="1200" y2="480"/><line x1="0" y1="540" x2="1200" y2="540"/>
+    <line x1="0" y1="600" x2="1200" y2="600"/>
+  </g>
+
+  <!-- Horizontal glow line -->
+  <rect x="0" y="310" width="1200" height="2" fill="url(#glow)"/>
+
+  <!-- Left side: video player panel -->
+  <g transform="translate(80, 85)" filter="url(#shadow)">
+    <rect width="480" height="290" rx="10" fill="#0d1a28" stroke="rgba(120,180,220,0.3)" stroke-width="1"/>
+    <!-- Screen -->
+    <rect x="10" y="10" width="460" height="200" rx="6" fill="#0a1626"/>
+    <rect x="10" y="10" width="460" height="200" rx="6" fill="url(#screenGrad)" opacity="0.08"/>
+
+    <!-- Glowing play button -->
+    <circle cx="240" cy="110" r="34" fill="none" stroke="#7dd3fc" stroke-width="1.5" opacity="0.6">
+      <animate attributeName="r" values="34;40;34" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.15;0.6" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <polygon points="228,92 228,128 262,110" fill="#7dd3fc"/>
+
+    <!-- REC dot -->
+    <circle cx="24" cy="24" r="5" fill="#ff5f57">
+      <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="36" y="28" font-family="monospace" font-size="12" fill="#ff5f57" opacity="0.9">REC</text>
+    <text x="380" y="28" font-family="monospace" font-size="12" fill="#7dd3fc" opacity="0.7">1920×1080</text>
+
+    <!-- Controls bar -->
+    <rect y="220" width="480" height="32" rx="0 0 0 0" fill="#0f2035"/>
+    <rect y="248" width="480" height="32" rx="0 0 10 10" fill="#0f2035"/>
+    <!-- Progress bar -->
+    <rect x="12" y="228" width="400" height="3" rx="1.5" fill="#1b3350"/>
+    <rect x="12" y="228" width="260" height="3" rx="1.5" fill="#348cb2"/>
+    <circle cx="272" cy="229.5" r="5" fill="#7dd3fc"/>
+    <text x="424" y="234" font-family="monospace" font-size="11" fill="#7dd3fc" opacity="0.8">04:12</text>
+    <rect x="12" y="262" width="28" height="4" rx="2" fill="#348cb2"/>
+    <rect x="48" y="262" width="28" height="4" rx="2" fill="#348cb2"/>
+    <rect x="84" y="262" width="28" height="4" rx="2" fill="#348cb2"/>
+    <rect x="12" y="272" width="28" height="4" rx="2" fill="#348cb2" opacity="0.6"/>
+    <rect x="48" y="272" width="28" height="4" rx="2" fill="#348cb2" opacity="0.6"/>
+  </g>
+
+  <!-- Right side: timeline with 4 language lanes -->
+  <g transform="translate(640, 120)">
+    <!-- Lane labels -->
+    <text x="0" y="40" font-family="monospace" font-size="14" fill="#7dd3fc" opacity="0.95">en</text>
+    <text x="0" y="95" font-family="monospace" font-size="14" fill="#34d399" opacity="0.95">de</text>
+    <text x="0" y="150" font-family="monospace" font-size="14" fill="#fbbf24" opacity="0.95">fr</text>
+    <text x="0" y="205" font-family="monospace" font-size="14" fill="#f472b6" opacity="0.95">de-CH</text>
+
+    <!-- Lane background bridges -->
+    <g fill="#0f2035">
+      <rect x="40" y="24" width="500" height="34" rx="6"/>
+      <rect x="40" y="79" width="500" height="34" rx="6"/>
+      <rect x="40" y="134" width="500" height="34" rx="6"/>
+      <rect x="40" y="189" width="500" height="34" rx="6"/>
+    </g>
+
+    <!-- Clip blocks per lane with spacing = pacing -->
+    <g fill="#348cb2" opacity="0.9">
+      <rect x="42" y="26" width="90" height="30" rx="5"/>
+      <rect x="150" y="26" width="70" height="30" rx="5"/>
+      <rect x="238" y="26" width="100" height="30" rx="5"/>
+      <rect x="356" y="26" width="80" height="30" rx="5"/>
+      <rect x="454" y="26" width="60" height="30" rx="5"/>
+    </g>
+    <g fill="#34d399" opacity="0.85">
+      <rect x="42" y="81" width="85" height="30" rx="5"/>
+      <rect x="145" y="81" width="65" height="30" rx="5"/>
+      <rect x="228" y="81" width="95" height="30" rx="5"/>
+      <rect x="341" y="81" width="75" height="30" rx="5"/>
+      <rect x="434" y="81" width="100" height="30" rx="5"/>
+    </g>
+    <g fill="#fbbf24" opacity="0.85">
+      <rect x="42" y="136" width="78" height="30" rx="5"/>
+      <rect x="138" y="136" width="60" height="30" rx="5"/>
+      <rect x="216" y="136" width="88" height="30" rx="5"/>
+      <rect x="322" y="136" width="70" height="30" rx="5"/>
+      <rect x="410" y="136" width="124" height="30" rx="5"/>
+    </g>
+    <g fill="#f472b6" opacity="0.85">
+      <rect x="42" y="191" width="82" height="30" rx="5"/>
+      <rect x="142" y="191" width="66" height="30" rx="5"/>
+      <rect x="226" y="191" width="92" height="30" rx="5"/>
+      <rect x="336" y="191" width="72" height="30" rx="5"/>
+      <rect x="426" y="191" width="108" height="30" rx="5"/>
+    </g>
+
+    <!-- Moving playhead -->
+    <rect x="340" y="14" width="2" height="220" fill="#7dd3fc" opacity="0.9">
+      <animate attributeName="x" values="60;500;60" dur="8s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- Time ruler -->
+    <g font-family="monospace" font-size="10" fill="#7dd3fc" opacity="0.5">
+      <text x="42" y="246">0:00</text>
+      <text x="166" y="246">1:00</text>
+      <text x="292" y="246">2:00</text>
+      <text x="418" y="246">3:00</text>
+      <text x="522" y="246">4:12</text>
+    </g>
+
+    <!-- A/V badge -->
+    <g transform="translate(40, 258)">
+      <rect width="60" height="18" rx="9" fill="rgba(52,140,178,0.2)" stroke="#348cb2" stroke-width="0.8"/>
+      <text x="30" y="13" font-family="monospace" font-size="10" fill="#7dd3fc" text-anchor="middle">AAC ×4</text>
+    </g>
+  </g>
+
+  <!-- Title text -->
+  <text x="600" y="520" font-family="'Source Sans Pro', sans-serif" font-size="36" font-weight="700" fill="#f0f4f8" text-anchor="middle" filter="url(#shadow)">
+    From Build Log to Video
+  </text>
+  <text x="600" y="555" font-family="'Source Sans Pro', sans-serif" font-size="18" fill="#7dd3fc" text-anchor="middle" opacity="0.8">
+    AI skill × Voicebox × Playwright × ffmpeg
+  </text>
+
+  <!-- Bottom accent line -->
+  <rect x="400" y="575" width="400" height="2" rx="1" fill="url(#glow)"/>
+</svg>

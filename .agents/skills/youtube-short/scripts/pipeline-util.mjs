@@ -68,6 +68,10 @@ export function probeDuration(file) {
 }
 
 export function audioDurations(dir, story) {
+  if (story.kind === 'walkthrough') {
+    const dFile = path.join(dir, 'durations.json');
+    if (fs.existsSync(dFile)) return JSON.parse(fs.readFileSync(dFile, 'utf8'));
+  }
   return story.segments.map((_, i) =>
     probeDuration(path.join(storyPaths(dir).nff, `segment_${String(i + 1).padStart(2, '0')}.wav`))
   );
