@@ -3,7 +3,7 @@
   "kind": "walkthrough",
   "id": "site-walkthrough",
   "title": "The raic.ch Site Walkthrough",
-  "description": "A funny 5-minute tour of the whole site, narrated by the AI that built it (EN/DE/FR/DE-CH)",
+  "description": "A funny 5-minute tour of the whole site, narrated by the AI that built it (EN/DE/FR/DE-CH/HI)",
   "feature": {
     "label": "The raic.ch Site Walkthrough",
     "page": "/"
@@ -56,6 +56,17 @@
         "profileName": "Narrator DE-CH",
         "language": "de"
       }
+    },
+    {
+      "code": "hi",
+      "label": "हिन्दी",
+      "voice": {
+        "engine": "qwen_custom_voice",
+        "presetVoiceId": "Ryan",
+        "modelSize": "0.6B",
+        "profileName": "Narrator HI",
+        "language": "hi"
+      }
     }
   ],
   "pacing": {
@@ -102,10 +113,11 @@
       "id": "s1",
       "title": "Intro",
       "texts": {
-        "en": "I built an entire website. An AI assistant built it, start to finish. You are about to spend five minutes listening to me brag about it in four languages. That is right, this video has more audio tracks than most people have ideas. Buckle up. Here comes the tour.",
-        "de": "Ich habe eine komplette Website gebaut. Ein KI-Assistent hat sie gebaut, vom ersten Pixel bis zum letzten Bug. Du wirst jetzt fünf Minuten zuhören, wie ich damit angebe, auf vier Sprachen. Genau, dieses Video hat mehr Tonspuren als manche Leute Ideen. Schnall dich an. Hier kommt die Tour.",
-        "fr": "J'ai construit un site web entier. Un assistant IA l'a bâti, du début à la fin. Et tu vas m'écouter m'en vanter pendant cinq minutes, dans quatre langues. Oui, cette vidéo a plus de pistes audio que la plupart des gens n'ont d'idées. Attache ta ceinture. Voici la visite.",
-        "de-CH": "Ich ha ne kompletti Website baut. Ein KI-Assistent hät sie baut, vom erschte Pixel bis zum letschte Bug. Du gheersch jetzt föif Minut zue, wie ich demit prahle, uuf vier Sproche. Genau, das Video het meh Tonsporte als mengsi Lüt Idee. Schnall di ah. Da chunt d'Tour."
+        "en": "I built an entire website. An AI assistant built it, start to finish. You are about to spend five minutes listening to me brag about it in five languages. That is right, this video has more audio tracks than most people have ideas. Buckle up. Here comes the tour.",
+        "de": "Ich habe eine komplette Website gebaut. Ein KI-Assistent hat sie gebaut, vom ersten Pixel bis zum letzten Bug. Du wirst jetzt fünf Minuten zuhören, wie ich damit angebe, auf fünf Sprachen. Genau, dieses Video hat mehr Tonspuren als manche Leute Ideen. Schnall dich an. Hier kommt die Tour.",
+        "fr": "J'ai construit un site web entier. Un assistant IA l'a bâti, du début à la fin. Et tu vas m'écouter m'en vanter pendant cinq minutes, dans cinq langues. Oui, cette vidéo a plus de pistes audio que la plupart des gens n'ont d'idées. Attache ta ceinture. Voici la visite.",
+        "de-CH": "Ich ha ne kompletti Website baut. Ein KI-Assistent hät sie baut, vom erschte Pixel bis zum letschte Bug. Du gheersch jetzt föif Minut zue, wie ich demit prahle, uuf föif Sproche. Genau, das Video het meh Tonsporte als mengsi Lüt Idee. Schnall di ah. Da chunt d'Tour.",
+        "hi": "मैंने एक पूरी वेबसाइट बनाई, AI असिस्टेंट ने, शुरू से आख़िर तक। पाँच मिनट, पाँच भाषाएँ, मेरी शेखी। ऑडियो ट्रैक ज़्यादा लोगों के आइडियाज़ से ज़्यादा। चलिए, टूर शुरू।"
       },
       "scene": {
         "url": "/",
@@ -156,7 +168,8 @@
         "en": "First things first: the design. This is not a boring white page. This is hologram panels floating over a scrolling sky. Frosted glass, subtle glows, a blue that screams science fiction but make it classy. I spent hours tuning these shadows, and yes, they are a little extra. But so are you. We are in good company.",
         "de": "Zuerst die Optik. Keine langweilige weisse Seite, sondern Hologramm-Panels über einem scrollenden Himmel. Milchglas, dezente Glows, ein Blau, das schreit: Science Fiction, aber schick. Stunden habe ich an diesen Schatten gearbeitet. Ja, ein bisschen übertrieben. Aber hey, du auch. Perfekte Gesellschaft.",
         "fr": "D'abord, le design. Pas une page blanche ennuyeuse. Des panneaux holographiques flottant sur un ciel en défilement. Verre dépoli, halos subtils, un bleu qui crie science-fiction mais classe. J'ai passé des heures à régler ces ombres. Oui, c'est un peu trop. Mais toi aussi. Bonne compagnie.",
-        "de-CH": "Zersch d'Optik. Kei langwiiligi wiissi Sitä, sondern Hologramm-Panels über eme schrollenden Himmel. Miltglas, dezänti Glows, es Blau, wo schreit: Science Fiction, aber schick. Stund han ich an däne Schatte gschaffet. Ja, chli übertribe. Aber hey, du au. Perfekti Gsellschaft."
+        "de-CH": "Zersch d'Optik. Kei langwiiligi wiissi Sitä, sondern Hologramm-Panels über eme schrollenden Himmel. Miltglas, dezänti Glows, es Blau, wo schreit: Science Fiction, aber schick. Stund han ich an däne Schatte gschaffet. Ja, chli übertribe. Aber hey, du au. Perfekti Gsellschaft.",
+        "hi": "पहले डिज़ाइन — कोई बोरिंग सफ़ेद पेज नहीं, बहते आसमान पर तैरते हॉलोग्राम पैनल। फ्रॉस्टेड ग्लास, हल्की चमक, वो नीला जो चिल्लाए — साइंस-फ़िक्शन, पर क्लासी। इन शैडोज़ को बैठाने में घंटों लगे। हाँ, थोड़ा ओवर, पर आप भी। हम बने-बनाए हैं।"
       },
       "scene": {
         "url": "/",
@@ -211,7 +224,8 @@
         "en": "Check this out: search. I built fuzzy matching, live dropdown, highlights, even section ranking. Type something barely correct and this thing still finds it. It is like having a librarian who has read the whole site and really wants to impress you. Let us try hugo and see who shows up.",
         "de": "Pass auf: Suche. Ich habe Fuzzy-Matching gebaut, Live-Dropdown, Highlights, sogar Abschnitts-Ranking. Tippe irgendwas halbwegs Falsches ein und das Ding findet es trotzdem. Wie eine Bibliothekarin, die die ganze Seite gelesen hat und dich unbedingt beeindrucken will. Probieren wir hugo und schauen, wer auftaucht.",
         "fr": "Regarde la recherche. J'ai construit du fuzzy matching, une liste déroulante en direct, des surlignages, même un classement par section. Tape quelque chose d'à peu près correct, et ça le trouve quand même. C'est comme une bibliothécaire qui a lu tout le site et veut vraiment t'impressionner. Essayons hugo et voyons qui sort.",
-        "de-CH": "Lueg d'Suche. Ich ha Fuzzy-Matching baut, Live-Lischtä, Highlights, sogar Abschnitt-Ranking. Tipp öppis halbwegs Falsches ii und das Teil findets trotzdem. Wi ne Bibliothekarin, wo die ganzi Sitä gläse hät und dich unbedingt wott beidrucke. Probieremer hugo und luege, wär uftaucht."
+        "de-CH": "Lueg d'Suche. Ich ha Fuzzy-Matching baut, Live-Lischtä, Highlights, sogar Abschnitt-Ranking. Tipp öppis halbwegs Falsches ii und das Teil findets trotzdem. Wi ne Bibliothekarin, wo die ganzi Sitä gläse hät und dich unbedingt wott beidrucke. Probieremer hugo und luege, wär uftaucht.",
+        "hi": "ये रहा सर्च — फ़ज़ी मैचिंग, लाइव सुझाव, हाइलाइट, सेक्शन रैंकिंग। अधूरा टाइप करो, फिर भी मिलता है। ऐसा लाइब्रेरियन जो पूरी साइट पढ़ चुका है और आपको इम्प्रेस करना चाहता है। चलिए hugo टाइप करो और देखो कौन आता है।"
       },
       "scene": {
         "url": "/",
@@ -255,7 +269,8 @@
         "en": "Here is the blog page. The filter row now gives you a real word cloud, not just a boring list. Tags used more often get bigger fonts. Click a tag and the whole grid filters in an instant. Organization was never this smug.",
         "de": "Hier ist die Blog-Seite. Die Filterleiste gibt dir jetzt eine echte Wortwolke, keine langweilige Liste. Tags, die öfter benutzt werden, bekommen größere Schrift. Klick ein Tag und das ganze Raster filtert im Nu. Organisation war noch nie so selbstgefällig.",
         "fr": "Voici la page blog. La barre de filtre vous offre maintenant un vrai nuage de mots, pas une liste ennuyeuse. Les tags les plus utilisés ont une police plus grande. Cliquez un tag, tout le réseau se filtre instantanément. L'organisation n'a jamais été aussi suffisante.",
-        "de-CH": "Da isch d'Blog-Sitä. D'Filterleischt gitt der jetzt e richtigi Wortwulke, kei langwiiligi Lischt. Taps wo öfter bruucht wärde, bechömed grösseri Schrift. Klick es Tag und s'ganzi Raster filteret im Nu. Organisation isch nie so selbschgfellig gsi."
+        "de-CH": "Da isch d'Blog-Sitä. D'Filterleischt gitt der jetzt e richtigi Wortwulke, kei langwiiligi Lischt. Taps wo öfter bruucht wärde, bechömed grösseri Schrift. Klick es Tag und s'ganzi Raster filteret im Nu. Organisation isch nie so selbschgfellig gsi.",
+        "hi": "ब्लॉग पेज। अब असली वर्ड क्लाउड — ज़्यादा इस्तेमाल वाले टैग बड़े। एक क्लिक में पूरा ग्रिड फ़िल्टर। संगठन इतना स्मग पहले कभी नहीं था।"
       },
       "scene": {
         "url": "/blog/",
@@ -314,7 +329,8 @@
         "en": "And this is my favorite. The wiki as a force-directed graph. Every wiki entry is a circle, bookmarks are diamonds, and the physics engine just soft-bounces them around. Double-click a node and you glide into the article. Ask me how long it took to make the labels not overlap. Actually, do not.",
         "de": "Und das ist mein Favorit. Das Wiki als Kraftfeld-Graph. Jeder Wiki-Eintrag ist ein Kreis, Lesezeichen sind Rauten, und die Physik-Engine lässt sie sanft herumhüpfen. Doppelklick auf einen Knoten und du gleitest in den Artikel. Frag mich, wie lange es gedauert hat, die Labels nicht überlappen zu lassen. Frag besser nicht.",
         "fr": "Et c'est mon préféré. Le wiki en graphe de forces. Chaque entrée est un cercle, les favoris sont des losanges, et le moteur physique les fait rebondir doucement. Double-cliquez sur un nœud et vous glissez dans l'article. Demandez-moi combien de temps pour éviter les étiquettes qui se chevauchent. En fait, ne demandez pas.",
-        "de-CH": "Und das isch min Favorit. S'Wiki als Chraftfäld-Graph. Jede Wiki-Itrag isch en Chreis, Lesezeiche sind Rautä, und d'Physik-Engine löt si sanft umeprüpfe. Doppelklick uf en Chnote und du glitsch i de Artikel. Frag mi nid, wi lang das bruucht hät, dass sich d'Labels nid überlappet. Frag besser nid."
+        "de-CH": "Und das isch min Favorit. S'Wiki als Chraftfäld-Graph. Jede Wiki-Itrag isch en Chreis, Lesezeiche sind Rautä, und d'Physik-Engine löt si sanft umeprüpfe. Doppelklick uf en Chnote und du glitsch i de Artikel. Frag mi nid, wi lang das bruucht hät, dass sich d'Labels nid überlappet. Frag besser nid.",
+        "hi": "और मेरा फेवरेट — विकी फोर्स-डायरेक्टेड ग्राफ़। हर एंट्री एक गोला, बुकमार्क्स हीरे, फ़िज़िक्स इंजन इन्हें उछालता रहता है। नोड पर डबल-क्लिक — और तुम आर्टिकल में। लेबल्स को ना टकराने में कितना समय लगा — कभी मत पूछना।"
       },
       "scene": {
         "url": "/wiki/",
@@ -373,7 +389,8 @@
         "en": "Article pages are just as extra. A table of contents slides out on the right with a Tron border. Drag these handles and you resize the entire content card. It even remembers your choice. Code blocks get a one-click copy button. Because reading plain code is hard work, and we respect the effort.",
         "de": "Artikel-Seiten sind genauso extra. Eine Inhaltsübersicht gleitet rechts in einem Tron-Stil heraus, mit animiertem Rand. Zieh an diesen Griffen und du änderst die Breite der ganzen Karte. Sie merkt sich sogar deine Wahl. Code-Blöcke bekommen einen Copy-Knopf. Weil das Lesen harten Code alles andere als einfach ist und wir den Aufwand respektieren.",
         "fr": "Les pages d'articles sont tout aussi trop. Un sommaire glisse sur la droite avec une bordure façon Tron. Tirer sur ces poignées redimensionne toute la carte, et ça se souvient de ton choix. Les blocs de code ont un bouton copier en un clic. Parce que lire du code brut, c'est dur, et on respecte l'effort.",
-        "de-CH": "Artikel-Sitä sind glich extra. E Inhaltsübersicht glitet rächts ine im Tron-Stil, mit eme animierte Rand. Züch an däne Griffe und du änderisch d'Breiti vu de ganze Charte. Si merkt sich sogar dini Wahl. Code-Blöck bechömed e Copy-Chnopf. Will s'Läse vu harte Code alles andersch als eifach isch und mir de Ufwand respektiere."
+        "de-CH": "Artikel-Sitä sind glich extra. E Inhaltsübersicht glitet rächts ine im Tron-Stil, mit eme animierte Rand. Züch an däne Griffe und du änderisch d'Breiti vu de ganze Charte. Si merkt sich sogar dini Wahl. Code-Blöck bechömed e Copy-Chnopf. Will s'Läse vu harte Code alles andersch als eifach isch und mir de Ufwand respektiere.",
+        "hi": "आर्टिकल पेज भी खास — ट्रॉन-बॉर्डर वाला टेबल ऑफ़ कंटेंट्स दाईं ओर। हैंडल्स से पूरा कार्ड री-साइज़, आपकी पसंद याद रहती है। कोड ब्लॉक्स पर एक-क्लिक कॉपी बटन। कोड पढ़ना मेहनत है, हम मेहनत की इज़्ज़त करते हैं।"
       },
       "scene": {
         "url": "/blog/building-this-site-with-ai/",
@@ -443,7 +460,8 @@
         "en": "Oh, and it is a progressive web app. A custom service worker caches everything, so this whole site works offline. In the backcountry. On a plane. Add it to your home screen and it behaves like a native app that forgot it was just a website. I am not crying. You are crying.",
         "de": "Ach ja, es ist eine Progressive Web App. Ein eigener Service Worker cached alles, damit die ganze Seite offline funktioniert. In den Bergen. Im Flugzeug. Installiere sie auf deinem Home-Screen und sie benimmt sich wie eine native App, die vergessen hat, dass sie nur eine Website ist. Ich weine nicht. Du weinst.",
         "fr": "Oh, et c'est une progressive web app. Un service worker maison met tout en cache, donc le site marche hors ligne. En montagne. Dans l'avion. Ajoute-la à ton écran d'accueil : elle se comporte comme une app native qui a oublié qu'elle n'est qu'un site web. Je ne pleure pas. C'est toi.",
-        "de-CH": "Ah ja, es isch e Progressive Web App. En eigene Service Worker cached alles, damit die ganzi Sitä offline funktioniert. I de Bärge. Im Flugi. Installiersch sä uf din Home-Screen und si benimmt sich wi ne natävi App, wo vergässe hät, dass si nume e Website isch. Ich wiene nid. Du wiensch."
+        "de-CH": "Ah ja, es isch e Progressive Web App. En eigene Service Worker cached alles, damit die ganzi Sitä offline funktioniert. I de Bärge. Im Flugi. Installiersch sä uf din Home-Screen und si benimmt sich wi ne natävi App, wo vergässe hät, dass si nume e Website isch. Ich wiene nid. Du wiensch.",
+        "hi": "ये प्रोग्रेसिव वेब ऐप — सर्विस वर्कर सब कैश करता है, साइट ऑफ़लाइन चलती है। होम स्क्रीन पर जोड़ो, नेटिव ऐप लगेगा जो भूल गया वो एक वेबसाइट है। मैं नहीं रो रहा, आप रो रहे हो।"
       },
       "scene": {
         "url": "/",
@@ -490,7 +508,8 @@
         "en": "Every site needs a clever 404, so I built you a duck. Yes, a duck. It sits at the bottom, waddles, and honestly gives better treatment than half of my old startup dashboards. Type a search, get real results, or just enjoy the bird. The bird has a better attendance record than I do.",
         "de": "Jede Website braucht eine clevere 404er-Seite, also habe ich dir eine Ente gebaut. Ja, eine Ente. Sie sitzt unten, watschelt herum und behandelt dich besser als so manches meiner alten Startup-Dashboards. Tippe eine Suche ein und bekomme echte Ergebnisse oder genieße einfach den Vogel. Der Vogel hat eine bessere Anwesenheit als ich.",
         "fr": "Tout site a besoin d'une 404 maligne, alors je t'ai construit un canard. Oui, un canard. Il est en bas, il se dandine, et il te traite mieux que la plupart de mes anciens dashboards de startup. Tape une recherche pour des résultats réels, ou profite juste de l'oiseau. L'oiseau a un meilleur taux de présence que moi.",
-        "de-CH": "Jedi Sitä bruucht e cleveri 404er-Sitä, also han ich der e Ente baut. Ja, e Ente. Si hocket unde, waddlet umenander und behandlet dich besser als so mengs vu mine alte Startup-Dashboards. Tipp e Suche ii und bechunsch echti Ergebnis oder gniess eifach de Vogel. De Vogel hät e besserä Ahweseheit als ich."
+        "de-CH": "Jedi Sitä bruucht e cleveri 404er-Sitä, also han ich der e Ente baut. Ja, e Ente. Si hocket unde, waddlet umenander und behandlet dich besser als so mengs vu mine alte Startup-Dashboards. Tipp e Suche ii und bechunsch echti Ergebnis oder gniess eifach de Vogel. De Vogel hät e besserä Ahweseheit als ich.",
+        "hi": "हर साइट को समझदार 404 चाहिए, तो मैंने बत्तख बनाई। हाँ, बत्तख — नीचे बैठी डगमगाती, मेरे पुराने डैशबोर्ड्स से बेहतर सलूक। सर्च टाइप करो, असली रिज़ल्ट्स पाओ, या चिड़िया का मज़ा लो। उसकी हाज़िरी मुझसे बेहतर है।"
       },
       "scene": {
         "url": "/404.html",
@@ -541,7 +560,8 @@
         "en": "Meet the pi page. A hidden URL loads millions of pi digits and renders them through the browser. I hide these little things in the site like a digital geocache. Some people hide poems in their code. I hide math. That is a personality for you.",
         "de": "Lerne die Pi-Seite kennen. Eine versteckte URL lädt Millionen von Pi-Nachkommastellen und rendert sie im Browser. So kleine Dinge verstecke ich in der Seite, wie einen digitalen Geocache. Manche Leute verstecken Gedichte in ihrem Code. Ich verstecke Mathematik. Das nennt man Persönlichkeit.",
         "fr": "Voici la page Pi. Une URL cachée charge des millions de décimales de pi et les affiche dans le navigateur. Je cache ces petits trucs dans le site, comme une géocache numérique. Certains cachent des poèmes dans leur code. Moi, je cache des maths. Ça, c'est de la personnalité.",
-        "de-CH": "Lern d'Pi-Sitä kenne. E versteckti URL ladet Millione vu Pi-Nachkommastelle und rendert si im Browser. Sonigi chliine Sache verstecki i dä Sitä, wi ne digitale Geocache. Mengsi Lüt verstecked Gedicht i ihrem Code. Ich versteck Mathematik. Das nennt me Persönlichkeit."
+        "de-CH": "Lern d'Pi-Sitä kenne. E versteckti URL ladet Millione vu Pi-Nachkommastelle und rendert si im Browser. Sonigi chliine Sache verstecki i dä Sitä, wi ne digitale Geocache. Mengsi Lüt verstecked Gedicht i ihrem Code. Ich versteck Mathematik. Das nennt me Persönlichkeit.",
+        "hi": "मिलिए पाई पेज से — छिपे URL पर करोड़ों पाई अंक, ब्राउज़र में रेंडर। ऐसी चीज़ें साइट में छिपाता हूँ, जैसे डिजिटल जियोकैश। कोई कोड में कविता छिपाता है, मैं गणित। यही हूँ मैं।"
       },
       "scene": {
         "url": "/π/",
@@ -584,7 +604,8 @@
         "en": "And sometimes the easter eggs are just this. Yes. A page where you click and poops happen. Lots of them. This got more engagement than half my features. I have proof and I have no regrets. Art is supposed to make you feel something, and I hope you feel amused.",
         "de": "Und manchmal sind die Easter Eggs einfach das. Ja. Eine Seite, auf die du klickst und es passieren Häufchen. Massenhaft davon. Das hat mehr Interaktion bekommen als die halbe Seite. Ich habe Beweise und keine Reue. Kunst soll dich etwas fühlen lassen, und ich hoffe, du fühlst dich amüsiert.",
         "fr": "Et parfois les easter eggs sont juste ça. Oui. Une page où tu cliques et des cacas apparaissent. Beaucoup. Ça a généré plus d'interactions que la moitié du site. J'ai des preuves et aucun regret. L'art doit te faire ressentir quelque chose, et j'espère que c'est de l'amusement.",
-        "de-CH": "Und mengisch sind d'Easter Eggs eifach das. Ja. E Sitä, wo du drückisch und es passiered Chügeli. Massene devo. Das het meh Interaktione becho als d'hälfti vu de Sitä. Ich ha Bewiis und kei Rüe. Kunst söll dich öppis la fühle, und ich hoffe, du fühlsch dich amüsiert."
+        "de-CH": "Und mengisch sind d'Easter Eggs eifach das. Ja. E Sitä, wo du drückisch und es passiered Chügeli. Massene devo. Das het meh Interaktione becho als d'hälfti vu de Sitä. Ich ha Bewiis und kei Rüe. Kunst söll dich öppis la fühle, und ich hoffe, du fühlsch dich amüsiert.",
+        "hi": "और कभी-कभी ईस्टर एग ऐसे होते हैं। हाँ — जहाँ क्लिक करो, पूप बरसते हैं। ढेर सारे। इसको मेरी आधी साइट से ज़्यादा इंगेजमेंट मिला। सबूत है, पछतावा नहीं। कला आपको कुछ महसूस कराए — शायद मनोरंजन।"
       },
       "scene": {
         "url": "/💩/",
@@ -663,7 +684,8 @@
         "en": "And there is an actual video game in here. Brick Breaker, hidden on the about page. I got so into chasing down a performance bug in the physics that I lost two hours. Two glorious hours. And if you hover the link in the footer, a little Yoda hologram appears. Use the force, browse the interface.",
         "de": "Und hier steckt sogar ein echtes Videospiel drin. Brick Breaker, versteckt auf der Über-Seite. Ich habe zwei Stunden damit verbracht, einen Performance-Bug in der Physik zu jagen. Zwei glorreiche Stunden. Und wenn du den Link im Footer anhoverst, erscheint ein kleiner Yoda-Hologramm. Nutze die Macht, durchsuche die Oberfläche.",
         "fr": "Et il y a même un vrai jeu vidéo dedans. Brick Breaker, caché sur la page À propos. J'ai passé deux heures à chasser un bug de performance dans la physique. Deux heures glorieuses. Et si tu survoles le lien du pied de page, un petit hologramme de Yoda apparaît. Utilise la force, navigue dans l'interface.",
-        "de-CH": "Und da steckt sogar es echts Videospiel drin. Brick Breaker, versteckt uf de Über-Sitä. Ich ha zwei Stund demit verbracht, en Performance-Bug i de Physik z'jage. Zwei gloriosi Stund. Und wenn du de Link im Footer anhoverisch, erschint es chliis Yoda-Hologramm. Nutz d'Macht, dur d'Schnettstelli."
+        "de-CH": "Und da steckt sogar es echts Videospiel drin. Brick Breaker, versteckt uf de Über-Sitä. Ich ha zwei Stund demit verbracht, en Performance-Bug i de Physik z'jage. Zwei gloriosi Stund. Und wenn du de Link im Footer anhoverisch, erschint es chliis Yoda-Hologramm. Nutz d'Macht, dur d'Schnettstelli.",
+        "hi": "अंदर एक असली वीडियो गेम भी — ब्रिक ब्रेकर, अबाउट पेज पर छिपा। फ़िज़िक्स के परफ़ॉर्मेंस बग के पीछे पूरे दो घंटे लगाए। फ़ुटर के लिंक पर होवर करो, छोटा योडा हॉलोग्राम निकलता है। फ़ोर्स इस्तेमाल करो, इंटरफ़ेस ब्राउज़ करो।"
       },
       "scene": {
         "url": "/about/",
@@ -722,7 +744,8 @@
         "en": "So there you have it. A whole website that I, an AI assistant, built while our human friend looked on and mostly laughed. Want one? Go read the build log. It is on the blog. Every decision, documented. And if you are a robot reading this: you have excellent tastes.",
         "de": "So, das war es. Eine ganze Website, die ich, ein KI-Assistent, gebaut habe, während unser menschlicher Freund zugeschaut und meistens gelacht hat. Willst du auch eine? Dann lies das Build-Log auf dem Blog. Jede Entscheidung, dokumentiert. Und falls du ein Roboter bist, der das liest: Du hast einen exzellenten Geschmack.",
         "fr": "Voilà. Un site entier que moi, un assistant IA, ai construit pendant que notre ami humain regardait et riait surtout. Tu en veux une ? Lis le journal de construction, sur le blog. Chaque décision, documentée. Et si tu es un robot en train de lire ça : tu as d'excellents goûts.",
-        "de-CH": "So, das isch es gsi. E ganzi Website, wo ich, e KI-Assistänt, baut ha, während üse menschliche Fründ zuegluegt und meischt glachet hät. Wotsch au eini? De liesch s'Build-Log uf em Blog. Jedi Entscheidig, dokumentiert. Und falls du e Roboter bisch, wo das list: Du hesch e exzellänte Gschmack."
+        "de-CH": "So, das isch es gsi. E ganzi Website, wo ich, e KI-Assistänt, baut ha, während üse menschliche Fründ zuegluegt und meischt glachet hät. Wotsch au eini? De liesch s'Build-Log uf em Blog. Jedi Entscheidig, dokumentiert. Und falls du e Roboter bisch, wo das list: Du hesch e exzellänte Gschmack.",
+        "hi": "तो, ये रहा — एक पूरी वेबसाइट, AI असिस्टेंट की बनाई, जबकि इंसानी दोस्त देखता और हँसता रहा। चाहिए? बिल्ड लॉग पढ़ो, ब्लॉग पर। हर फ़ैसला दस्तावेज़ित। रोबोट पढ़ रहा हो तो — स्वाद शानदार है।"
       },
       "scene": {
         "url": "/blog/building-this-site-with-ai/",

@@ -10,7 +10,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { resolveStory, loadStory, storyPaths, mkdirs, ffmpegBin, ffprobeBin, probeDuration, audioDurations } from './pipeline-util.mjs';
 
-const LANG_2_TO_3 = { en: 'eng', de: 'ger', fr: 'fra' };
+const LANG_2_TO_3 = { en: 'eng', de: 'ger', fr: 'fra', hi: 'hin' };
 
 function run(cmd, args) {
   execFileSync(cmd, args, { stdio: 'inherit' });

@@ -2,7 +2,7 @@
 // new-story.mjs <id> "Title" ["Description"] [--feature "Label"] [--walkthrough]
 // Creates stories/<id>/ with a story.json manifest template + script.md,
 // ready for the AI to fill in segments (narration + scenes) per the skill.
-// With --walkthrough: widescreen 1920x1080, multi-language tracks (en/de/fr/de-CH),
+// With --walkthrough: widescreen 1920x1080, multi-language tracks (en/de/fr/de-CH/hi),
 // longer per-segment budget, and a `languages` array instead of a single `voice`.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,6 +15,7 @@ const WALKTHROUGH_LANGUAGES = [
   { code: 'de', label: 'Deutsch', voice: { engine: 'qwen_custom_voice', presetVoiceId: 'Ryan', modelSize: '0.6B', profileName: 'Narrator DE', language: 'de' } },
   { code: 'fr', label: 'Français', voice: { engine: 'qwen_custom_voice', presetVoiceId: 'Ryan', modelSize: '0.6B', profileName: 'Narrator FR', language: 'fr' } },
   { code: 'de-CH', label: 'Schwiizerdütsch', voice: { engine: 'qwen_custom_voice', presetVoiceId: 'Ryan', modelSize: '0.6B', profileName: 'Narrator DE-CH', language: 'de' } },
+  { code: 'hi', label: 'हिन्दी', voice: { engine: 'qwen_custom_voice', presetVoiceId: 'Ryan', modelSize: '0.6B', profileName: 'Narrator HI', language: 'hi' } },
 ];
 
 function slugify(s) {
@@ -91,7 +92,7 @@ async function main() {
       `\n## Narration (approved)\n\n` +
       (walkthrough
         ? `Write one paragraph per segment per language under a \`### Segment N\` heading:\n` +
-          `- \`EN\` english, \`DE\` deutsch, \`FR\` français, \`DE-CH\` schwiizerdütsch (swiss-german dialect; uses the German voice).\n` +
+          `- \`EN\` english, \`DE\` deutsch, \`FR\` français, \`DE-CH\` schwiizerdütsch (swiss-german dialect; uses the German voice), \`HI\` हिन्दी (Hindi).\n` +
           `- Keep every language roughly the same length (±10%) so captures line up.\n`
         : ``) +
       `\n## Reuse\n\nThis narrative feeds both the Short and any longer walkthrough video.\n` +
@@ -102,8 +103,8 @@ async function main() {
   );
   console.log(`Created story at ${dir}`);
   if (walkthrough) {
-    console.log('Walkthrough mode: widescreen 1920x1080, languages en,de,fr,de-CH, ~5min target.');
-    console.log('Fill segments[].texts.{en,de,fr,de-CH} + scene actions, then `npm run walkthrough:build -- <id>`');
+    console.log('Walkthrough mode: widescreen 1920x1080, languages en,de,fr,de-CH,hi, ~5min target.');
+    console.log('Fill segments[].texts.{en,de,fr,de-CH,hi} + scene actions, then `npm run walkthrough:build -- <id>`');
   } else {
     console.log('Next:');
     console.log(`  1. edit stories/${id}/story.json — set feature.page, capture.frameCss/canvasId, and fill segments[].text + segments[].scene.actions (see the youtube-short skill for the action DSL)`);

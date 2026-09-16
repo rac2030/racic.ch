@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { resolveStory, loadStory, storyPaths, ffmpegBin, ffprobeBin, probeDuration, audioDurations } from './pipeline-util.mjs';
 
-const LANG_2_TO_3 = { en: 'eng', de: 'ger', fr: 'fra' };
+const LANG_2_TO_3 = { en: 'eng', de: 'ger', fr: 'fra', hi: 'hin' };
 
 function runOut(cmd, args) {
   return execFileSync(cmd, args, { encoding: 'utf8' }).trim();
