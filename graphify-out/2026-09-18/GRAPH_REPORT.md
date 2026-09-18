@@ -1,28 +1,28 @@
-# Graph Report - racic.ch-portfolio-blog  (2026-09-18)
+# Graph Report - racic.ch-portfolio-blog  (2026-09-17)
 
 ## Corpus Check
-- 164 files · ~913,392 words
+- 164 files · ~913,319 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 6 file(s) not represented in the graph (top: (none) 5, .css 1)
 
 ## Summary
-- 1030 nodes · 1367 edges · 98 communities (74 shown, 24 thin omitted)
+- 1033 nodes · 1382 edges · 99 communities (75 shown, 24 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 36 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9fd3d918`
+- Built from commit: `3a12655d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - pipeline-util.mjs
 - brick-breaker.ts
-- utils.ts
+- astro:content
 - scripts
 - package.json
-- sw.test.ts
-- ref_astro_content
+- @jest/globals
+- timeline.ts
 - @playwright/test
 - search.ts
 - Base.astro
@@ -31,7 +31,7 @@
 - build-brickbreaker.js
 - new-post.mjs
 - generate-migration-report.mjs
-- blog/index.astro
+- ref_astro_content
 - content.config.ts
 - 404.astro
 - pieiter
@@ -55,7 +55,7 @@
 - Workflow
 - History
 - using-google.md
-- @jest/globals
+- utils.ts
 - ubuntu-font-rendering-mono-emoji-fix.md
 - from-build-log-to-video-ai-youtube-pipeline.md
 - makezurich-mobifloc.md
@@ -83,6 +83,7 @@
 - Phase 13: Content Polish — Tags, Wide Hero Images, and Bookmark Cleanup
 - Phase 8: Content System Features
 - Phase 12: Content Migration Fixes
+- timeline.astro
 - stories/
 - Story: The raic.ch Site Walkthrough
 - graphify reference: add a URL and watch a folder
@@ -112,8 +113,8 @@
 5. `What You Must Do When Invoked` - 12 edges
 6. `AGENTS.md — racic.ch Project Context` - 12 edges
 7. `main()` - 11 edges
-8. `loadStory()` - 11 edges
-9. `resolveStory()` - 11 edges
+8. `resolveStory()` - 11 edges
+9. `loadStory()` - 11 edges
 10. `main()` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
@@ -121,17 +122,17 @@
   src/content/blog/building-this-site-with-ai.md → .agents/skills/youtube-short/scripts/capture.mjs
 - `Recently Updated` --references--> `effectiveUpdatedDate()`  [INFERRED]
   src/content/blog/building-this-site-with-ai.md → src/lib/utils.ts
-- `TypeScript Search Module` --references--> `ExactResult`  [INFERRED]
-  src/content/blog/building-this-site-with-ai.md → src/lib/search.ts
+- `Workflow` --references--> `corner()`  [INFERRED]
+  .agents/skills/youtube-short/SKILL.md → .agents/skills/youtube-short/scripts/capture.mjs
 - `TypeScript Search Module` --references--> `FuzzyMatchResult`  [INFERRED]
   src/content/blog/building-this-site-with-ai.md → src/lib/search.ts
-- `TypeScript Search Module` --references--> `FuzzyResult`  [INFERRED]
+- `TypeScript Search Module` --references--> `ExactResult`  [INFERRED]
   src/content/blog/building-this-site-with-ai.md → src/lib/search.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (98 total, 24 thin omitted)
+## Communities (99 total, 24 thin omitted)
 
 ### Community 0 - "pipeline-util.mjs"
 Cohesion: 0.10
@@ -141,33 +142,33 @@ Nodes (53): LANG_2_TO_3, main(), run(), tracksFor(), ensureBase(), ensureVoicebo
 Cohesion: 0.06
 Nodes (41): Ball, BALL_R, bounceWalls(), Brick, BRICK_COLORS, BrickBreaker, BrickColorSpec, circleRectHit() (+33 more)
 
-### Community 2 - "utils.ts"
-Cohesion: 0.07
-Nodes (38): log(), tocHeadings, Article Change Timeline, src_data_git_log, buildTimelineEvents(), expandGitCommits(), GitCommit, GitLog (+30 more)
+### Community 2 - "astro:content"
+Cohesion: 0.18
+Nodes (4): tocHeadings, src_data_git_log, canonicalURL, extractHeadings()
 
 ### Community 3 - "scripts"
 Cohesion: 0.06
 Nodes (36): scripts, astro, build, build:brickbreaker, build:git, build:search, build:sw, dev (+28 more)
 
 ### Community 4 - "package.json"
-Cohesion: 0.05
-Nodes (38): dependencies, astro, @astrojs/rss, marked, devDependencies, @astrojs/sitemap, esbuild, husky (+30 more)
+Cohesion: 0.06
+Nodes (33): dependencies, astro, @astrojs/rss, marked, devDependencies, @astrojs/sitemap, esbuild, husky (+25 more)
 
-### Community 5 - "sw.test.ts"
-Cohesion: 0.31
-Nodes (7): Service Worker (Offline Support), CACHE_NAME, getVersion(), normalizePath(), notifyClients(), setVersion(), shouldBypassCache()
+### Community 5 - "@jest/globals"
+Cohesion: 0.11
+Nodes (18): astro, @jest/globals, ref_zod, Service Worker (Offline Support), CACHE_NAME, getVersion(), normalizePath(), notifyClients() (+10 more)
 
-### Community 6 - "ref_astro_content"
-Cohesion: 0.24
-Nodes (5): ref_astro_content, allPosts, allProjects, allWiki, tags
+### Community 6 - "timeline.ts"
+Cohesion: 0.09
+Nodes (29): log(), Article Change Timeline, Code Block Enhancements, Content Resizer, Dedicated Search Page (`/search`), Edit Link, Full-Text Search with Fuzzy Matching, Heading Anchor Links (+21 more)
 
 ### Community 8 - "search.ts"
-Cohesion: 0.10
-Nodes (30): Code Block Enhancements, Content Resizer, Dedicated Search Page (`/search`), Edit Link, Full-Text Search with Fuzzy Matching, Heading Anchor Links, Last Updated Date, Phase 9: Interactive Features (+22 more)
+Cohesion: 0.21
+Nodes (18): TypeScript Search Module, escapeHtml(), ExactResult, fuzzyMatch(), FuzzyMatchResult, FuzzyResult, getExcerpt(), highlight() (+10 more)
 
 ### Community 9 - "Base.astro"
-Cohesion: 0.19
-Nodes (6): @astrojs/rss, NAV, SITE, canonicalURL, canonicalURL, src_styles_global
+Cohesion: 0.22
+Nodes (4): NAV, SITE, canonicalURL, src_styles_global
 
 ### Community 10 - "wiki-graph.test.ts"
 Cohesion: 0.09
@@ -189,9 +190,9 @@ Nodes (12): ref_node_readline, ALLOWS_CATEGORY, COLLECTION_NAME, COLLECTIONS, DI
 Cohesion: 0.19
 Nodes (11): categories, diffLines(), __dirname, escapeHtml(), FILE_MAP, FILE_MAP_PATH, getStats(), MIGRATION_PLAN (+3 more)
 
-### Community 15 - "blog/index.astro"
-Cohesion: 0.17
-Nodes (8): allCategories, allTags, posts, tagCounts, allCategories, allTags, projects, tagCounts
+### Community 15 - "ref_astro_content"
+Cohesion: 0.10
+Nodes (14): ref_astro_content, @astrojs/rss, allCategories, allTags, posts, tagCounts, allCategories, allTags (+6 more)
 
 ### Community 16 - "content.config.ts"
 Cohesion: 0.33
@@ -226,8 +227,8 @@ Cohesion: 0.29
 Nodes (5): { execSync }, findMdFiles(), { join, relative }, { readdirSync, statSync, mkdirSync, writeFileSync }, ref_child_process
 
 ### Community 25 - "wiki/index.astro"
-Cohesion: 0.29
-Nodes (6): allCategories, allTags, bookmarkEntries, entries, tagCounts, wikiGraph
+Cohesion: 0.25
+Nodes (7): resize(), allCategories, allTags, bookmarkEntries, entries, tagCounts, wikiGraph
 
 ### Community 26 - "tsconfig.json"
 Cohesion: 0.33
@@ -277,9 +278,9 @@ Nodes (18): Backstage is Named (2017–2019), CNCF Incubating Project (March 202
 Cohesion: 0.12
 Nodes (15): eBook, Frontpage, Links / Referenzen, Music, Netzwerk Kameras, Pages that are hidden for google robots, Passwords, PHP PHOTO ALBUMS (+7 more)
 
-### Community 41 - "@jest/globals"
-Cohesion: 0.29
-Nodes (6): @jest/globals, ref_zod, blogSchema, bookmarkSchema, projectSchema, wikiSchema
+### Community 41 - "utils.ts"
+Cohesion: 0.28
+Nodes (13): buildBlogUrl(), buildProjectUrl(), buildTagUrl(), buildWikiUrl(), effectiveUpdatedDate(), extractAllTags(), filterDrafts(), formatDate() (+5 more)
 
 ### Community 42 - "ubuntu-font-rendering-mono-emoji-fix.md"
 Cohesion: 0.13
@@ -389,6 +390,10 @@ Nodes (5): Bookmarks Collection, Category System, Draft Mode, Four Content Colle
 Cohesion: 0.40
 Nodes (5): How the Fix Was Verified, Lessons Learned, Phase 12: Content Migration Fixes, The Fix Prompts and Manual Fixes, What Went Wrong in the First Conversion
 
+### Community 69 - "timeline.astro"
+Cohesion: 0.80
+Nodes (4): check(), onScroll(), reveal(), teardown()
+
 ### Community 70 - "stories/"
 Cohesion: 0.40
 Nodes (4): Commands, Layout, Reuse, stories/
@@ -430,24 +435,24 @@ Cohesion: 0.67
 Nodes (3): HTML5 UP Copyright Notice, Manual Changes Required, Other Manual Tasks
 
 ## Knowledge Gaps
-- **549 isolated node(s):** `$schema`, `plugin`, `type`, `command`, `cwd` (+544 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 649 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **549 isolated node(s):** `LANG_2_TO_3`, `SCRIPTS`, `VOICEBOX_URL`, `REPO`, `STORIES` (+544 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 650 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **24 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `@jest/globals` connect `@jest/globals` to `pipeline-util.mjs`, `brick-breaker.ts`, `utils.ts`, `package.json`, `sw.test.ts`, `search.ts`, `Base.astro`, `wiki-graph.test.ts`?**
-  _High betweenness centrality (0.153) - this node is a cross-community bridge._
+- **Why does `@jest/globals` connect `@jest/globals` to `pipeline-util.mjs`, `brick-breaker.ts`, `package.json`, `timeline.ts`, `search.ts`, `Base.astro`, `utils.ts`, `wiki-graph.test.ts`?**
+  _High betweenness centrality (0.150) - this node is a cross-community bridge._
 - **Why does `esbuild` connect `build-brickbreaker.js` to `package.json`, `build-sw.js`?**
-  _High betweenness centrality (0.063) - this node is a cross-community bridge._
-- **Why does `Complete Feature List` connect `wiki-graph.test.ts` to `building-this-site-with-ai.md`?**
-  _High betweenness centrality (0.041) - this node is a cross-community bridge._
-- **What connects `$schema`, `plugin`, `type` to the rest of the system?**
+  _High betweenness centrality (0.071) - this node is a cross-community bridge._
+- **Why does `effectiveUpdatedDate()` connect `utils.ts` to `pipeline-util.mjs`, `timeline.ts`?**
+  _High betweenness centrality (0.042) - this node is a cross-community bridge._
+- **What connects `LANG_2_TO_3`, `SCRIPTS`, `VOICEBOX_URL` to the rest of the system?**
   _549 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `pipeline-util.mjs` be split into smaller, more focused modules?**
   _Cohesion score 0.09783183500793231 - nodes in this community are weakly interconnected._
 - **Should `brick-breaker.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.05660377358490566 - nodes in this community are weakly interconnected._
-- **Should `utils.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.06980433632998413 - nodes in this community are weakly interconnected._
+- **Should `scripts` be split into smaller, more focused modules?**
+  _Cohesion score 0.05555555555555555 - nodes in this community are weakly interconnected._
