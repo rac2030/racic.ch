@@ -1,6 +1,36 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
-    "open-mem@latest"
-  ]
+    "open-mem@latest",
+    ".opencode/plugins/graphify.js"
+  ],
+  "mcp": {
+    "graphify": {
+      "type": "local",
+      "command": [
+        "/home/node/.local/bin/graphify-mcp",
+        "--graph",
+        "graphify-out/graph.json"
+      ],
+      "cwd": ".",
+      "enabled": true
+    }
+  },
+  "provider": {
+    "lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LM Studio (host)",
+      "options": {
+        "baseUrl": "http://172.17.0.1:1234"
+      },
+      "models": {
+        "qwen/qwen3.8-27b": {
+          "name": "qwen3.8-27b"
+        },
+        "qwen/qwen3.5-9b": {
+          "name": "qwen3.5-9b"
+        }
+      }
+    }
+  }
 }

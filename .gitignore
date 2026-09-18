@@ -50,3 +50,6 @@ stories/*/segments/
 stories/*/output/
 stories/*/durations.json
 video-output/
+
+# graphify knowledge graph — local-only cost tracking (the graph itself is committed)
+graphify-out/cost.json

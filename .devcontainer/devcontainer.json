@@ -37,7 +37,7 @@
     "4322": { "label": "Playwright preview", "onAutoForward": "notify" }
   },
 
-  "postCreateCommand": "npm install && opencode --version && node -v",
+  "postCreateCommand": "npm install && opencode --version && node -v && graphify install --project --platform opencode && graphify hook install",
 
   "customizations": {
     "vscode": {

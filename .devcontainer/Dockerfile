@@ -38,6 +38,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # binary in /usr/local/bin so it stays on PATH for every user.
 RUN npm install -g opencode-ai@1.18.21
 
+# graphify knowledge graph CLI (https://github.com/Graphify-Labs/graphify).
+# uv is the recommended installer; the `graphify` command lands in
+# /home/node/.local/bin so it stays on PATH for the `node` user. HOME is
+# redirected because the RUN shell runs as root (default uv home is /root).
+# Rebuilt with the `mcp` extra so the graph.json can be served to opencode as
+# a local MCP stdio server (.opencode/opencode.json "mcp.graphify").
+RUN HOME=/home/node curl -LsSf https://astral.sh/uv/install.sh | sh && \
+    HOME=/home/node /home/node/.local/bin/uv tool install "graphifyy[mcp]" && \
+    chown -R node:node /home/node/.local
+
 # Playwright browsers at build time so `npm run test:e2e` works in the container
 # without a first-run download. Pin to the project's Playwright major.
 RUN npx --yes playwright@1.62.1 install --with-deps chromium
